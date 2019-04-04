@@ -1,0 +1,54 @@
+#######################################
+# Syntax Coloring Map For Bridge
+#######################################
+
+#######################################
+# Data types & structures (KEYWORD1/3)
+#######################################
+
+OneWireNg	KEYWORD1
+OneWireNg_BitBang	KEYWORD1
+OneWireNg_ArduinoAVR	KEYWORD1
+Id	KEYWORD3
+ErrorCode	KEYWORD3
+
+#######################################
+# Methods (KEYWORD2)
+#######################################
+
+reset	KEYWORD2
+touchBit	KEYWORD2
+touchByte	KEYWORD2
+touchBytes	KEYWORD2
+writeBit	KEYWORD2
+writeByte	KEYWORD2
+writeBytes	KEYWORD2
+readBit	KEYWORD2
+readByte	KEYWORD2
+readBytes	KEYWORD2
+search	KEYWORD2
+searchReset	KEYWORD2
+readSingleId	KEYWORD2
+addressSingle	KEYWORD2
+addressAll	KEYWORD2
+powerBus	KEYWORD2
+crc8	KEYWORD2
+checkCrcId	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+EC_SUCCESS	LITERAL1
+EC_NO_DEVS	LITERAL1
+EC_MORE	LITERAL1
+EC_DONE	LITERAL1
+EC_BUS_ERROR	LITERAL1
+EC_CRC_ERROR	LITERAL1
+EC_UNSUPPORED	LITERAL1
+
+CMD_READ_ROM	LITERAL1
+CMD_MATCH_ROM	LITERAL1
+CMD_SKIP_ROM	LITERAL1
+CMD_SEARCH_ROM	LITERAL1
+CMD_SEARCH_ROM_COND	LITERAL1

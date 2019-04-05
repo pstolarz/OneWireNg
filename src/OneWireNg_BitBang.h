@@ -35,8 +35,8 @@ public:
      * Enable/disable direct voltage source provisioning on the 1-wire data bus
      * parasitically powering connected slave devices. In case of open-drain
      * type of platform, where no power-control-GPIO has been configured,
-     * the routine returns @sa EC_UNSUPPORED. See @sa setupPwrCtrlGpio() for
-     * details.
+     * the routine returns @sa EC_UNSUPPORED, @sa EC_SUCCESS otherwise. See
+     * @sa setupPwrCtrlGpio() for details.
      */
     virtual ErrorCode powerBus(bool on);
 
@@ -90,7 +90,7 @@ protected:
     }
 
     /**
-     * Read input-mode @c gpio and return it state (0: low, 1: high).
+     * Read input-mode @c gpio and return its state (0: low, 1: high).
      *
      * @note Currently the routine is called for data GPIO only (@c GPIO_DTA).
      *     However @c gpio parameter is passed to maintain common GPIO interface

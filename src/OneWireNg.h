@@ -47,13 +47,20 @@ public:
 
     typedef enum
     {
-        EC_SUCCESS = 0, /** Success */
-        EC_NO_DEVS,     /** Search: no slave devices detected on the bus */
-        EC_MORE,        /** Search: more slave devices available */
-        EC_DONE,        /** Search: no more slave devices available */
-        EC_BUS_ERROR,   /** 1-wire bus error */
-        EC_CRC_ERROR,   /** CRC error */
-        EC_UNSUPPORED   /** Service is not supported by a platform */
+        /** Success */
+        EC_SUCCESS = 0,
+        /** Search process finished - no more slave devices available */
+        EC_DONE = EC_SUCCESS,
+        /** Search process in progress - more slave devices available */
+        EC_MORE,
+        /** No slave devices detected on the bus */
+        EC_NO_DEVS,
+        /** 1-wire bus error */
+        EC_BUS_ERROR,
+        /** CRC error */
+        EC_CRC_ERROR,
+        /** Service is not supported by the platform */
+        EC_UNSUPPORED
     } ErrorCode;
 
     /**
@@ -145,7 +152,7 @@ public:
      * @param alarm If @c true - search for devices only with alarm state set,
      *     @c false - search for all devices.
      *
-     * @return The function may return the following codes:
+     * @return Error codes:
      *     - @sa EC_MORE: Success; more devices available by subsequent calls
      *         of this routine. @id is written with slave id.
      *     - @sa EC_DONE: Success; no more devices available. @id is written
@@ -173,9 +180,9 @@ public:
      *   received data.
      *
      * @return Error codes:
-     *     - @sa EC_NO_DEVS - no devices on the bus.
-     *     - @sa EC_CRC_ERROR - probably more than one slave on the bus,
-     *     - @sa EC_SUCCESS - success, the result written to @c id.
+     *     - @sa EC_SUCCESS - Success, the result written to @c id.
+     *     - @sa EC_NO_DEVS - No devices on the bus.
+     *     - @sa EC_CRC_ERROR - Probably more than one slave on the bus.
      */
     ErrorCode readSingleId(Id &id)
     {

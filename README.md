@@ -91,12 +91,61 @@ a particular platform (see [above](#architecture-details)).
 
 ## Usage
 
-Refer to `examples` directory for usage details.
-For API details refer to sources inline docs (mainly `OneWireNg` class).
+Refer to `examples` directory for usage details. For API details refer to sources
+inline docs (mainly `OneWireNg` class).
 
 ## Parasite powering
 
-TODO
+The library supports two modes of providing direct voltage source on the 1-wire
+bus to parasitically power connected slaves:
+
+1. If platform's GPIO set to the high-state (in the output mode) is able to serve
+   as a voltage source, the library may leverage this trait. The master MCU GPIO
+   controlling the 1-wire bus is set to the high-state powering the bus when
+   additional energy is needed for connected slaves.
+
+2. If platform's GPIO in the output mode is of an open-drain type, then the GPIO
+   is not able to directly serve as a voltage source powering the slaves. In this
+   case additional switching transistor is leveraged to provide the power to the
+   bus and is controlled by a dedicated power-control-GPIO as presented on the
+   following figure.
+
+![Switching transistor parasite powering](extras/schema/parasite.svg)
+
+Choice between the two types is made by selecting appropriate constructor of a
+platform class. For example:
+
+```cpp
+/*
+ * Macro-defines used:
+ *
+ * OW_PIN: GPIO pin number used for bit-banging 1-wire bus.
+ * PWR_CTRL_PIN: power-control-GPIO pin number (optional).
+ */
+
+#ifdef PWR_CTRL_PIN
+// switching transistor powering
+OneWireNg_ArduinoAVR owAvr(OW_PIN, PWR_CTRL_PIN);
+#else
+// GPIO bit-bang powering
+OneWireNg_ArduinoAVR owAvr(OW_PIN);
+#endif
+
+OneWireNg& ow = owAvr;
+
+// ...
+
+// power the bus until explicit unpowering or next 1-wire bus activity
+ow.powerBus(true);
+
+// wait for connected slaves to fulfill their task requiring extra powering
+delay(750);
+
+// unpower the bus
+ow.powerBus(false);
+```
+
+configures 1-wire service to work in one of the above modes (AVR platform).
 
 ## License
 

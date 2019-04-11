@@ -1,0 +1,110 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# parasite-rescue_DS18B20
+#
+DEF parasite-rescue_DS18B20 U 0 40 Y Y 1 F N
+F0 "U" -150 250 50 H V C CNN
+F1 "parasite-rescue_DS18B20" 0 -250 50 H V C CNN
+F2 "" -150 250 50 H V C CNN
+F3 "" -150 250 50 H V C CNN
+$FPLIST
+ TO-92_*
+$ENDFPLIST
+DRAW
+S -200 200 200 -200 0 1 0 N
+X GND 1 -300 -100 100 R 50 50 1 1 W
+X DQ 2 -300 0 100 R 50 50 1 1 B
+X VDD 3 -300 100 100 R 50 50 1 1 W
+ENDDRAW
+ENDDEF
+#
+# parasite-rescue_DS18B20-PAR
+#
+DEF parasite-rescue_DS18B20-PAR U 0 40 Y Y 1 F N
+F0 "U" -150 250 50 H V C CNN
+F1 "parasite-rescue_DS18B20-PAR" 0 -250 50 H V C CNN
+F2 "" -150 250 50 H V C CNN
+F3 "" -150 250 50 H V C CNN
+$FPLIST
+ TO-92_*
+$ENDFPLIST
+DRAW
+S -200 200 200 -200 0 1 0 N
+X GND 1 -300 -100 100 R 50 50 1 1 W
+X DQ 2 -300 100 100 R 50 50 1 1 B
+ENDDRAW
+ENDDEF
+#
+# parasite-rescue_GND
+#
+DEF parasite-rescue_GND #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -250 50 H I C CNN
+F1 "parasite-rescue_GND" 0 -150 50 H V C CNN
+F2 "" 0 0 50 H V C CNN
+F3 "" 0 0 50 H V C CNN
+DRAW
+P 6 0 1 0 0 0 0 -50 50 -50 0 -100 -50 -50 0 -50 N
+X GND 1 0 0 0 D 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
+# parasite-rescue_Q_PMOS_GDS
+#
+DEF parasite-rescue_Q_PMOS_GDS Q 0 0 Y N 1 F N
+F0 "Q" 300 50 50 H V R CNN
+F1 "parasite-rescue_Q_PMOS_GDS" 650 -50 50 H V R CNN
+F2 "" 200 100 50 H V C CNN
+F3 "" 0 0 50 H V C CNN
+DRAW
+C 50 0 111 0 1 10 N
+P 2 0 1 0 30 -70 100 -70 N
+P 2 0 1 10 30 -50 30 -90 N
+P 2 0 1 0 30 0 100 0 N
+P 2 0 1 10 30 20 30 -20 N
+P 2 0 1 0 30 70 100 70 N
+P 2 0 1 10 30 90 30 50 N
+P 2 0 1 0 100 -70 100 -100 N
+P 2 0 1 0 100 -70 100 0 N
+P 2 0 1 0 100 100 100 70 N
+P 3 0 1 10 10 75 10 -75 10 -75 N
+P 4 0 1 0 90 0 50 -15 50 15 90 0 F
+X G 1 -200 0 210 R 50 50 1 1 I
+X D 2 100 200 100 D 50 50 1 1 P
+X S 3 100 -200 100 U 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# parasite-rescue_R
+#
+DEF parasite-rescue_R R 0 0 N Y 1 F N
+F0 "R" 80 0 50 V V C CNN
+F1 "parasite-rescue_R" 0 0 50 V V C CNN
+F2 "" -70 0 50 V V C CNN
+F3 "" 0 0 50 H V C CNN
+$FPLIST
+ R_*
+ Resistor_*
+$ENDFPLIST
+DRAW
+S -40 -100 40 100 0 1 10 N
+X ~ 1 0 150 50 D 50 50 1 1 P
+X ~ 2 0 -150 50 U 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# parasite-rescue_VCC
+#
+DEF parasite-rescue_VCC #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -150 50 H I C CNN
+F1 "parasite-rescue_VCC" 0 150 50 H V C CNN
+F2 "" 0 0 50 H V C CNN
+F3 "" 0 0 50 H V C CNN
+DRAW
+C 0 75 25 0 1 0 N
+P 2 0 1 0 0 0 0 50 N
+X VCC 1 0 0 0 U 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
+#End Library

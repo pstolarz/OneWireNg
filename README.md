@@ -36,8 +36,14 @@ devices (e.g. Dallas/Maxim thermometers).
 
 ## Supported platforms
 
-Currently Arduino AVR only, since it's the only platform I'm able to test for.
-Expect more platforms support in the future. **I'm inviting all developers**,
+* Arduino AVR.
+    * Platform class: `OneWireNg_ArduinoAVR`.
+    * Tested on Arduino UNO (ATmega328P).
+* Arduino megaAVR (recent Microchip AVR architecture).
+    * Platform class: `OneWireNg_ArduinoMegaAVR`.
+    * **Not tested**.
+
+NOTE: Expect more platforms support in the future. **I'm inviting all developers**,
 eager to help me with porting and testing the library for new platforms.
 
 ## Architecture details

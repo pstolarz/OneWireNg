@@ -1,0 +1,22 @@
+{
+    "name": "OneWireNg",
+    "description": "Arduino 1-wire service library",
+    "keywords": "onewire, 1-wire, arduino, dallas, maxim, thermometer, ds18b20",
+    "authors": [
+        {
+            "name": "Piotr Stolarz",
+            "email": "pstolarz@o2.pl",
+            "maintainer": true
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pstolarz/OneWireNg"
+    },
+    "version": "0.1.0",
+    "homepage": "https://github.com/pstolarz/OneWireNg",
+    "frameworks": "Arduino",
+    "examples": [
+        "examples/*/*.ino"
+    ]
+}

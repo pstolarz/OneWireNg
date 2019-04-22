@@ -16,32 +16,32 @@
 #ifdef ARDUINO
 # include "Arduino.h"
 # define delayUs(dly) delayMicroseconds(dly)
-# define enableInterrups() interrupts()
-# define disableInterrupts() noInterrupts()
+# define timeCriticalEnter() noInterrupts()
+# define timeCriticalExit() interrupts()
 #else
 #  ifndef __TEST__
 #    warning "Interrupts API unsupported by the target platform"
 #  endif
 # include <unistd.h>
 # define delayUs(dly) usleep(dly)
-# define enableInterrups()
-# define disableInterrupts()
+# define timeCriticalEnter()
+# define timeCriticalExit()
 #endif
 
 bool OneWireNg_BitBang::reset()
 {
     int presPulse;
 
-    disableInterrupts();
+    timeCriticalEnter();
     if (_flgs.pwre) powerBus(false);
     setBus(0);
-    enableInterrups();
+    timeCriticalExit();
     delayUs(480);
-    disableInterrupts();
+    timeCriticalEnter();
     setBus(1);
     delayUs(90);
     presPulse = readGpioIn(GPIO_DTA);
-    enableInterrups();
+    timeCriticalExit();
     delayUs(390);
 
     return !presPulse;
@@ -51,7 +51,7 @@ int OneWireNg_BitBang::touchBit(int bit)
 {
     int smpl = 0;
 
-    disableInterrupts();
+    timeCriticalEnter();
     if (_flgs.pwre) powerBus(false);
     setBus(0);
     if (bit != 0)
@@ -62,14 +62,14 @@ int OneWireNg_BitBang::touchBit(int bit)
         delayUs(8);
         /* start sampling at 13us */
         smpl = readGpioIn(GPIO_DTA);
-        enableInterrups();
+        timeCriticalExit();
         delayUs(52);
     } else
     {
         /* write-0 */
         delayUs(65);
         setBus(1);
-        enableInterrups();
+        timeCriticalExit();
         delayUs(5);
     }
     return smpl;

@@ -22,9 +22,14 @@
 #elif !defined(OWNG_DISABLE_DEFAULT_CONFIG)
 
 /**
- * Fast, 256-elements table based, CRC-8 calculation
+ * Fast, table based, CRC-8 calculation. If not defined CRC-8 calculation
+ * is about 8 times slower but no extra memory is used for the table.
+ *
+ * The macro may be defined as:
+ * @c CRC8_TAB_256: 256 elements table; fastest; significant memory usage.
+ * @c CRC8_TAB_16LH: 2x16 elements table; decent fast & acceptable memory usage.
  */
-#define CONFIG_CRC8_TAB
+#define CONFIG_CRC8_TAB CRC8_TAB_16LH
 
 /**
  * Store CRC-8 table in flash memory instead of RAM
@@ -35,7 +40,7 @@
  *     time needed for CRC calculation, since the flash access is much slower
  *     than RAM.
  */
-#define CONFIG_FLASH_CRC8_TAB
+//#define CONFIG_FLASH_CRC8_TAB
 
 /**
  * See @sa OneWireNg_BitBang::setGpioAsOutput() for more information

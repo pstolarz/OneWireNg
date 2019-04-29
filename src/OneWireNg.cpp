@@ -13,6 +13,14 @@
 #include "OneWireNg.h"
 #include <string.h>
 
+#define CRC8_TAB_256    1
+#define CRC8_TAB_16LH   2
+
+#if defined(CONFIG_CRC8_TAB) && \
+    !(CONFIG_CRC8_TAB == CRC8_TAB_256 || CONFIG_CRC8_TAB == CRC8_TAB_16LH)
+# error Invalid CONFIG_CRC8_TAB
+#endif
+
 /* flash storage API */
 #if defined(CONFIG_CRC8_TAB) && defined(CONFIG_FLASH_CRC8_TAB)
 # ifdef ARDUINO
@@ -75,10 +83,11 @@ void OneWireNg::searchReset()
 
 uint8_t OneWireNg::crc8(const void *in, size_t len)
 {
-    uint8_t crc=0;
+    uint8_t crc = 0;
     const uint8_t *in_bts = (const uint8_t*)in;
-#ifdef CONFIG_CRC8_TAB
-    static const uint8_t CRCTAB_STORAGE tabCrc8[] =
+
+#if (CONFIG_CRC8_TAB == CRC8_TAB_256)
+    static const uint8_t CRCTAB_STORAGE CRC8_256[] =
     {
         0x00, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83,
         0xc2, 0x9c, 0x7e, 0x20, 0xa3, 0xfd, 0x1f, 0x41,
@@ -116,7 +125,22 @@ uint8_t OneWireNg::crc8(const void *in, size_t len)
 
     while (len--) {
         crc = crc ^ *in_bts++;
-        crc = crcTabRead(tabCrc8 + (crc & 0xff));
+        crc = crcTabRead(CRC8_256 + (crc & 0xff));
+    }
+#elif (CONFIG_CRC8_TAB == CRC8_TAB_16LH)
+    static const uint8_t CRCTAB_STORAGE CRC8_16L[] = {
+        0x00, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83,
+        0xc2, 0x9c, 0x7e, 0x20, 0xa3, 0xfd, 0x1f, 0x41,
+    };
+    static const uint8_t CRCTAB_STORAGE CRC8_16H[] = {
+        0x00, 0x9d, 0x23, 0xbe, 0x46, 0xdb, 0x65, 0xf8,
+        0x8c, 0x11, 0xaf, 0x32, 0xca, 0x57, 0xe9, 0x74
+    };
+
+    while (len--) {
+        crc = crc ^ *in_bts++;
+        crc = crcTabRead(CRC8_16L + (crc & 0x0f)) ^
+            crcTabRead(CRC8_16H + ((crc >> 4) & 0x0f));
     }
 #else
     size_t i;
@@ -128,6 +152,7 @@ uint8_t OneWireNg::crc8(const void *in, size_t len)
             crc = ((crc ^ b) & 1 ? 0x8c : 0) ^ (crc >> 1);
     }
 #endif
+
     return crc;
 }
 

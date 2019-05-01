@@ -42,6 +42,9 @@ devices (e.g. Dallas/Maxim thermometers).
 * Arduino megaAVR (recent Microchip AVR architecture).
     * Platform class: `OneWireNg_ArduinoMegaAVR`.
     * **Not tested**.
+* Arduino ESP8266.
+    * Platform class: `OneWireNg_ArduinoESP8266`.
+    * **Not tested**.
 
 NOTE: Expect more platforms support in the future. **I'm inviting all developers**,
 eager to help me with porting and testing the library for new platforms.

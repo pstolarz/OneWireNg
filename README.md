@@ -98,6 +98,13 @@ GPIO activities details).
 Platform classes have a public constructor allowing to create 1-wire service for
 a particular platform (see [above](#architecture-details)).
 
+NOTE: For the convenience there has been provided `OneWireNg_CurrentPlatform.h`
+header which tries to detect platform the compilation is proceeded and:
+ * include proper platform class header,
+ * assign `OneWireNg_CurrentPlatform` macro-define to the detected platform class.
+
+Refer to `examples/Dallas_Temperature` example for the usage details.
+
 ## Usage
 
 Refer to `examples` directory for usage details. For API details refer to sources

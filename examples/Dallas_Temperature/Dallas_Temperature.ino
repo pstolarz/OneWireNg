@@ -10,7 +10,7 @@
  * See the License for more information.
  */
 
-#include "OneWireNg_ArduinoAVR.h"
+#include "OneWireNg_CurrentPlatform.h"
 
 #define OW_PIN          10
 
@@ -47,9 +47,9 @@
     (NULL))))))
 
 #ifdef PWR_CTRL_PIN
-static OneWireNg *ow = new OneWireNg_ArduinoAVR(OW_PIN, PWR_CTRL_PIN, false);
+static OneWireNg *ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false);
 #else
-static OneWireNg *ow = new OneWireNg_ArduinoAVR(OW_PIN, false);
+static OneWireNg *ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
 #endif
 
 static void printId(const OneWireNg::Id& id)

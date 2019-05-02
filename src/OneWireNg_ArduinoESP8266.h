@@ -63,8 +63,8 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, bool pullUp):
         OneWireNg_BitBang(false)
     {
-        assert(pin >= 0 && pin <= 16);
-        assert(pullup && pin < 16);
+        assert(pin <= 16);
+        assert(pullUp && pin < 16);
 
         _dtaPin = pin;
         initDtaGpio(pullUp);
@@ -88,8 +88,8 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, unsigned pwrCtrlPin, bool pullUp):
         OneWireNg_BitBang(true)
     {
-        assert(pin >= 0 && pin <= 16 && pwrCtrlPin >= 0 && pwrCtrlPin <= 16);
-        assert(pullup && pin < 16);
+        assert(pin <= 16 && pwrCtrlPin <= 16);
+        assert(pullUp && pin < 16);
 
         _dtaPin = pin;
         _pwrCtrlPin = pwrCtrlPin;
@@ -102,7 +102,7 @@ protected:
     virtual int readGpioIn(GpioType gpio)
     {
         UNUSED(gpio);
-        return __READ_GPIO(pin);
+        return __READ_GPIO(_dtaPin);
     }
 
     virtual void writeGpioOut(GpioType gpio, int state)

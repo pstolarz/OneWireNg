@@ -13,8 +13,12 @@
 #ifndef __OWNG_ARDUINO_ESP8266__
 #define __OWNG_ARDUINO_ESP8266__
 
+#include <assert.h>
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
+
+#define __READ_GPIO(pin) \
+    (pin < 16 ? GPIP(pin) : pin == 16 ? (GP16I & 0x01) : 1)
 
 #define __WRITE_GPIO(pin, st) \
     if (pin < 16) { \
@@ -59,6 +63,9 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, bool pullUp):
         OneWireNg_BitBang(false)
     {
+        assert(pin >= 0 && pin <= 16);
+        assert(pullup && pin < 16);
+
         _dtaPin = pin;
         initDtaGpio(pullUp);
     }
@@ -81,6 +88,9 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, unsigned pwrCtrlPin, bool pullUp):
         OneWireNg_BitBang(true)
     {
+        assert(pin >= 0 && pin <= 16 && pwrCtrlPin >= 0 && pwrCtrlPin <= 16);
+        assert(pullup && pin < 16);
+
         _dtaPin = pin;
         _pwrCtrlPin = pwrCtrlPin;
 
@@ -92,8 +102,7 @@ protected:
     virtual int readGpioIn(GpioType gpio)
     {
         UNUSED(gpio);
-        return (_dtaPin < 16 ? GPIP(_dtaPin) :
-            _dtaPin == 16 ? (GP16I & 0x01) : 1);
+        return __READ_GPIO(pin);
     }
 
     virtual void writeGpioOut(GpioType gpio, int state)
@@ -130,7 +139,7 @@ protected:
 
     void initPwrCtrlGpio(void)
     {
-        pinMode(_pwrCtrlPin, OUTPUT_OPEN_DRAIN);
+        pinMode(_pwrCtrlPin, OUTPUT);
         setupPwrCtrlGpio(true);
     }
 
@@ -142,5 +151,6 @@ private:
 #undef __GPIO_AS_OUTPUT
 #undef __GPIO_AS_INPUT
 #undef __WRITE_GPIO
+#undef __READ_GPIO
 
 #endif /* __OWNG_ARDUINO_ESP8266__ */

@@ -17,6 +17,9 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
+#define __READ_GPIO(gs) \
+    ((gs.port->IN & gs.bmsk) != 0)
+
 #define __WRITE_GPIO(gs, st) \
     if (st) gs.port->OUTSET = gs.bmsk; \
     else gs.port->OUTCLR = gs.bmsk
@@ -76,7 +79,7 @@ protected:
     virtual int readGpioIn(GpioType gpio)
     {
         UNUSED(gpio);
-        return ((_dtaGpio.port->IN & _dtaGpio.bmsk) != 0);
+        return __READ_GPIO(_dtaGpio);
     }
 
     virtual void writeGpioOut(GpioType gpio, int state)
@@ -157,5 +160,6 @@ protected:
 #undef __GPIO_AS_OUTPUT
 #undef __GPIO_AS_INPUT
 #undef __WRITE_GPIO
+#undef __READ_GPIO
 
 #endif /* __OWNG_ARDUINO_MEGAAVR__ */

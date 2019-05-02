@@ -13,8 +13,12 @@
 #ifndef __OWNG_ARDUINO_AVR__
 #define __OWNG_ARDUINO_AVR__
 
+#include <assert.h>
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
+
+#define __READ_GPIO(gs) \
+    ((*gs.inReg & gs.bmsk) != 0)
 
 #define __WRITE_GPIO(gs, st) \
     if (st) *gs.outReg |= gs.bmsk; \
@@ -74,7 +78,7 @@ protected:
     virtual int readGpioIn(GpioType gpio)
     {
         UNUSED(gpio);
-        return ((*_dtaGpio.inReg & _dtaGpio.bmsk) != 0);
+        return __READ_GPIO(_dtaGpio);
     }
 
     virtual void writeGpioOut(GpioType gpio, int state)
@@ -106,6 +110,8 @@ protected:
     void initDtaGpio(unsigned pin, bool pullUp)
     {
         uint8_t port = digitalPinToPort(pin);
+        assert(port != NOT_A_PIN);
+
         _dtaGpio.bmsk = digitalPinToBitMask(pin);
         _dtaGpio.inReg = portInputRegister(port);
         _dtaGpio.outReg = portOutputRegister(port);
@@ -127,6 +133,8 @@ protected:
     void initPwrCtrlGpio(unsigned pin)
     {
         uint8_t port = digitalPinToPort(pin);
+        assert(port != NOT_A_PIN);
+
         _pwrCtrlGpio.bmsk = digitalPinToBitMask(pin);
         _pwrCtrlGpio.outReg = portOutputRegister(port);
         _pwrCtrlGpio.modReg = portModeRegister(port);
@@ -151,5 +159,6 @@ protected:
 #undef __GPIO_AS_OUTPUT
 #undef __GPIO_AS_INPUT
 #undef __WRITE_GPIO
+#undef __READ_GPIO
 
 #endif /* __OWNG_ARDUINO_AVR__ */

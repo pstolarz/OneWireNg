@@ -224,7 +224,7 @@ bool OneWireNg::updateDiscrepancy()
  * (discrepancy counter) is increased by 1 (the counter shall be initialized
  * with 0).
  *
- * @return Error codes: @sa EC_SUCCESS, @sa EC_NO_DEVS, @sa EC_BUS_ERROR.
+ * @return Error codes: @sa EC_SUCCESS, @sa EC_BUS_ERROR.
  */
 OneWireNg::ErrorCode
     OneWireNg::transmitSearchTriplet(size_t n, Id& id, size_t& dscrCnt)
@@ -236,11 +236,10 @@ OneWireNg::ErrorCode
 
     if (v1 && v0) {
         /*
-         * No slave devices present on the bus. In case there previously
-         * has been detected a presence for lower bit position - bus error
-         * is returned.
+         * No slave devices present on the bus. Reset pulse
+         * indicated presence of some - bus error is returned.
          */
-        return (n ? EC_BUS_ERROR : EC_NO_DEVS);
+        return EC_BUS_ERROR;
     } else
     if (!v1 && !v0) {
         /*

@@ -106,7 +106,7 @@ public:
         for (size_t i=0; i < _slaves_n; i++)
             _slaves[i].srchIdle = false;
 
-        return true;
+        return (_slaves_n > 0 ? true : false);
     }
 
     virtual int touchBit(int bit)

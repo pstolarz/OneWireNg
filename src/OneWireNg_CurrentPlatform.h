@@ -26,6 +26,9 @@
 #elif defined(ARDUINO_ARCH_ESP8266)
 # include "OneWireNg_ArduinoESP8266.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoESP8266
+#elif defined(ARDUINO_ARCH_ESP32)
+# include "OneWireNg_ArduinoESP32.h"
+# define OneWireNg_CurrentPlatform OneWireNg_ArduinoESP32
 #else
 # define OneWireNg_CurrentPlatform
 # warning "Can't detect platform. Use proper class for the platform you are compiling for!"

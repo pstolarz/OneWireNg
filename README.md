@@ -45,6 +45,9 @@ devices (e.g. Dallas/Maxim thermometers).
 * Arduino ESP8266.
     * Platform class: `OneWireNg_ArduinoESP8266`.
     * **Not tested**.
+* Arduino ESP32.
+    * Platform class: `OneWireNg_ArduinoESP32`.
+    * **Not tested**.
 
 NOTE: Expect more platforms support in the future. **I'm inviting all developers**,
 eager to help me with porting and testing the library for new platforms.

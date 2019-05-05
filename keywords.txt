@@ -9,6 +9,10 @@
 OneWireNg	KEYWORD1
 OneWireNg_BitBang	KEYWORD1
 OneWireNg_ArduinoAVR	KEYWORD1
+OneWireNg_ArduinoMegaAVR	KEYWORD1
+OneWireNg_ArduinoESP8266	KEYWORD1
+OneWireNg_ArduinoESP32	KEYWORD1
+OneWireNg_CurrentPlatform	KEYWORD1
 Id	KEYWORD3
 ErrorCode	KEYWORD3
 

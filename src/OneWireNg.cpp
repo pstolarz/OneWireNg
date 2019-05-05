@@ -242,12 +242,11 @@ OneWireNg::ErrorCode
         return EC_BUS_ERROR;
     } else
     if (!v1 && !v0) {
-        /*
-         * Discrepancy detected for this bit position.
-         * No discrepancy is expected for CRC part of the id - bus error
-         * is returned in this case.
-         */
         if (n >= 56) {
+            /*
+             * No discrepancy is expected for CRC part of the id -
+             * bus error is returned.
+             */
             return EC_BUS_ERROR;
         } else {
             selBit = setDiscrepancy(n);

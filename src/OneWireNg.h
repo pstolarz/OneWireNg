@@ -276,7 +276,6 @@ protected:
 
 private:
     /* search related support routines */
-    int setDiscrepancy(size_t n);
     bool updateDiscrepancy();
     ErrorCode transmitSearchTriplet(size_t n, Id& id, size_t& dscrCnt);
 

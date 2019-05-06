@@ -162,16 +162,6 @@ uint8_t OneWireNg::crc8(const void *in, size_t len)
 #define __BIT_SET(t, n)     (__BYTE_OF_BIT(t, n) |= __BITMASK8(n))
 
 /**
- * Set discrepancy for bit @n.
- * Discrepancy value of bit @n is returned.
- */
-int OneWireNg::setDiscrepancy(size_t n)
-{
-    __BIT_SET(_msk, n);
-    return (__BIT_IN_BYTE(_dscr, n) != 0);
-}
-
-/**
  * Update discrepancy state to prepare for the next searching step.
  *
  * The state is treated as a cross-section of a binary tree with its root as
@@ -249,7 +239,9 @@ OneWireNg::ErrorCode
              */
             return EC_BUS_ERROR;
         } else {
-            selBit = setDiscrepancy(n);
+            /* set discrepancy for bit n */
+            __BIT_SET(_msk, n);
+            selBit = (__BIT_IN_BYTE(_dscr, n) != 0);
             dscrCnt++;
         }
     } else {

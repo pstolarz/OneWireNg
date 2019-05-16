@@ -32,6 +32,9 @@ readByte	KEYWORD2
 readBytes	KEYWORD2
 search	KEYWORD2
 searchReset	KEYWORD2
+searchFilterAdd	KEYWORD2
+searchFilterDel	KEYWORD2
+searchFilterDelAll	KEYWORD2
 readSingleId	KEYWORD2
 addressSingle	KEYWORD2
 addressAll	KEYWORD2

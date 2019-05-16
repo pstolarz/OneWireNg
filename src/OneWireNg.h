@@ -53,14 +53,22 @@ public:
         EC_DONE = EC_SUCCESS,
         /** Search process in progress - more slave devices available */
         EC_MORE,
-        /** No slave devices detected on the bus */
+        /** No slave devices */
         EC_NO_DEVS,
         /** 1-wire bus error */
         EC_BUS_ERROR,
         /** CRC error */
         EC_CRC_ERROR,
         /** Service is not supported by the platform */
-        EC_UNSUPPORED
+        EC_UNSUPPORED,
+        /** No space (e.g. filters table is full) */
+        EC_FULL,
+
+        /*
+         * internally used
+         */
+        /** Search process - detected slave with filtered family code */
+        EC_FILTERED = 100
     } ErrorCode;
 
     /**
@@ -152,12 +160,21 @@ public:
      * @param alarm If @c true - search for devices only with alarm state set,
      *     @c false - search for all devices.
      *
-     * @return Error codes:
-     *     - @sa EC_MORE: Success; more devices available by subsequent calls
-     *         of this routine. @id is written with slave id.
-     *     - @sa EC_DONE: Success; no more devices available. @id is written
-     *         with slave id.
-     *     - @sa EC_NO_DEVS: No devices on the bus (@c id is zeroed).
+     * @return
+     *     Non-error codes:
+     *     - @sa EC_MORE: More devices available by subsequent calls of this
+     *         routine. @c id is written with slave id.
+     *     - @sa EC_DONE (aka @sa EC_SUCCESS): No more devices available.
+     *         @c id is written with slave id.
+     *     - @sa EC_NO_DEVS: No slave devices (@c id not returned - zeroed).
+     *         The code may be returned in 2 cases:
+     *         - No devices detected on the bus,
+     *         - No more devices available. Returned only if search filtering
+     *           is enabled and slave ids detected at the last searching step
+     *           have been all filtered out (therefore @sa EC_DONE doesn't
+     *           apply).
+     *
+     *     Error codes:
      *     - @sa EC_BUS_ERROR: Bus error.
      *     - @sa EC_CRC_ERROR: CRC error.
      */
@@ -167,6 +184,33 @@ public:
      * Reset 1-wire search state.
      */
     virtual void searchReset();
+
+#if (CONFIG_MAX_SRCH_FILTERS > 0)
+    /**
+     * Add a family @c code to the search filters.
+     * During the search process slave devices with given family code
+     * are filtered from the whole set of devices connected to the bus.
+     *
+     * @return Error codes:
+     *     - @sa EC_SUCCESS: The @c code added to the filters set.
+     *     - @sa EC_FULL: no more place in filters table to add the code
+     */
+    ErrorCode searchFilterAdd(uint8_t code);
+
+    /**
+     * Remove a family @c code from the search filters.
+     */
+    void searchFilterDel(uint8_t code);
+
+    /**
+     * Remove all currently set family codes.
+     * Consequently no filtering will be applied during the search process.
+     */
+    void searchFilterDelAll() {
+        _n_fltrs = 0;
+    }
+
+#endif /* CONFIG_MAX_SRCH_FILTERS */
 
     /**
      * In case there is only one slave connected to the 1-wire bus the routine
@@ -181,7 +225,7 @@ public:
      *
      * @return Error codes:
      *     - @sa EC_SUCCESS - Success, the result written to @c id.
-     *     - @sa EC_NO_DEVS - No devices on the bus.
+     *     - @sa EC_NO_DEVS - No slave devices.
      *     - @sa EC_CRC_ERROR - Probably more than one slave on the bus.
      */
     ErrorCode readSingleId(Id &id)
@@ -272,7 +316,44 @@ protected:
     */
     OneWireNg() {
         searchReset();
+#if (CONFIG_MAX_SRCH_FILTERS > 0)
+        searchFilterDelAll();
+#endif
     }
+
+#if (CONFIG_MAX_SRCH_FILTERS > 0)
+    /**
+     * For currently selected family code filters apply them for bit
+     * position @c n.
+     *
+     * @return Filtered bit value at position @c n:
+     *     0: only 0 possible,
+     *     1: only 1 possible,
+     *     2: 0 or 1 possible (code discrepancy or no filtering).
+     */
+    int searchFilterApply(size_t n);
+
+    /**
+     * For currently selected family code filters deselect these ones
+     * whose value on @c n bit position is different from @c bit.
+     */
+    void searchFilterSelect(size_t n, int bit);
+
+    /**
+     * Select all family codes set as search filters.
+     */
+    void searchFilterSelectAll() {
+        for (size_t i=0; i < _n_fltrs; i++)
+            _fltrs[i].ns = false;
+    }
+
+    struct {
+        uint8_t code;   /* family code */
+        bool ns;        /* not-selected flag */
+    } _fltrs[CONFIG_MAX_SRCH_FILTERS];
+
+    size_t _n_fltrs;   /* number of elements in _fltrs */
+#endif /* CONFIG_MAX_SRCH_FILTERS */
 
 private:
     /* search related support routines */

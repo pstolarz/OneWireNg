@@ -150,7 +150,6 @@ protected:
         }
     }
 
-private:
     struct {
         unsigned od:   1;   /** open drain indicator */
         unsigned pwre: 1;   /** bus is powered indicator */

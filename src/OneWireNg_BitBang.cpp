@@ -19,9 +19,9 @@
 # define timeCriticalEnter() noInterrupts()
 # define timeCriticalExit() interrupts()
 #else
-#  ifndef __TEST__
-#    warning "Interrupts API unsupported by the target platform"
-#  endif
+# ifndef __TEST__
+#  warning "Interrupts API unsupported by the target platform"
+# endif
 # include <unistd.h>
 # define delayUs(dly) usleep(dly)
 # define timeCriticalEnter()

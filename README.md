@@ -29,6 +29,12 @@ devices (e.g. Dallas/Maxim thermometers).
   (in the output mode) work in the open-drain mode only. More details
   [below](#parasite-powering).
 
+* Search filtering.
+
+  Search algorithm allows efficient filtering basing on a selected set of family
+  codes. Maximum size of the set is configurable by `CONFIG_MAX_SRCH_FILTERS`
+  configuration macro-define.
+
 * Clear and flexible architecture.
 
   The code architecture allows fast and easy porting for new Arduino platforms

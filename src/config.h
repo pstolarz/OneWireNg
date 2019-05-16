@@ -47,5 +47,11 @@
  */
 //#define CONFIG_BUS_BLINK_PROTECTION
 
+/**
+ * Maximum number of family codes used for search filtering.
+ * If not defined or 0 - filtering disabled.
+ */
+#define CONFIG_MAX_SRCH_FILTERS 10
+
 #endif /* !OWNG_DISABLE_DEFAULT_CONFIG */
 #endif /* __OWNG_CONFIG__ */

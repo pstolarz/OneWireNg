@@ -1,9 +1,21 @@
+/*
+ * Copyright (c) 2019 Piotr Stolarz
+ * OneWireNg: Ardiono 1-wire service library
+ *
+ * Distributed under the 2-clause BSD License (the License)
+ * see accompanying file LICENSE for details.
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the License for more information.
+ */
+
 #include "common.h"
 
 #define MAX_TEST_SLAVES 20
 
 static const OneWireNg::Id ZERO_ID = {};
-static const OneWireNg::Id TEST_IDS[] =
+static const OneWireNg::Id TEST1_IDS[] =
 {
     {0x28, 0xff, 0x11, 0x8a, 0x60, 0x14, 0x02, 0xf5},
     {0x28, 0xff, 0x3c, 0x6e, 0x2d, 0x04, 0x00, 0xd7},
@@ -22,7 +34,31 @@ static const OneWireNg::Id TEST_IDS[] =
     {0x28, 0x87, 0x6a, 0xa1, 0x03, 0x00, 0x00, 0x1f},
     {0x28, 0x48, 0x60, 0xBF, 0x06, 0x00, 0x00, 0x01},
     {0x28, 0x9A, 0x8F, 0x24, 0x06, 0x00, 0x00, 0x6B}
-
+};
+static const OneWireNg::Id TEST2_IDS[] =
+{
+    {0x04, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x74},
+    {0x44, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xb3},
+    {0x44, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0xf1},
+//    {0xc4, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x24},
+    {0xb4, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xf7},
+    {0x74, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xa7},
+    {0x7c, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x56},
+    {0xfc, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xc1},
+//    {0x47, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xf4},
+    {0xc7, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x63},
+    {0x77, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xe0},
+    {0xf7, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x77},
+    {0xf7, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x35},
+    {0x4f, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x05},
+    {0x2f, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x2d},
+    {0x2f, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x6f},
+//    {0xdf, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x69},
+    {0x7f, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x11},
+    {0xff, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x86}
+};
+static const uint8_t TEST2_FILTERS[] = {
+    0xc4, 0x74, 0x7c, 0x47, 0xf7, 0x2f, 0xdf
 };
 
 class OneWireNg_Test: OneWireNg
@@ -133,8 +169,8 @@ public:
 
     static void test_crc8()
     {
-        for (size_t i=0; i < TAB_SZ(TEST_IDS); i++)
-            assert(checkCrcId(TEST_IDS[i]));
+        for (size_t i=0; i < TAB_SZ(TEST1_IDS); i++)
+            assert(checkCrcId(TEST1_IDS[i]));
 
         TEST_SUCCESS();
     }
@@ -175,7 +211,6 @@ public:
         Id id;
         ErrorCode ec;
         OneWireNg_Test ow;
-        bool fnd[TAB_SZ(TEST_IDS)] = {};
 
         /* no devices */
         ec = ow.search(id);
@@ -183,37 +218,43 @@ public:
 
         /* single device; no discrepancies */
         ow.searchReset();
-        ow.addSlave(TEST_IDS[0]);
+        ow.addSlave(TEST1_IDS[0]);
         ec = ow.search(id);
         assert(ec == EC_DONE);
-        assert(cmpId(id, TEST_IDS[0]));
+        assert(cmpId(id, TEST1_IDS[0]));
 
-        /* multiple devices on the bus; discrepancies */
-        size_t i, j, fnd_n;
+        /*
+         * multiple devices on the bus; discrepancies
+         */
+        size_t i;
+        int fnd[TAB_SZ(TEST1_IDS)] = {};
 
         ow.searchReset();
-        for (i=1; i < TAB_SZ(TEST_IDS); i++)
-            ow.addSlave(TEST_IDS[i]);
+        for (i=1; i < TAB_SZ(TEST1_IDS); i++)
+            ow.addSlave(TEST1_IDS[i]);
 
-        for (i=fnd_n=0; i<TAB_SZ(TEST_IDS); i++)
-        {
+        do {
             ec = ow.search(id);
-            assert(ec == (i+1 < TAB_SZ(TEST_IDS) ? EC_MORE : EC_DONE));
-            for (j=0; j < TAB_SZ(TEST_IDS); j++) {
-                if (cmpId(id, TEST_IDS[j]))
-                {
-                    assert(!fnd[j]);
-                    fnd[j] = true;
-                    fnd_n++;
-                    break;
+            if (ec == EC_MORE || ec == EC_DONE)
+            {
+                // printId(id);
+                for (i=0; i < TAB_SZ(TEST1_IDS); i++) {
+                    if (cmpId(id, TEST1_IDS[i])) {
+                        fnd[i]++;
+                        break;
+                    }
                 }
             }
+        } while (ec == EC_MORE);
+
+        for (i=0; i < TAB_SZ(TEST1_IDS); i++) {
+            /* each id returned only once */
+            assert(fnd[i] == 1);
         }
-        assert(fnd_n == TAB_SZ(TEST_IDS));
 
         /* CRC error */
         Id idCorrupt;
-        memcpy(&idCorrupt, &TEST_IDS[0], sizeof(Id));
+        memcpy(&idCorrupt, &TEST1_IDS[0], sizeof(Id));
         idCorrupt[7] = 0x00;
 
         ow.searchReset();
@@ -224,6 +265,146 @@ public:
 
         TEST_SUCCESS();
     }
+
+    static void test_filter()
+    {
+        OneWireNg_Test ow;
+        assert(!ow._n_fltrs);
+
+        size_t i;
+        for (i=0; i < CONFIG_MAX_SRCH_FILTERS; i++) {
+            assert(ow.searchFilterAdd(i+1) == EC_SUCCESS);
+            assert(!ow._fltrs[i].ns);
+        }
+        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS);
+
+        /* already exist */
+        assert(ow.searchFilterAdd(1) == EC_SUCCESS);
+        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS);
+
+        assert(ow.searchFilterAdd(0) == EC_FULL);
+        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS);
+
+        ow.searchFilterDel(0);
+        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS);
+
+        ow.searchFilterDel(1);
+        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS-1 &&
+            ow._fltrs[0].code == 2);
+
+        ow.searchFilterDelAll();
+        assert(!ow._n_fltrs);
+
+        assert(ow.searchFilterApply(0) == 2);
+
+        ow.searchFilterAdd(0x00);
+        ow.searchFilterAdd(0x0f);
+        ow.searchFilterAdd(0xf0);
+        ow.searchFilterAdd(0xaa);
+        ow.searchFilterAdd(0xff);
+
+        assert(ow.searchFilterApply(3) == 2);
+
+        ow.searchFilterSelect(3, 1);
+        assert(ow._fltrs[0].ns &&
+           !ow._fltrs[1].ns &&
+            ow._fltrs[2].ns &&
+           !ow._fltrs[3].ns &&
+           !ow._fltrs[4].ns);
+
+        assert(ow.searchFilterApply(3) == 1);
+
+        ow.searchFilterSelectAll();
+        for (i=0; i < ow._n_fltrs; i++)
+            assert(!ow._fltrs[1].ns);
+
+        ow.searchFilterSelect(3, 0);
+        assert(!ow._fltrs[0].ns &&
+           ow._fltrs[1].ns &&
+           !ow._fltrs[2].ns &&
+           ow._fltrs[3].ns &&
+           ow._fltrs[4].ns);
+
+        assert(!ow.searchFilterApply(3));
+
+        ow.searchFilterDelAll();
+        assert(ow.searchFilterApply(0) == 2);
+
+        ow.searchFilterAdd(0xaa);
+        for (i=0; i < 8; i++)
+            assert(ow.searchFilterApply(i) == (int)(i % 2));
+
+        TEST_SUCCESS();
+    }
+
+    static void test_filteredSearch()
+    {
+        Id id;
+        ErrorCode ec;
+        OneWireNg_Test ow;
+
+        /* no matching devices */
+        ow.addSlave(TEST2_IDS[0]);
+
+        ow.searchFilterAdd(0x00);
+        assert(ow.search(id) == EC_NO_DEVS);
+
+        /* single device matches */
+        ow.searchReset();
+        ow.searchFilterDelAll();
+        ow.searchFilterAdd(0x04);
+        assert(ow.search(id) == EC_DONE);
+        assert(cmpId(id, TEST2_IDS[0]));
+
+        /*
+         * multiple devices; multiple filters
+         */
+        size_t i, j;
+        int fnd[TAB_SZ(TEST2_IDS)] = {};
+
+        ow.searchReset();
+        ow.searchFilterDelAll();
+
+        for (i=1; i < TAB_SZ(TEST2_IDS); i++)
+            ow.addSlave(TEST2_IDS[i]);
+
+        for (i=0; i < TAB_SZ(TEST2_FILTERS); i++)
+            ow.searchFilterAdd(TEST2_FILTERS[i]);
+
+        do {
+            ec = ow.search(id);
+            if (ec == EC_MORE || ec == EC_DONE)
+            {
+                // printId(id);
+                for (i=0; i < TAB_SZ(TEST2_IDS); i++) {
+                    if (cmpId(id, TEST2_IDS[i])) {
+                        fnd[i]++;
+                        break;
+                    }
+                }
+            }
+        } while (ec == EC_MORE);
+
+        for (i=0; i < TAB_SZ(TEST2_FILTERS); i++) {
+            for (j=0; j < TAB_SZ(TEST2_IDS); j++) {
+                if (TEST2_IDS[j][0] == TEST2_FILTERS[i])
+                {
+                    /* each filtered id returned only once */
+                    assert(fnd[j] == 1);
+                    /* mark as checked */
+                    fnd[j] = -1;
+                }
+            }
+        }
+
+        for (i=0; i < TAB_SZ(TEST2_IDS); i++) {
+            /* slaves with family codes outside
+               the filters set are not returned */
+            assert(!fnd[i] || fnd[i] == -1);
+        }
+
+        TEST_SUCCESS();
+    }
 };
 
 int main(void)
@@ -231,6 +412,8 @@ int main(void)
     OneWireNg_Test::test_crc8();
     OneWireNg_Test::test_updateDiscrepancy();
     OneWireNg_Test::test_search();
+    OneWireNg_Test::test_filter();
+    OneWireNg_Test::test_filteredSearch();
 
     return 0;
 }

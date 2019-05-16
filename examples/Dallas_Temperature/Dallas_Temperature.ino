@@ -23,6 +23,7 @@
 // # define PWR_CTRL_PIN   9
 #endif
 
+/* DS therms commands */
 #define CONVERT_T           0x44
 #define COPY_SCRATCHPAD     0x48
 #define WRITE_SCRATCHPAD    0x4e
@@ -37,14 +38,18 @@
 #define DS1825              0x3b
 #define DS28EA00            0x42
 
-/* returns NULL if not supported */
-#define dsthName(_id) \
-    ((_id[0])==DS18S20 ? "DS18S20" : \
-    ((_id[0])==DS1822 ? "DS1822" : \
-    ((_id[0])==DS18B20 ? "DS18B20" : \
-    ((_id[0])==DS1825 ? "DS1825" : \
-    ((_id[0])==DS28EA00 ? "DS28EA00" : \
-    (NULL))))))
+static struct {
+    uint8_t code;
+    const char *name;
+} DSTH_CODES[] = {
+    { DS18S20, "DS18S20" },
+    { DS1822, "DS1822" },
+    { DS18B20, "DS18B20" },
+    { DS1825, "DS1825" },
+    { DS28EA00,"DS28EA00" }
+};
+
+#define ARRSZ(t) (sizeof(t)/sizeof((t)[0]))
 
 #ifdef PWR_CTRL_PIN
 static OneWireNg *ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false);
@@ -52,7 +57,18 @@ static OneWireNg *ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false
 static OneWireNg *ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
 #endif
 
-static void printId(const OneWireNg::Id& id)
+/* returns NULL if not supported */
+static const char *dsthName(const OneWireNg::Id& id)
+{
+    for (size_t i=0; i < ARRSZ(DSTH_CODES); i++) {
+        if (id[0] == DSTH_CODES[i].code)
+            return DSTH_CODES[i].name;
+    }
+    return NULL;
+}
+
+/* returns false if not supported */
+static bool printId(const OneWireNg::Id& id)
 {
     const char *name = dsthName(id);
 
@@ -66,11 +82,20 @@ static void printId(const OneWireNg::Id& id)
         Serial.print(name);
     }
     Serial.println();
+
+    return (name ? true : false);
 }
 
 void setup()
 {
     Serial.begin(115200);
+
+#if (CONFIG_MAX_SRCH_FILTERS > 0)
+    /* if filtering is enabled - filter to supported devices only;
+       CONFIG_MAX_SRCH_FILTERS must be large enough to embrace all code ids */
+    for (size_t i=0; i < ARRSZ(DSTH_CODES); i++)
+        ow->searchFilterAdd(DSTH_CODES[i].code);
+#endif
 }
 
 void loop()
@@ -83,8 +108,11 @@ void loop()
     do
     {
         ec = ow->search(id);
-        if (ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE)
-            printId(id);
+        if (!(ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE))
+            break;
+
+        if (!printId(id))
+            continue;
 
         /* start temperature conversion */
         ow->addressSingle(id);

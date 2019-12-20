@@ -103,6 +103,8 @@ void OneWireNg::searchReset()
 #define __BYTE_OF_BIT(t, n) ((t)[(n) >> 3])
 #define __BIT_IN_BYTE(t, n) (__BYTE_OF_BIT(t, n) & __BITMASK8(n))
 #define __BIT_SET(t, n)     (__BYTE_OF_BIT(t, n) |= __BITMASK8(n))
+#define __BIT_CLR(t, n)     (__BYTE_OF_BIT(t, n) &= ~__BITMASK8(n))
+#define __BIT_XOR(t, n)     (__BYTE_OF_BIT(t, n) ^= __BITMASK8(n))
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
 OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
@@ -188,17 +190,11 @@ bool OneWireNg::updateDiscrepancy()
     /* down-iterate 56 least significant bits (id w/o crc) */
     for (n=55; n >= 0; n--) {
         if (__BIT_IN_BYTE(_msk, n) != 0) {
+            __BIT_XOR(_dscr, n);
             if (!__BIT_IN_BYTE(_dscr, n)) {
-                __BIT_SET(_dscr, n);
-
-                /* clear all bits higher than n in _msk and _dscr */
-                uint8_t bm = (uint8_t)(0xffU >> (7 - (n & 7)));
-                __BYTE_OF_BIT(_dscr, n) &= bm;
-                __BYTE_OF_BIT(_msk, n) &= bm;
-                for (int i=0; i < 6-(n >> 3); i++) _msk[6-i] = _dscr[6-i] = 0;
-
+                __BIT_CLR(_msk, n);
+            } else
                 break;
-            }
         }
     }
     return (n < 0 ? true : false);
@@ -284,6 +280,8 @@ OneWireNg::ErrorCode
     return EC_SUCCESS;
 }
 
+#undef __BIT_XOR
+#undef __BIT_CLR
 #undef __BIT_SET
 #undef __BIT_IN_BYTE
 #undef __BYTE_OF_BIT

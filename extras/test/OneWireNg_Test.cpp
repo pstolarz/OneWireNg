@@ -185,8 +185,15 @@ public:
         memset(ow._msk, 0xff, sizeof(Id));
         memset(ow._dscr, 0xff, sizeof(Id));
         assert(ow.updateDiscrepancy());
+        for (int i=0; i<7; i++) {
+            assert(!ow._msk[i] && !ow._dscr[i]);
+        }
+        assert(ow._msk[7] == 0xff);
+        assert(ow._dscr[7] == 0xff);
 
-        for (int n=55; n >=0 ; n--)
+        memset(ow._msk, 0xff, sizeof(Id));
+        memset(ow._dscr, 0xff, sizeof(Id));
+        for (int n=55; n>=0; n--)
         {
             ow._dscr[n >> 3] &= ~(1 << (n & 7));
             assert(!ow.updateDiscrepancy());

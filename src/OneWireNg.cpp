@@ -51,7 +51,6 @@ uint8_t OneWireNg::touchByte(uint8_t byte)
 
 OneWireNg::ErrorCode OneWireNg::search(Id& id, bool alarm)
 {
-
     size_t dscrCnt;
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
@@ -103,8 +102,6 @@ void OneWireNg::searchReset()
 #define __BYTE_OF_BIT(t, n) ((t)[(n) >> 3])
 #define __BIT_IN_BYTE(t, n) (__BYTE_OF_BIT(t, n) & __BITMASK8(n))
 #define __BIT_SET(t, n)     (__BYTE_OF_BIT(t, n) |= __BITMASK8(n))
-#define __BIT_CLR(t, n)     (__BYTE_OF_BIT(t, n) &= ~__BITMASK8(n))
-#define __BIT_XOR(t, n)     (__BYTE_OF_BIT(t, n) ^= __BITMASK8(n))
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
 OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
@@ -173,31 +170,40 @@ void OneWireNg::searchFilterSelect(size_t n, int bit)
  * Update discrepancy state to prepare for the next searching step.
  *
  * The state is treated as a cross-section of a binary tree with its root as
- * least significant bit (as indicated by the mask). The tree is inspected from
- * the most significant bit (leaf) onwards to look for a 0-value bit. In case
- * such bit is found the branch associated with this bit (as a root) is cut
- * (discarded) and the bit is set 1 to build a new branch for the bit with
- * the new value. The search process is finished when the discrepancy state
- * consists of all 1s.
+ * least significant bit (as indicated by the discrepancy mask). The tree is
+ * inspected from the most significant bit (leaf) onwards to look for a 0-value
+ * bit. In case such bit is found the branch associated with this bit (as
+ * a root) is cut (discarded) and the bit is set 1 to build a new branch for
+ * the bit with the new value. The search process is finished when the
+ * discrepancy state consists of all 1s.
+ *
+ * The update discrepancy algorithm may be described as +1 integer number
+ * incrementation, where the integer is defined by discrepancy bits, with least
+ * significant bit as the most significant discrepancy bit (binary tree leaf).
+ * For performance reason the CRC-8 byte is omitted in this procedure.
  *
  * @return @false: iteration process is not finished and shall be continued,
  *     @true: otherwise.
  */
 bool OneWireNg::updateDiscrepancy()
 {
-    int n;
+    for (int n = sizeof(Id)-2; n >= 0; n--) {
+        register uint8_t rev, msk, bit;
 
-    /* down-iterate 56 least significant bits (id w/o crc) */
-    for (n=55; n >= 0; n--) {
-        if (__BIT_IN_BYTE(_msk, n) != 0) {
-            __BIT_XOR(_dscr, n);
-            if (!__BIT_IN_BYTE(_dscr, n)) {
-                __BIT_CLR(_msk, n);
-            } else
-                break;
+        rev = _msk[n] & (_msk[n] ^ _dscr[n]);
+        if (!rev) {
+            _msk[n] = _dscr[n] = 0;
+        } else {
+            for (bit=1, msk=rev; rev > 1;) {
+                msk |= (rev >>= 1);
+                bit <<= 1;
+            }
+            _msk[n] &= msk;
+            _dscr[n] = (_dscr[n] & msk) | bit;
+            return false;
         }
     }
-    return (n < 0 ? true : false);
+    return true;
 }
 
 /**
@@ -239,7 +245,7 @@ OneWireNg::ErrorCode
         /*
          * Discrepancy detected for this bit position.
          */
-        if (n >= 56) {
+        if (n >= 8*(sizeof(Id)-1)) {
             /* no discrepancy is expected for CRC part of the id - bus error */
             return EC_BUS_ERROR;
         } else {
@@ -280,8 +286,6 @@ OneWireNg::ErrorCode
     return EC_SUCCESS;
 }
 
-#undef __BIT_XOR
-#undef __BIT_CLR
 #undef __BIT_SET
 #undef __BIT_IN_BYTE
 #undef __BYTE_OF_BIT

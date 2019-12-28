@@ -1,3 +1,6 @@
 *.o
 *.sw[a-p]
 tags
+GPATH
+GRTAGS
+GTAGS

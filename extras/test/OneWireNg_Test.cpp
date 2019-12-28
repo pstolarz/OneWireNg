@@ -32,8 +32,8 @@ static const OneWireNg::Id TEST1_IDS[] =
     {0x28, 0x1d, 0x39, 0x31, 0x02, 0x00, 0x00, 0xf0},
     {0x28, 0xb1, 0x6d, 0xa1, 0x03, 0x00, 0x00, 0x11},
     {0x28, 0x87, 0x6a, 0xa1, 0x03, 0x00, 0x00, 0x1f},
-    {0x28, 0x48, 0x60, 0xBF, 0x06, 0x00, 0x00, 0x01},
-    {0x28, 0x9A, 0x8F, 0x24, 0x06, 0x00, 0x00, 0x6B}
+    {0x28, 0x48, 0x60, 0xbf, 0x06, 0x00, 0x00, 0x01},
+    {0x28, 0x9a, 0x8f, 0x24, 0x06, 0x00, 0x00, 0x6b}
 };
 static const OneWireNg::Id TEST2_IDS[] =
 {
@@ -73,10 +73,10 @@ private:
         bit = (bit != 0);   /* 0/1 conversion */
         int resAnd = bit;
 
-        size_t bit_n = (_trans_n-8) / 3;
-        size_t trpl_n = (_trans_n-8) % 3;
+        int bit_n = (_trans_n-8) / 3;
+        int trpl_n = (_trans_n-8) % 3;
 
-        for (size_t i=0; i < _slaves_n; i++)
+        for (int i=0; i < _slaves_n; i++)
         {
             if (!_slaves[i].srchIdle)
             {
@@ -118,20 +118,20 @@ private:
     static void printId(const Id& id)
     {
         printf("%02x", id[0]);
-        for (size_t i=1; i < sizeof(Id); i++)
+        for (int i=1; i < (int)sizeof(Id); i++)
             printf(":%02x", id[i]);
         printf("\n");
     }
 
-    size_t _trans_n;    /* number of transmitted bits after reset */
-    uint8_t _cmd;       /* command id */
+    int _trans_n;   /* number of transmitted bits after reset */
+    uint8_t _cmd;   /* command id */
 
     /* emulated slave devices connected to the bus */
     struct {
         Id id;
         bool srchIdle;
     } _slaves[MAX_TEST_SLAVES];
-    size_t _slaves_n;
+    int _slaves_n;
 
 public:
     virtual bool reset()
@@ -139,7 +139,7 @@ public:
         _trans_n = 0;
         _cmd = 0x00;
 
-        for (size_t i=0; i < _slaves_n; i++)
+        for (int i=0; i < _slaves_n; i++)
             _slaves[i].srchIdle = false;
 
         return (_slaves_n > 0 ? true : false);
@@ -171,44 +171,6 @@ public:
     {
         for (size_t i=0; i < TAB_SZ(TEST1_IDS); i++)
             assert(checkCrcId(TEST1_IDS[i]));
-
-        TEST_SUCCESS();
-    }
-
-    static void test_updateDiscrepancy()
-    {
-        OneWireNg_Test ow;
-
-        assert(cmpId(ow._msk, ZERO_ID));
-        assert(cmpId(ow._dscr, ZERO_ID));
-
-        memset(ow._msk, 0xff, sizeof(Id));
-        memset(ow._dscr, 0xff, sizeof(Id));
-        assert(ow.updateDiscrepancy());
-        for (int i=0; i<7; i++) {
-            assert(!ow._msk[i] && !ow._dscr[i]);
-        }
-        assert(ow._msk[7] == 0xff);
-        assert(ow._dscr[7] == 0xff);
-
-        memset(ow._msk, 0xff, sizeof(Id));
-        memset(ow._dscr, 0xff, sizeof(Id));
-        for (int n=55; n>=0; n--)
-        {
-            ow._dscr[n >> 3] &= ~(1 << (n & 7));
-            assert(!ow.updateDiscrepancy());
-            assert(ow._msk[7] == 0xff);
-            assert(ow._dscr[7] == 0xff);
-
-            for (int i=0; i<55; i++) {
-                int msk_bit = ow._msk[i >> 3] & (1 << (i & 7));
-                int dscr_bit = ow._dscr[i >> 3] & (1 << (i & 7));
-                assert((i <= n) ? (msk_bit != 0) : !msk_bit);
-                assert((i <= n) ? (dscr_bit != 0) : !dscr_bit);
-            }
-            memset(ow._msk, 0xff, sizeof(Id));
-            memset(ow._dscr, 0xff, sizeof(Id));
-        }
 
         TEST_SUCCESS();
     }
@@ -278,7 +240,7 @@ public:
         OneWireNg_Test ow;
         assert(!ow._n_fltrs);
 
-        size_t i;
+        int i;
         for (i=0; i < CONFIG_MAX_SRCH_FILTERS; i++) {
             assert(ow.searchFilterAdd(i+1) == EC_SUCCESS);
             assert(!ow._fltrs[i].ns);
@@ -339,7 +301,7 @@ public:
 
         ow.searchFilterAdd(0xaa);
         for (i=0; i < 8; i++)
-            assert(ow.searchFilterApply(i) == (int)(i % 2));
+            assert(ow.searchFilterApply(i) == (i % 2));
 
         TEST_SUCCESS();
     }
@@ -417,7 +379,6 @@ public:
 int main(void)
 {
     OneWireNg_Test::test_crc8();
-    OneWireNg_Test::test_updateDiscrepancy();
     OneWireNg_Test::test_search();
     OneWireNg_Test::test_filter();
     OneWireNg_Test::test_filteredSearch();

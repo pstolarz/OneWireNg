@@ -166,7 +166,7 @@ public:
      *         routine. @c id is written with slave id.
      *     - @sa EC_DONE (aka @sa EC_SUCCESS): No more devices available.
      *         @c id is written with slave id.
-     *     - @sa EC_NO_DEVS: No slave devices (@c id not returned - zeroed).
+     *     - @sa EC_NO_DEVS: No slave devices (@c id not returned - undefined).
      *         The code may be returned in 2 cases:
      *         - No devices detected on the bus,
      *         - No more devices available. Returned only if search filtering
@@ -183,7 +183,9 @@ public:
     /**
      * Reset 1-wire search state.
      */
-    virtual void searchReset();
+    virtual void searchReset() {
+        _lzero = -1;
+    }
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     /**
@@ -331,19 +333,19 @@ protected:
      *     1: only 1 possible,
      *     2: 0 or 1 possible (code discrepancy or no filtering).
      */
-    int searchFilterApply(size_t n);
+    int searchFilterApply(int n);
 
     /**
      * For currently selected family code filters deselect these ones
      * whose value on @c n bit position is different from @c bit.
      */
-    void searchFilterSelect(size_t n, int bit);
+    void searchFilterSelect(int n, int bit);
 
     /**
      * Select all family codes set as search filters.
      */
     void searchFilterSelectAll() {
-        for (size_t i=0; i < _n_fltrs; i++)
+        for (int i=0; i < _n_fltrs; i++)
             _fltrs[i].ns = false;
     }
 
@@ -352,16 +354,14 @@ protected:
         bool ns;        /* not-selected flag */
     } _fltrs[CONFIG_MAX_SRCH_FILTERS];
 
-    size_t _n_fltrs;   /* number of elements in _fltrs */
+    int _n_fltrs;       /* number of elements in _fltrs */
 #endif /* CONFIG_MAX_SRCH_FILTERS */
 
 private:
-    /* search related support routines */
-    bool updateDiscrepancy();
-    ErrorCode transmitSearchTriplet(size_t n, Id& id, size_t& dscrCnt);
+    ErrorCode transmitSearchTriplet(int n, Id& id, int& lzero);
 
-    Id _msk;   /** discrepancy mask (56-bit are valid) */
-    Id _dscr;  /** discrepancy state (56-bit are valid) */
+    Id _lsrch;  /** last search result */
+    int _lzero; /** last 0-value search discrepancy bit number */
 
 #ifdef __TEST__
 friend class OneWireNg_Test;

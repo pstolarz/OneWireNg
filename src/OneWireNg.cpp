@@ -49,29 +49,33 @@ uint8_t OneWireNg::touchByte(uint8_t byte)
     return ret;
 }
 
+#define __UPDATE_DISCREPANCY() \
+    (memcpy(_lsrch, id, sizeof(Id)), ((_lzero = lzero) < 0))
+
 OneWireNg::ErrorCode OneWireNg::search(Id& id, bool alarm)
 {
-    size_t dscrCnt;
-
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
 restart:
 #endif
-    dscrCnt = 0;
+    int lzero = -1;
     memset(&id, 0, sizeof(Id));
 
     /* initialize search process on slave devices */
-    if (!reset()) return EC_NO_DEVS;
+    if (!reset())
+        return EC_NO_DEVS;
+
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     searchFilterSelectAll();
 #endif
     touchByte(alarm ? CMD_SEARCH_ROM_COND : CMD_SEARCH_ROM);
 
-    for (size_t n=0; n < 8*sizeof(Id); n++)
+    for (int n=0; n < (int)(8*sizeof(Id)); n++)
     {
-        ErrorCode ec = transmitSearchTriplet(n, id, dscrCnt);
+        ErrorCode ec = transmitSearchTriplet(n, id, lzero);
+
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
         if (ec == EC_FILTERED) {
-            if (updateDiscrepancy())
+            if (__UPDATE_DISCREPANCY())
                 return EC_NO_DEVS;
             else
                 goto restart;
@@ -84,19 +88,10 @@ restart:
     if (!checkCrcId(id))
         return EC_CRC_ERROR;
 
-    if (dscrCnt) {
-        return (updateDiscrepancy() ? EC_DONE : EC_MORE);
-    } else {
-        /* single slave on the bus */
-        return EC_DONE;
-    }
+    return (__UPDATE_DISCREPANCY() ? EC_DONE : EC_MORE);
 }
 
-void OneWireNg::searchReset()
-{
-    memset(_msk, 0, sizeof(Id));
-    memset(_dscr, 0, sizeof(Id));
-}
+#undef __UPDATE_DISCREPANCY
 
 #define __BITMASK8(n)       ((uint8_t)(1 << ((n) & 7)))
 #define __BYTE_OF_BIT(t, n) ((t)[(n) >> 3])
@@ -106,7 +101,7 @@ void OneWireNg::searchReset()
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
 OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
 {
-    for (size_t i=0; i < _n_fltrs; i++) {
+    for (int i=0; i < _n_fltrs; i++) {
         /* check if the code is already added */
         if (_fltrs[i].code == code)
             return EC_SUCCESS;
@@ -124,7 +119,7 @@ OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
 
 void OneWireNg::searchFilterDel(uint8_t code)
 {
-    for (size_t i=0; i < _n_fltrs; i++) {
+    for (int i=0; i < _n_fltrs; i++) {
         if (_fltrs[i].code == code) {
             for (i++; i < _n_fltrs; i++) {
                 _fltrs[i-1].code = _fltrs[i].code;
@@ -135,29 +130,28 @@ void OneWireNg::searchFilterDel(uint8_t code)
     }
 }
 
-int OneWireNg::searchFilterApply(size_t n)
+int OneWireNg::searchFilterApply(int n)
 {
     if (!_n_fltrs)
         /* no filtering - any bit value applies */
         return 2;
 
-    register uint8_t ba=0, bo=0, bm=__BITMASK8(n);
+    uint8_t ba=0, bo=0, bm=__BITMASK8(n);
     ba--; /* all 1s */
 
-    for (size_t i=0; i < _n_fltrs; i++) {
+    for (int i=0; i < _n_fltrs; i++) {
         if (!_fltrs[i].ns) {
             ba &= _fltrs[i].code;
             bo |= _fltrs[i].code;
         }
     }
-
     return (!(bo & bm) ? 0 : ((ba & bm) ? 1 : 2));
 }
 
-void OneWireNg::searchFilterSelect(size_t n, int bit)
+void OneWireNg::searchFilterSelect(int n, int bit)
 {
-    register uint8_t bm=__BITMASK8(n);
-    for (size_t i=0; i < _n_fltrs; i++) {
+    uint8_t bm=__BITMASK8(n);
+    for (int i=0; i < _n_fltrs; i++) {
         if (!_fltrs[i].ns) {
             if ((((_fltrs[i].code & bm) != 0) ^ (bit != 0)))
                 _fltrs[i].ns = true;
@@ -165,46 +159,6 @@ void OneWireNg::searchFilterSelect(size_t n, int bit)
     }
 }
 #endif /* CONFIG_MAX_SRCH_FILTERS */
-
-/**
- * Update discrepancy state to prepare for the next searching step.
- *
- * The state is treated as a cross-section of a binary tree with its root as
- * least significant bit (as indicated by the discrepancy mask). The tree is
- * inspected from the most significant bit (leaf) onwards to look for a 0-value
- * bit. In case such bit is found the branch associated with this bit (as
- * a root) is cut (discarded) and the bit is set 1 to build a new branch for
- * the bit with the new value. The search process is finished when the
- * discrepancy state consists of all 1s.
- *
- * The update discrepancy algorithm may be described as +1 integer number
- * incrementation, where the integer is defined by discrepancy bits, with least
- * significant bit as the most significant discrepancy bit (binary tree leaf).
- * For performance reason the CRC-8 byte is omitted in this procedure.
- *
- * @return @false: iteration process is not finished and shall be continued,
- *     @true: otherwise.
- */
-bool OneWireNg::updateDiscrepancy()
-{
-    for (int n = sizeof(Id)-2; n >= 0; n--) {
-        register uint8_t rev, msk, bit;
-
-        rev = _msk[n] & (_msk[n] ^ _dscr[n]);
-        if (!rev) {
-            _msk[n] = _dscr[n] = 0;
-        } else {
-            for (bit=1, msk=rev; rev > 1;) {
-                msk |= (rev >>= 1);
-                bit <<= 1;
-            }
-            _msk[n] &= msk;
-            _dscr[n] = (_dscr[n] & msk) | bit;
-            return false;
-        }
-    }
-    return true;
-}
 
 /**
  * Transmit search triplet on the bus (for a given bit position @c n)
@@ -218,14 +172,12 @@ bool OneWireNg::updateDiscrepancy()
  * If selected bit value is 1 then the corresponding n-th bit in @c id is set
  * (the @id shall be initialized with 0).
  *
- * In case of discrepancy detected for bit position @c n @c dscrCnt
- * (discrepancy counter) is increased by 1 (the counter shall be initialized
- * with 0).
+ * @c lzero is set to @c n if discrepancy occurred at the processed bit and
+ * the bit value is 0. @c lzero is not updated in other case.
  *
  * @return Error codes: @sa EC_SUCCESS, @sa EC_BUS_ERROR, @sa EC_FILTERED.
  */
-OneWireNg::ErrorCode
-    OneWireNg::transmitSearchTriplet(size_t n, Id& id, size_t& dscrCnt)
+OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
 {
     int selBit; /* selected bit value */
 
@@ -245,7 +197,7 @@ OneWireNg::ErrorCode
         /*
          * Discrepancy detected for this bit position.
          */
-        if (n >= 8*(sizeof(Id)-1)) {
+        if (n >= (int)(8*(sizeof(Id)-1))) {
             /* no discrepancy is expected for CRC part of the id - bus error */
             return EC_BUS_ERROR;
         } else {
@@ -253,10 +205,17 @@ OneWireNg::ErrorCode
             if (n >= 8 || (selBit = searchFilterApply(n)) == 2)
 #endif
             {
-                /* set discrepancy for bit n */
-                __BIT_SET(_msk, n);
-                selBit = (__BIT_IN_BYTE(_dscr, n) != 0);
-                dscrCnt++;
+                if (n < _lzero) {
+                    selBit = (__BIT_IN_BYTE(_lsrch, n) != 0);
+                } else
+                if (n == _lzero) {
+                    selBit = 1;
+                } else {
+                    selBit = 0;
+                }
+
+                if (!selBit)
+                    lzero = n;
             }
         }
     } else
@@ -289,7 +248,7 @@ OneWireNg::ErrorCode
 #undef __BIT_SET
 #undef __BIT_IN_BYTE
 #undef __BYTE_OF_BIT
-#undef __BIMASK8
+#undef __BITMASK8
 
 uint8_t OneWireNg::crc8(const void *in, size_t len)
 {
@@ -353,7 +312,7 @@ uint8_t OneWireNg::crc8(const void *in, size_t len)
             crcTabRead(CRC8_16H + ((crc >> 4) & 0x0f));
     }
 #else
-    size_t i;
+    int i;
     uint8_t b;
 
     while (len--) {

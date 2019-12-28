@@ -134,7 +134,7 @@ private:
     int _slaves_n;
 
 public:
-    virtual bool reset()
+    virtual ErrorCode reset()
     {
         _trans_n = 0;
         _cmd = 0x00;
@@ -142,7 +142,7 @@ public:
         for (int i=0; i < _slaves_n; i++)
             _slaves[i].srchIdle = false;
 
-        return (_slaves_n > 0 ? true : false);
+        return (_slaves_n > 0 ? EC_SUCCESS : EC_NO_DEVS);
     }
 
     virtual int touchBit(int bit)
@@ -170,7 +170,7 @@ public:
     static void test_crc8()
     {
         for (size_t i=0; i < TAB_SZ(TEST1_IDS); i++)
-            assert(checkCrcId(TEST1_IDS[i]));
+            assert(checkCrcId(TEST1_IDS[i]) == EC_SUCCESS);
 
         TEST_SUCCESS();
     }

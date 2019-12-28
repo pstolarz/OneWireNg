@@ -28,7 +28,7 @@
 class OneWireNg_BitBang: public OneWireNg
 {
 public:
-    virtual bool reset();
+    virtual ErrorCode reset();
     virtual int touchBit(int bit);
 
     /**

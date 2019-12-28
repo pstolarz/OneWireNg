@@ -74,10 +74,12 @@ public:
     /**
      * Transmit reset cycle on the 1-wire bus.
      *
-     * @return @c true: detected device(s) connected to the bus (presence pulse
-     *     observed after the reset cycle), @c false: no devices on the bus.
+     * @return Error codes:
+     *     - @sa EC_SUCCESS: Detected device(s) connected to the bus (presence
+     *         pulse observed after the reset cycle).
+     *     - @sa EC_NO_DEVS: No devices on the bus.
      */
-    virtual bool reset() = 0;
+    virtual ErrorCode reset() = 0;
 
     /**
      * Bit touch.
@@ -92,7 +94,7 @@ public:
 
     /**
      * Byte touch with least significant bit transmitted first.
-     * @return touching result.
+     * @return Touching result.
      */
     virtual uint8_t touchByte(uint8_t byte);
 
@@ -136,7 +138,7 @@ public:
 
     /**
      * Byte read with least significant bit transmitted first.
-     * @return reading result.
+     * @return Reading result.
      */
     virtual uint8_t readByte() {
         return touchByte(0xff);
@@ -161,7 +163,7 @@ public:
      *     @c false - search for all devices.
      *
      * @return
-     *     Non-error codes:
+     *     Non-failure error codes:
      *     - @sa EC_MORE: More devices available by subsequent calls of this
      *         routine. @c id is written with slave id.
      *     - @sa EC_DONE (aka @sa EC_SUCCESS): No more devices available.
@@ -174,7 +176,7 @@ public:
      *           have been all filtered out (therefore @sa EC_DONE doesn't
      *           apply).
      *
-     *     Error codes:
+     *     Failure error codes:
      *     - @sa EC_BUS_ERROR: Bus error.
      *     - @sa EC_CRC_ERROR: CRC error.
      */
@@ -195,7 +197,7 @@ public:
      *
      * @return Error codes:
      *     - @sa EC_SUCCESS: The @c code added to the filters set.
-     *     - @sa EC_FULL: no more place in filters table to add the code
+     *     - @sa EC_FULL: No more place in filters table to add the code.
      */
     ErrorCode searchFilterAdd(uint8_t code);
 
@@ -226,16 +228,19 @@ public:
      *   received data.
      *
      * @return Error codes:
-     *     - @sa EC_SUCCESS - Success, the result written to @c id.
-     *     - @sa EC_NO_DEVS - No slave devices.
-     *     - @sa EC_CRC_ERROR - Probably more than one slave on the bus.
+     *     - @sa EC_SUCCESS: Success, the result written to @c id.
+     *     - @sa EC_NO_DEVS: No slave devices.
+     *     - @sa EC_CRC_ERROR: Probably more than one slave on the bus.
      */
     ErrorCode readSingleId(Id &id)
     {
-        if (!reset()) return EC_NO_DEVS;
-        writeByte(CMD_READ_ROM);
-        readBytes(&id[0], sizeof(Id));
-        return (checkCrcId(id) ? EC_SUCCESS : EC_CRC_ERROR);
+        ErrorCode ret = reset();
+        if (ret == EC_SUCCESS) {
+            writeByte(CMD_READ_ROM);
+            readBytes(&id[0], sizeof(Id));
+            ret = checkCrcId(id);
+        }
+        return ret;
     }
 
     /**
@@ -246,13 +251,17 @@ public:
      *
      * After calling this routine subsequent data send over the bus will be
      * received by the selected slave until the next reset pulse.
+     *
+     * @return Same as for @sa reset().
      */
-    void addressSingle(const Id& id)
+    ErrorCode addressSingle(const Id& id)
     {
-        if (reset()) {
+        ErrorCode ret = reset();
+        if (ret == EC_SUCCESS) {
             writeByte(CMD_MATCH_ROM);
             writeBytes(&id[0], sizeof(Id));
         }
+        return ret;
     }
 
     /**
@@ -263,9 +272,16 @@ public:
      *
      * After calling this routine subsequent data send over the bus will be
      * received by all connected slaves until the next reset pulse.
+     *
+     * @return Same as for @sa reset().
      */
-    void addressAll() {
-        if (reset()) writeByte(CMD_SKIP_ROM);
+    ErrorCode addressAll()
+    {
+        ErrorCode ret = reset();
+        if (ret == EC_SUCCESS) {
+            writeByte(CMD_SKIP_ROM);
+        }
+        return ret;
     }
 
     /**
@@ -279,8 +295,9 @@ public:
      *
      * @param on If @true - power the bus, @false - depower the bus.
      *
-     * @return Error codes: @sa EC_UNSUPPORED: service is unsupported by the
-     *     platform, otherwise @sa EC_SUCCESS.
+     * @return Error codes:
+     *     - @sa EC_UNSUPPORED: Service is unsupported by the platform.
+     *     - @sa EC_SUCCESS: Otherwise.
      */
     virtual ErrorCode powerBus(bool on) {
         UNUSED(on);
@@ -295,12 +312,14 @@ public:
 
     /**
      * Check CRC for a given @c id.
-     * @return @c false for CRC mismatch, @c true otherwise.
+     * @return Error codes:
+     *     - @sa EC_CRC_ERROR: CRC mismatch.
+     *     - @sa EC_SUCCESS: Compliant CRC.
      */
-    static bool checkCrcId(const Id& id)
+    static ErrorCode checkCrcId(const Id& id)
     {
         uint8_t crc = crc8(&id[0], sizeof(Id)-1);
-        return (crc == id[sizeof(Id)-1]);
+        return (crc == id[sizeof(Id)-1] ? EC_SUCCESS : EC_CRC_ERROR);
     }
 
     virtual ~OneWireNg() {}

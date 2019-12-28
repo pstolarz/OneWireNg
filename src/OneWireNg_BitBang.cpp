@@ -28,7 +28,7 @@
 # define timeCriticalExit()
 #endif
 
-bool OneWireNg_BitBang::reset()
+OneWireNg::ErrorCode OneWireNg_BitBang::reset()
 {
     int presPulse;
 
@@ -44,7 +44,7 @@ bool OneWireNg_BitBang::reset()
     timeCriticalExit();
     delayUs(390);
 
-    return !presPulse;
+    return (presPulse ? EC_NO_DEVS : EC_SUCCESS);
 }
 
 int OneWireNg_BitBang::touchBit(int bit)

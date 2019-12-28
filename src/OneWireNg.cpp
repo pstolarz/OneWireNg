@@ -61,8 +61,9 @@ restart:
     memset(&id, 0, sizeof(Id));
 
     /* initialize search process on slave devices */
-    if (!reset())
-        return EC_NO_DEVS;
+    ErrorCode err = reset();
+    if (err != EC_SUCCESS)
+        return err;
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     searchFilterSelectAll();
@@ -85,8 +86,9 @@ restart:
             return ec;
     }
 
-    if (!checkCrcId(id))
-        return EC_CRC_ERROR;
+    err = checkCrcId(id);
+    if (err != EC_SUCCESS)
+        return err;
 
     return (__UPDATE_DISCREPANCY() ? EC_DONE : EC_MORE);
 }

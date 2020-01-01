@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -17,35 +17,18 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
-#define __READ_GPIO(pin) \
-    (pin < 32 ? ((GPIO.in >> pin) & 0x01) : \
-         pin < 40 ? ((GPIO.in1.val >> (pin - 32)) & 0x01) : 1)
+#define __READ_GPIO(gs) \
+    ((*gs.inReg & gs.bmsk) != 0)
 
-#define __WRITE_GPIO(pin, st) \
-    if (pin < 32) { \
-        if (st) GPIO.out_w1ts = ((uint32_t)1 << pin); \
-        else GPIO.out_w1tc = ((uint32_t)1 << pin); \
-    } else \
-    if (pin < 34) { \
-        if (st) GPIO.out1_w1ts.val = ((uint32_t)1 << (pin - 32)); \
-        else GPIO.out1_w1tc.val = ((uint32_t)1 << (pin - 32)); \
-    }
+#define __WRITE_GPIO(gs, st) \
+    if (st) *gs.outSetReg = gs.bmsk; \
+    else *gs.outClrReg = gs.bmsk
 
-#define __GPIO_AS_INPUT(pin) \
-    if(pin < 32) { \
-        GPIO.enable_w1tc = ((uint32_t)1 << pin); \
-    } else \
-    if (pin < 40) { \
-        GPIO.enable1_w1tc.val = ((uint32_t)1 << (pin - 32)); \
-    }
+#define __GPIO_AS_INPUT(gs) \
+    *gs.modClrReg = gs.bmsk
 
-#define __GPIO_AS_OUTPUT(pin) \
-    if (pin < 32) { \
-        GPIO.enable_w1ts = ((uint32_t)1 << pin); \
-    } else \
-    if (pin < 34) { \
-        GPIO.enable1_w1ts.val = ((uint32_t)1 << (pin - 32)); \
-    }
+#define __GPIO_AS_OUTPUT(gs) \
+    *gs.modSetReg = gs.bmsk
 
 /**
  * Arduino ESP32 platform GPIO specific implementation.
@@ -66,11 +49,7 @@ public:
     OneWireNg_ArduinoESP32(unsigned pin, bool pullUp):
         OneWireNg_BitBang(false)
     {
-        /* pins above 33 can only be inputs */
-        assert(pin < 34);
-
-        _dtaPin = pin;
-        initDtaGpio(pullUp);
+        initDtaGpio(pin, pullUp);
     }
 
     /**
@@ -91,64 +70,106 @@ public:
     OneWireNg_ArduinoESP32(unsigned pin, unsigned pwrCtrlPin, bool pullUp):
         OneWireNg_BitBang(true)
     {
-        /* pins above 33 can only be inputs */
-        assert(pin < 40 && pwrCtrlPin < 34);
-
-        _dtaPin = pin;
-        _pwrCtrlPin = pwrCtrlPin;
-
-        initDtaGpio(pullUp);
-        initPwrCtrlGpio();
+        initDtaGpio(pin, pullUp);
+        initPwrCtrlGpio(pwrCtrlPin);
     }
 
 protected:
     virtual int readGpioIn(GpioType gpio)
     {
         UNUSED(gpio);
-        return __READ_GPIO(_dtaPin);
+        return __READ_GPIO(_dtaGpio);
     }
 
     virtual void writeGpioOut(GpioType gpio, int state)
     {
         if (gpio == GPIO_DTA) {
-            __WRITE_GPIO(_dtaPin, state);
+            __WRITE_GPIO(_dtaGpio, state);
         } else {
-            __WRITE_GPIO(_pwrCtrlPin, state);
+            __WRITE_GPIO(_pwrCtrlGpio, state);
         }
     }
 
     virtual void setGpioAsInput(GpioType gpio)
     {
         UNUSED(gpio);
-        __GPIO_AS_INPUT(_dtaPin);
+        __GPIO_AS_INPUT(_dtaGpio);
     }
 
     virtual void setGpioAsOutput(GpioType gpio, int state)
     {
         if (gpio == GPIO_DTA) {
-            __GPIO_AS_OUTPUT(_dtaPin);
-            __WRITE_GPIO(_dtaPin, state);
+            __GPIO_AS_OUTPUT(_dtaGpio);
+            __WRITE_GPIO(_dtaGpio, state);
         } else {
-            __GPIO_AS_OUTPUT(_pwrCtrlPin);
-            __WRITE_GPIO(_pwrCtrlPin, state);
+            __GPIO_AS_OUTPUT(_pwrCtrlGpio);
+            __WRITE_GPIO(_pwrCtrlGpio, state);
         }
     }
 
-    void initDtaGpio(bool pullUp)
+    void initDtaGpio(unsigned pin, bool pullUp)
     {
-        pinMode(_dtaPin, INPUT | (pullUp ? PULLUP : 0));
+        /* pins above 33 can only be inputs */
+        assert(pin < 34);
+
+        if (pin < 32) {
+            _dtaGpio.bmsk = (uint32_t)(1 << pin);
+            _dtaGpio.inReg = &GPIO.in;
+            _dtaGpio.outSetReg = &GPIO.out_w1ts;
+            _dtaGpio.outClrReg = &GPIO.out_w1tc;
+            _dtaGpio.modSetReg = &GPIO.enable_w1ts;
+            _dtaGpio.modClrReg = &GPIO.enable_w1tc;
+        } else {
+            _dtaGpio.bmsk = (uint32_t)(1 << (pin-32));
+            _dtaGpio.inReg = &GPIO.in1.val;
+            _dtaGpio.outSetReg = &GPIO.out1_w1ts.val;
+            _dtaGpio.outClrReg = &GPIO.out1_w1tc.val;
+            _dtaGpio.modSetReg = &GPIO.enable1_w1ts.val;
+            _dtaGpio.modClrReg = &GPIO.enable1_w1tc.val;
+        }
+        pinMode(pin, INPUT | (pullUp ? PULLUP : 0));
         setupDtaGpio();
     }
 
-    void initPwrCtrlGpio(void)
+    void initPwrCtrlGpio(unsigned pin)
     {
-        pinMode(_pwrCtrlPin, OUTPUT);
+        /* pins above 33 can only be inputs */
+        assert(pin < 34);
+
+        if (pin < 32) {
+            _pwrCtrlGpio.bmsk = (uint32_t)(1 << pin);
+            _pwrCtrlGpio.outSetReg = &GPIO.out_w1ts;
+            _pwrCtrlGpio.outClrReg = &GPIO.out_w1tc;
+            _pwrCtrlGpio.modSetReg = &GPIO.enable_w1ts;
+            _pwrCtrlGpio.modClrReg = &GPIO.enable_w1tc;
+        } else {
+            _pwrCtrlGpio.bmsk = (uint32_t)(1 << (pin-32));
+            _pwrCtrlGpio.outSetReg = &GPIO.out1_w1ts.val;
+            _pwrCtrlGpio.outClrReg = &GPIO.out1_w1tc.val;
+            _pwrCtrlGpio.modSetReg = &GPIO.enable1_w1ts.val;
+            _pwrCtrlGpio.modClrReg = &GPIO.enable1_w1tc.val;
+        }
+        pinMode(pin, OUTPUT);
         setupPwrCtrlGpio(true);
     }
 
 private:
-    unsigned _dtaPin;
-    unsigned _pwrCtrlPin;
+    struct {
+        uint32_t bmsk;
+        volatile uint32_t *inReg;
+        volatile uint32_t *outSetReg;
+        volatile uint32_t *outClrReg;
+        volatile uint32_t *modSetReg;
+        volatile uint32_t *modClrReg;
+    } _dtaGpio;
+
+    struct {
+        uint32_t bmsk;
+        volatile uint32_t *outSetReg;
+        volatile uint32_t *outClrReg;
+        volatile uint32_t *modSetReg;
+        volatile uint32_t *modClrReg;
+    } _pwrCtrlGpio;
 };
 
 #undef __GPIO_AS_OUTPUT

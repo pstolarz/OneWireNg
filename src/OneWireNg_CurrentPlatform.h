@@ -23,7 +23,7 @@
 #elif defined(ARDUINO_ARCH_MEGAAVR)
 # include "OneWireNg_ArduinoMegaAVR.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoMegaAVR
-#elif defined(ARDUINO_ARCH_SAMD)
+#elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_SAMD_BETA)
 # include "OneWireNg_ArduinoSAMD.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoSAMD
 #elif defined(ARDUINO_ARCH_ESP8266)

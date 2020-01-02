@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -23,6 +23,9 @@
 #elif defined(ARDUINO_ARCH_MEGAAVR)
 # include "OneWireNg_ArduinoMegaAVR.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoMegaAVR
+#elif defined(ARDUINO_ARCH_SAMD)
+# include "OneWireNg_ArduinoSAMD.h"
+# define OneWireNg_CurrentPlatform OneWireNg_ArduinoSAMD
 #elif defined(ARDUINO_ARCH_ESP8266)
 # include "OneWireNg_ArduinoESP8266.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoESP8266

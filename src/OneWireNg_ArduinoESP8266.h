@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -18,31 +18,23 @@
 #include "OneWireNg_BitBang.h"
 
 #define __READ_GPIO(pin) \
-    (pin < 16 ? GPIP(pin) : pin == 16 ? (GP16I & 0x01) : 1)
+    (pin < 16 ? GPIP(pin) : (pin == 16 ? (GP16I & 0x01) : 1))
 
 #define __WRITE_GPIO(pin, st) \
     if (pin < 16) { \
-        if (st) GPOS = (1 << pin); else GPOC = (1 << pin); \
+        if (st) GPOS = (uint32_t)(1UL << pin); else GPOC = (uint32_t)(1UL << pin); \
     } else \
     if (pin == 16) { \
-        if (st) GP16O |= 1; else GP16O &= ~1; \
+        if (st) GP16O |= 1; else GP16O &= ~(uint32_t)1; \
     }
 
 #define __GPIO_AS_INPUT(pin) \
-    if (pin < 16) { \
-        GPEC = (1 << pin); \
-    } else \
-    if (pin == 16) { \
-      GP16E &= ~1; \
-    }
+    if (pin < 16) { GPEC = (uint32_t)(1UL << pin); } \
+    else if (pin == 16) { GP16E &= ~(uint32_t)1; }
 
 #define __GPIO_AS_OUTPUT(pin) \
-    if (pin < 16) { \
-        GPES = (1 << pin); \
-    } else \
-    if (pin == 16) { \
-      GP16E |= 1; \
-    }
+    if (pin < 16) { GPES = (uint32_t)(1UL << pin); } \
+    else if (pin == 16) { GP16E |= 1; }
 
 /**
  * Arduino ESP8266 platform GPIO specific implementation.

@@ -113,14 +113,14 @@ protected:
         assert(pin < 34);
 
         if (pin < 32) {
-            _dtaGpio.bmsk = (uint32_t)(1 << pin);
+            _dtaGpio.bmsk = (uint32_t)(1UL << pin);
             _dtaGpio.inReg = &GPIO.in;
             _dtaGpio.outSetReg = &GPIO.out_w1ts;
             _dtaGpio.outClrReg = &GPIO.out_w1tc;
             _dtaGpio.modSetReg = &GPIO.enable_w1ts;
             _dtaGpio.modClrReg = &GPIO.enable_w1tc;
         } else {
-            _dtaGpio.bmsk = (uint32_t)(1 << (pin-32));
+            _dtaGpio.bmsk = (uint32_t)(1UL << (pin-32));
             _dtaGpio.inReg = &GPIO.in1.val;
             _dtaGpio.outSetReg = &GPIO.out1_w1ts.val;
             _dtaGpio.outClrReg = &GPIO.out1_w1tc.val;
@@ -137,13 +137,13 @@ protected:
         assert(pin < 34);
 
         if (pin < 32) {
-            _pwrCtrlGpio.bmsk = (uint32_t)(1 << pin);
+            _pwrCtrlGpio.bmsk = (uint32_t)(1UL << pin);
             _pwrCtrlGpio.outSetReg = &GPIO.out_w1ts;
             _pwrCtrlGpio.outClrReg = &GPIO.out_w1tc;
             _pwrCtrlGpio.modSetReg = &GPIO.enable_w1ts;
             _pwrCtrlGpio.modClrReg = &GPIO.enable_w1tc;
         } else {
-            _pwrCtrlGpio.bmsk = (uint32_t)(1 << (pin-32));
+            _pwrCtrlGpio.bmsk = (uint32_t)(1UL << (pin-32));
             _pwrCtrlGpio.outSetReg = &GPIO.out1_w1ts.val;
             _pwrCtrlGpio.outClrReg = &GPIO.out1_w1tc.val;
             _pwrCtrlGpio.modSetReg = &GPIO.enable1_w1ts.val;

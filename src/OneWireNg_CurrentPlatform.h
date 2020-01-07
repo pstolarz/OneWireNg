@@ -18,19 +18,19 @@
  * - assign OneWireNg_CurrentPlatform macro-define to the detected platform class.
  */
 #if defined(ARDUINO_ARCH_AVR)
-# include "OneWireNg_ArduinoAVR.h"
+# include "platform/OneWireNg_ArduinoAVR.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoAVR
 #elif defined(ARDUINO_ARCH_MEGAAVR)
-# include "OneWireNg_ArduinoMegaAVR.h"
+# include "platform/OneWireNg_ArduinoMegaAVR.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoMegaAVR
 #elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_SAMD_BETA)
-# include "OneWireNg_ArduinoSAMD.h"
+# include "platform/OneWireNg_ArduinoSAMD.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoSAMD
 #elif defined(ARDUINO_ARCH_ESP8266)
-# include "OneWireNg_ArduinoESP8266.h"
+# include "platform/OneWireNg_ArduinoESP8266.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoESP8266
 #elif defined(ARDUINO_ARCH_ESP32)
-# include "OneWireNg_ArduinoESP32.h"
+# include "platform/OneWireNg_ArduinoESP32.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoESP32
 #else
 # define OneWireNg_CurrentPlatform

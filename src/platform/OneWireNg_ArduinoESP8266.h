@@ -55,8 +55,8 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, bool pullUp):
         OneWireNg_BitBang(false)
     {
-        assert(pin <= 16);
-        assert(pullUp && pin < 16);
+        /* only pins < 16 can be configured with internal pull-up */
+        assert(pullUp ? pin < 16 : pin <= 16);
 
         _dtaPin = pin;
         initDtaGpio(pullUp);
@@ -80,8 +80,7 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, unsigned pwrCtrlPin, bool pullUp):
         OneWireNg_BitBang(true)
     {
-        assert(pin <= 16 && pwrCtrlPin <= 16);
-        assert(pullUp && pin < 16);
+        assert((pullUp ? pin < 16 : pin <= 16) && pwrCtrlPin <= 16);
 
         _dtaPin = pin;
         _pwrCtrlPin = pwrCtrlPin;

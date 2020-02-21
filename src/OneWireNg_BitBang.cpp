@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -12,20 +12,21 @@
 
 #include "OneWireNg_BitBang.h"
 
-/* delay & interrupts API */
+/*
+ * Platform specific delay & interrupts API
+ */
 #ifdef ARDUINO
 # include "Arduino.h"
 # define delayUs(dly) delayMicroseconds(dly)
 # define timeCriticalEnter() noInterrupts()
 # define timeCriticalExit() interrupts()
-#else
-# ifndef __TEST__
-#  warning "Interrupts API unsupported by the target platform"
-# endif
+#elif defined(__TEST__)
 # include <unistd.h>
 # define delayUs(dly) usleep(dly)
 # define timeCriticalEnter()
 # define timeCriticalExit()
+#else
+# error "Unsupported platform"
 #endif
 
 OneWireNg::ErrorCode OneWireNg_BitBang::reset()

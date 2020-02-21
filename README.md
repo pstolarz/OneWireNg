@@ -56,7 +56,7 @@ devices (e.g. Dallas/Maxim thermometers).
     * **Not tested**.
 * Arduino ESP32.
     * Platform class: `OneWireNg_ArduinoESP32`.
-    * **Not tested**.
+    * Tested on ESP32-DevKitC (ESP32-WROOM-32)
 
 NOTE: Expect more platforms support in the future. **I'm inviting all developers**,
 eager to help me with porting and testing the library for new platforms.

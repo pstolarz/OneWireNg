@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -38,6 +38,8 @@
 #define DS1825              0x3b
 #define DS28EA00            0x42
 
+#define ARRSZ(t) (sizeof(t)/sizeof((t)[0]))
+
 static struct {
     uint8_t code;
     const char *name;
@@ -49,13 +51,8 @@ static struct {
     { DS28EA00,"DS28EA00" }
 };
 
-#define ARRSZ(t) (sizeof(t)/sizeof((t)[0]))
+static OneWireNg *ow = NULL;
 
-#ifdef PWR_CTRL_PIN
-static OneWireNg *ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false);
-#else
-static OneWireNg *ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
-#endif
 
 /* returns NULL if not supported */
 static const char *dsthName(const OneWireNg::Id& id)
@@ -88,6 +85,13 @@ static bool printId(const OneWireNg::Id& id)
 
 void setup()
 {
+#ifdef PWR_CTRL_PIN
+    ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false);
+#else
+    ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
+#endif
+    delay(500);
+
     Serial.begin(115200);
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)

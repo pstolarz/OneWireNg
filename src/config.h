@@ -43,7 +43,28 @@
 //#define CONFIG_FLASH_CRC8_TAB
 
 /**
- * See @sa OneWireNg_BitBang::setGpioAsOutput() for more information
+ * GPIO blink reveals as a short, unexpected low-high (or vice versa) state
+ * change on the digital data wire. The GPIO blink (resulted of the internal
+ * library logic) may occur if both of the following circumstances occur:
+ *
+ * 1. The driver is configured for parasitically powering slaves via GPIO
+ *    bit-banging (possible for non open-drain type of output).
+ * 2. The underlying platform can't guarantee input to output GPIO switch with
+ *    a desired initial state.
+ *
+ * To prevent the blink resulted of the above @c CONFIG_BUS_BLINK_PROTECTION
+ * may be configured. Undesirable side effect of using this parameter is a short
+ * period of time when a direct voltage source is provided directly on the data
+ * wire. This is basically unwanted behavior in the open-drain environment
+ * (except parasitically powering slave devices in a specific period of time
+ * during 1-wire activity). The side effect occurs while switching the data
+ * wire GPIO from low to high state via the following 3-steps procedure:
+ *
+ *  1. Initial low state (GPIO configured as output-low).
+ *  2. Hight state (GPIO configured as output-high) - direct voltage source
+ *     connected to the bus. This is an additional state provided by @c
+ *     CONFIG_BUS_BLINK_PROTECTION parameter.
+ *  3. High state visible via pull-up resistor (GPIO configured as input).
  */
 //#define CONFIG_BUS_BLINK_PROTECTION
 

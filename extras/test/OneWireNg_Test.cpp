@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -171,6 +171,56 @@ public:
     {
         for (size_t i=0; i < TAB_SZ(TEST1_IDS); i++)
             assert(checkCrcId(TEST1_IDS[i]) == EC_SUCCESS);
+
+        TEST_SUCCESS();
+    }
+
+    static void test_crc16()
+    {
+        uint16_t c1=0, c2;
+        const uint16_t res[] = {
+            0xbad3, 0x4631, 0x47bb, 0x3840, 0x477e, 0xa7bc, 0x78e1, 0xd7dd,
+            0xb74e, 0x8043, 0x2706, 0x3bc4, 0xd4a5, 0x35a5, 0x0314, 0x4525
+        };
+
+        uint8_t buf[0x1000];
+        for (size_t i=0; i < sizeof(buf); i++)
+            buf[i] = (uint8_t)i;
+
+        for (size_t i=0, j=0; i < sizeof(buf); i+=0x100, j++) {
+            c1 = crc16(&buf[i], 0x100, c1);
+            c2 = crc16(&buf[0], i + 0x100);
+            assert(c1 == c2 && c1 == res[j]);
+        }
+
+        TEST_SUCCESS();
+    }
+
+    static void test_checkinvCrc16()
+    {
+        const uint16_t res[] = {
+            0xbad3, 0x4631, 0x47bb, 0x3840, 0x477e, 0xa7bc, 0x78e1, 0xd7dd,
+            0xb74e, 0x8043, 0x2706, 0x3bc4, 0xd4a5, 0x35a5, 0x0314, 0x4525
+        };
+
+        uint8_t buf[0x1000];
+        for (size_t i=0; i < sizeof(buf); i++)
+            buf[i] = (uint8_t)i;
+
+        for (size_t i=0, j=0; i < sizeof(buf); i+=0x100, j++) {
+            assert(checkInvCrc16(&buf[0], i + 0x100, ~res[j]) == EC_SUCCESS);
+        }
+
+        TEST_SUCCESS();
+    }
+
+    static void test_getLSB()
+    {
+        uint8_t u16[] = {0x02, 0x01};
+        uint8_t u32[] = {0x04, 0x03, 0x02, 0x01};
+
+        assert(getLSB_u16(u16) == 0x0102);
+        assert(getLSB_u32(u32) == 0x01020304);
 
         TEST_SUCCESS();
     }
@@ -379,6 +429,9 @@ public:
 int main(void)
 {
     OneWireNg_Test::test_crc8();
+    OneWireNg_Test::test_crc16();
+    OneWireNg_Test::test_checkinvCrc16();
+    OneWireNg_Test::test_getLSB();
     OneWireNg_Test::test_search();
     OneWireNg_Test::test_filter();
     OneWireNg_Test::test_filteredSearch();

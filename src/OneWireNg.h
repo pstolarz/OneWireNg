@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -13,9 +13,10 @@
 #ifndef __OWNG__
 #define __OWNG__
 
-#include <stdint.h>
 #include <stddef.h>
-#include "config.h"
+#include <stdint.h>
+#include <stdio.h>
+#include "OneWireNg_config.h"
 
 #ifndef UNUSED
 # define UNUSED(x) ((void)(x))
@@ -305,16 +306,70 @@ public:
     }
 
     /**
-     * Compute Maxim/Dallas CRC-8.
-     * Polynomial used: x^8 + x^5 + x^4 + 1
+     * Generic CRC-8/16/32 calculation.
+     *
+     * Template parameters:
+     * @param Ret CRC type: uint8_t for CRC-8, uint16_t for CRC-16, uint32_t for
+     *     CRC-32
+     * @param RevPoly CRC polynomial coefficients in a reverse order, e.g. 0x8C
+     *     (not 0x31) for CRC-8/MAXIM, 0xA001 (not 0x8005) for CRC-16/ARC.
      */
-    static uint8_t crc8(const void *in, size_t len);
+    template<class Ret, Ret RevPoly>
+    static inline Ret crc(const void *in, size_t len, Ret crc_in = 0)
+    {
+        Ret crc = crc_in;
+        const uint8_t *in_bts = (const uint8_t*)in;
+
+        while (len--) {
+            crc ^= *in_bts++;
+            for (int i=8; i; i--)
+                crc = (crc & 1 ? RevPoly : 0) ^ (crc >> 1);
+        }
+        return crc;
+    }
 
     /**
-     * Check CRC for a given @c id.
+     * Compute CRC-8/MAXIM.
+     * Polynomial used: x^8 + x^5 + x^4 + 1
+     */
+    static uint8_t crc8(const void *in, size_t len, uint8_t crc_in = 0);
+
+#ifdef CONFIG_CRC16_ENABLED
+    /**
+     * Compute CRC-16/ARC.
+     * Polynomial used: x^16 + x^15 + x^2 + 1
+     */
+    static uint16_t crc16(const void *in, size_t len, uint16_t crc_in = 0);
+
+    /**
+     * Check bitwise inverted CRC-16/ARC for a given input @c in of length
+     * @c len bytes.
+     *
+     * @c invCrc argument represents a bitwise inverted CRC checksum sent over
+     * the 1-wire bus which need to be compliant with the computed checksum.
+     * Use @ref getLSB_u16() routine to get this LSB encoded CRC, e.g.:
+     *
+     * @code
+     *     OneWireNg::checkInvCrc16(
+     *         &recv_buf[recv_data_to_check_offset],
+     *         recv_data_length,
+     *         OneWireNg::getLSB_u16(&recv_buf[recv_data_inv_crc16]));
+     * @endcode
+     *
      * @return Error codes:
-     *     - @sa EC_CRC_ERROR: CRC mismatch.
      *     - @sa EC_SUCCESS: Compliant CRC.
+     *     - @sa EC_CRC_ERROR: CRC mismatch.
+     */
+    static ErrorCode checkInvCrc16(const void *in, size_t len, uint16_t invCrc) {
+        return (!(uint16_t)(crc16(in, len) ^ ~invCrc) ? EC_SUCCESS : EC_CRC_ERROR);
+    }
+#endif
+
+    /**
+     * Check CRC-8/MAXIM for a given @c id.
+     * @return Error codes:
+     *     - @sa EC_SUCCESS: Compliant CRC.
+     *     - @sa EC_CRC_ERROR: CRC mismatch.
      */
     static ErrorCode checkCrcId(const Id& id)
     {
@@ -323,6 +378,42 @@ public:
     }
 
     virtual ~OneWireNg() {}
+
+    /**
+     * Read 2 consecutive bytes starting at address @c v and interpret them
+     * as @c uin16_t little-endian integer.
+     *
+     * @note This function may be useful as a platform endianess agnostic
+     *     routine reading multi-byte integers sent over 1-wire bus
+     *     (characterised by LSB first byte order).
+     */
+    static uint16_t getLSB_u16(void *v)
+    {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        return *(uint16_t*)v;
+#else
+        return (uint16_t)((uint8_t*)v)[0] |
+            ((uint16_t)((uint8_t*)v)[1] << 8);
+#endif
+    }
+
+    /**
+     * Read 4 consecutive bytes starting at address @c v and interpret them
+     * as @c uin32_t little-endian integer.
+     *
+     * @see getLSB_u16()
+     */
+    static uint32_t getLSB_u32(void *v)
+    {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        return *(uint32_t*)v;
+#else
+        return (uint32_t)((uint8_t*)v)[0] |
+            ((uint32_t)((uint8_t*)v)[1] << 8) |
+            ((uint32_t)((uint8_t*)v)[2] << 16) |
+            ((uint32_t)((uint8_t*)v)[3] << 24);
+#endif
+    }
 
     const static uint8_t CMD_READ_ROM        = 0x33;
     const static uint8_t CMD_MATCH_ROM       = 0x55;

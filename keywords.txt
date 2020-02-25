@@ -39,8 +39,13 @@ readSingleId	KEYWORD2
 addressSingle	KEYWORD2
 addressAll	KEYWORD2
 powerBus	KEYWORD2
+crc	KEYWORD2
 crc8	KEYWORD2
+crc16	KEYWORD2
 checkCrcId	KEYWORD2
+checkInvCrc16	KEYWORD2
+getLSB_u16	KEYWORD2
+getLSB_u32	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

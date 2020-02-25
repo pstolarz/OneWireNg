@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -22,25 +22,41 @@
 #elif !defined(OWNG_DISABLE_DEFAULT_CONFIG)
 
 /**
- * Fast, table based, CRC-8 calculation. If not defined CRC-8 calculation
- * is about 8 times slower but no extra memory is used for the table.
+ * Type of algorithm used for CRC-8/MAXIM calculation.
  *
  * The macro may be defined as:
- * @c CRC8_TAB_256: 256 elements table; fastest; significant memory usage.
- * @c CRC8_TAB_16LH: 2x16 elements table; decent fast & acceptable memory usage.
+ * @c CRC8_BASIC: Basic method. No memory tables used. This method is about 8
+ *     times slower than the tabled method but no extra memory is used.
+ * @c CRC8_TAB_16LH: 2x16 elements table, 1 byte each.
  */
-#define CONFIG_CRC8_TAB CRC8_TAB_16LH
+#define CONFIG_CRC8_ALGO CRC8_TAB_16LH
 
 /**
- * Store CRC-8 table in flash memory instead of RAM
- * Valid only if @c CONFIG_CRC8_TAB is defined.
+ * Enable CRC-16/ARC.
+ */
+//#define CONFIG_CRC16_ENABLED
+
+/**
+ * Type of algorithm used for CRC-16/ARC calculation.
+ * Valid only if CRC-16 is enabled via @ref CONFIG_CRC16_ENABLED.
+ *
+ * The macro may be defined as:
+ * @c CRC16_BASIC: Basic method. No memory tables used. This method is about 8
+ *     times slower than the tabled method but no extra memory is used.
+ * @c CRC16_TAB_16LH: 2x16 elements table, 2 bytes each.
+ */
+#define CONFIG_CRC16_ALGO CRC16_TAB_16LH
+
+/**
+ * Store CRC tables in flash memory instead of RAM.
+ * Valid only if CRC algorithms are configured for memory tables usage.
  *
  * @note The configuration reduces RAM usage (usually most constrained resource
  *     on embedded devices) by the library instead of flash, but also increases
  *     time needed for CRC calculation, since the flash access is much slower
  *     than RAM.
  */
-//#define CONFIG_FLASH_CRC8_TAB
+//#define CONFIG_FLASH_CRC_TAB
 
 /**
  * GPIO blink reveals as a short, unexpected low-high (or vice versa) state

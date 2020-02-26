@@ -72,6 +72,9 @@ public:
         EC_FILTERED = 100
     } ErrorCode;
 
+    /* destructor need to be virtual */
+    virtual ~OneWireNg() {}
+
     /**
      * Transmit reset cycle on the 1-wire bus.
      *
@@ -346,14 +349,15 @@ public:
      * @c len bytes.
      *
      * @c invCrc argument represents a bitwise inverted CRC checksum sent over
-     * the 1-wire bus which need to be compliant with the computed checksum.
-     * Use @ref getLSB_u16() routine to get this LSB encoded CRC, e.g.:
+     * the 1-wire bus which needs to be compliant with the computed checksum.
+     * Use @ref getLSB_u16() routine to get this little-endian encoded CRC from
+     * received bytes sent over the bus, e.g.:
      *
      * @code
      *     OneWireNg::checkInvCrc16(
      *         &recv_buf[recv_data_to_check_offset],
-     *         recv_data_length,
-     *         OneWireNg::getLSB_u16(&recv_buf[recv_data_inv_crc16]));
+     *         recv_data_to_check_length,
+     *         OneWireNg::getLSB_u16(&recv_buf[recv_data_inv_crc16_offset]));
      * @endcode
      *
      * @return Error codes:
@@ -377,41 +381,39 @@ public:
         return (crc == id[sizeof(Id)-1] ? EC_SUCCESS : EC_CRC_ERROR);
     }
 
-    virtual ~OneWireNg() {}
-
     /**
-     * Read 2 consecutive bytes starting at address @c v and interpret them
+     * Read 2 consecutive bytes starting at address @c addr and interpret them
      * as @c uin16_t little-endian integer.
      *
      * @note This function may be useful as a platform endianess agnostic
      *     routine reading multi-byte integers sent over 1-wire bus
      *     (characterised by LSB first byte order).
      */
-    static uint16_t getLSB_u16(void *v)
+    static uint16_t getLSB_u16(void *addr)
     {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-        return *(uint16_t*)v;
+        return *(uint16_t*)addr;
 #else
-        return (uint16_t)((uint8_t*)v)[0] |
-            ((uint16_t)((uint8_t*)v)[1] << 8);
+        return (uint16_t)((uint8_t*)addr)[0] |
+            ((uint16_t)((uint8_t*)addr)[1] << 8);
 #endif
     }
 
     /**
-     * Read 4 consecutive bytes starting at address @c v and interpret them
+     * Read 4 consecutive bytes starting at address @c addr and interpret them
      * as @c uin32_t little-endian integer.
      *
      * @see getLSB_u16()
      */
-    static uint32_t getLSB_u32(void *v)
+    static uint32_t getLSB_u32(void *addr)
     {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-        return *(uint32_t*)v;
+        return *(uint32_t*)addr;
 #else
-        return (uint32_t)((uint8_t*)v)[0] |
-            ((uint32_t)((uint8_t*)v)[1] << 8) |
-            ((uint32_t)((uint8_t*)v)[2] << 16) |
-            ((uint32_t)((uint8_t*)v)[3] << 24);
+        return (uint32_t)((uint8_t*)addr)[0] |
+            ((uint32_t)((uint8_t*)addr)[1] << 8) |
+            ((uint32_t)((uint8_t*)addr)[2] << 16) |
+            ((uint32_t)((uint8_t*)addr)[3] << 24);
 #endif
     }
 

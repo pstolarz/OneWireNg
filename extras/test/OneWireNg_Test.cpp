@@ -196,7 +196,7 @@ public:
         TEST_SUCCESS();
     }
 
-    static void test_checkinvCrc16()
+    static void test_checkInvCrc16()
     {
         const uint16_t res[] = {
             0xbad3, 0x4631, 0x47bb, 0x3840, 0x477e, 0xa7bc, 0x78e1, 0xd7dd,
@@ -430,7 +430,7 @@ int main(void)
 {
     OneWireNg_Test::test_crc8();
     OneWireNg_Test::test_crc16();
-    OneWireNg_Test::test_checkinvCrc16();
+    OneWireNg_Test::test_checkInvCrc16();
     OneWireNg_Test::test_getLSB();
     OneWireNg_Test::test_search();
     OneWireNg_Test::test_filter();

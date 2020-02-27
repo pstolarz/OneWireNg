@@ -191,7 +191,7 @@ void OneWireNg::searchFilterSelect(int n, int bit)
  * @c lzero is set to @c n if discrepancy occurred at the processed bit and
  * the bit value is 0. @c lzero is not updated in other case.
  *
- * @return Error codes: @sa EC_SUCCESS, @sa EC_BUS_ERROR, @sa EC_FILTERED.
+ * @return Error codes: @c EC_SUCCESS, @c EC_BUS_ERROR, @c EC_FILTERED.
  */
 OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
 {

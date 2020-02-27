@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2020 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -22,8 +22,8 @@
  * The class relies on virtual functions provided by derivative class to
  * perform platform specific GPIO operations. The platform specific class
  * shall provide:
- * - @sa readGpioIn(), @sa writeGpioOut(): read/write operations.
- * - @sa setGpioAsInput(), @sa setGpioAsOutput(): set GPIO working mode.
+ * - @ref readGpioIn(), @ref writeGpioOut(): read/write operations.
+ * - @ref setGpioAsInput(), @ref setGpioAsOutput(): set GPIO working mode.
  */
 class OneWireNg_BitBang: public OneWireNg
 {
@@ -35,8 +35,9 @@ public:
      * Enable/disable direct voltage source provisioning on the 1-wire data bus
      * parasitically powering connected slave devices. In case of open-drain
      * type of platform, where no power-control-GPIO has been configured,
-     * the routine returns @sa EC_UNSUPPORED, @sa EC_SUCCESS otherwise. See
-     * @sa setupPwrCtrlGpio() for details.
+     * the routine returns @c EC_UNSUPPORED, @c EC_SUCCESS.
+     *
+     * @see setupPwrCtrlGpio().
      */
     virtual ErrorCode powerBus(bool on);
 
@@ -51,7 +52,9 @@ protected:
      * This class is intended to be inherited by specialized classes.
      *
      * @param openDrain Set to @c true if platform's GPIOs are of open-drain
-     *    type (in the output mode). See @sa writeGpioOut().
+     *    type (in the output mode).
+     *
+     * @see writeGpioOut().
      */
     OneWireNg_BitBang(bool openDrain = false)
     {
@@ -67,7 +70,7 @@ protected:
      * disables power-control-GPIO (working in the output mode) controlling
      * power switching transistor providing the voltage source to the bus.
      * The GPIO is set to the low state in case the power is enabled on the
-     * bus via @sa powerBus() routine and to the high state otherwise. The
+     * bus via @ref powerBus() routine and to the high state otherwise. The
      * logic may be inverted by setting @c reversePolarity to @c true.
      */
     void setupPwrCtrlGpio(bool on, bool reversePolarity = false)
@@ -107,7 +110,7 @@ protected:
      *
      * @note The routine is called for data (@c GPIO_DTA) and power-control-GPIO
      *     (@c GPIO_CTRL_PWR). The latter case happens if and only if
-     *     power-control-GPIO has been configured via @sa setupPwrCtrlGpio().
+     *     power-control-GPIO has been configured via @ref setupPwrCtrlGpio().
      */
     virtual void writeGpioOut(GpioType gpio, int state) = 0;
 
@@ -126,12 +129,12 @@ protected:
      * @note The function should guarantee no intermediate "blink" state between
      *     switching the GPIO into the output mode and setting the initial
      *     value on the pin. In case of problem with fulfilling such assumption
-     *     there may be feasible to compile the library with @c
+     *     there may be feasible to compile the library with @ref
      *     CONFIG_BUS_BLINK_PROTECTION, but such approach has its drawbacks too.
      *
      * @note The routine is called for data (@c GPIO_DTA) and power-control-GPIO
      *     (@c GPIO_CTRL_PWR). The latter case happens if and only if
-     *     power-control-GPIO has been configured via @sa setupPwrCtrlGpio().
+     *     power-control-GPIO has been configured via @ref setupPwrCtrlGpio().
      */
     virtual void setGpioAsOutput(GpioType gpio, int state) = 0;
 

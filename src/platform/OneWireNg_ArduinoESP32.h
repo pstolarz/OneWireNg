@@ -56,7 +56,7 @@ public:
      * OneWireNg 1-wire service for Arduino ESP32 platform.
      *
      * Bus powering is supported via a switching transistor providing
-     * the power to the bus and controlled by a dedicated GPIO (see @sa
+     * the power to the bus and controlled by a dedicated GPIO (@see
      * OneWireNg_BitBang::setupPwrCtrlGpio()). In this configuration the
      * service mimics the open-drain type of output. The approach may be
      * feasible if the GPIO is unable to provide sufficient power for

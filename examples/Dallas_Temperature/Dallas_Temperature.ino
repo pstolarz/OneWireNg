@@ -24,19 +24,19 @@
 #endif
 
 /* DS therms commands */
-#define CONVERT_T           0x44
-#define COPY_SCRATCHPAD     0x48
-#define WRITE_SCRATCHPAD    0x4e
-#define RECALL_EEPROM       0xb8
-#define READ_POW_SUPPLY     0xb4
-#define READ_SCRATCHPAD     0xbe
+#define CMD_CONVERT_T           0x44
+#define CMD_COPY_SCRATCHPAD     0x48
+#define CMD_WRITE_SCRATCHPAD    0x4e
+#define CMD_RECALL_EEPROM       0xb8
+#define CMD_READ_POW_SUPPLY     0xb4
+#define CMD_READ_SCRATCHPAD     0xbe
 
 /* supported DS therms families */
-#define DS18S20             0x10
-#define DS1822              0x22
-#define DS18B20             0x28
-#define DS1825              0x3b
-#define DS28EA00            0x42
+#define DS18S20     0x10
+#define DS1822      0x22
+#define DS18B20     0x28
+#define DS1825      0x3b
+#define DS28EA00    0x42
 
 #define ARRSZ(t) (sizeof(t)/sizeof((t)[0]))
 
@@ -120,7 +120,7 @@ void loop()
 
         /* start temperature conversion */
         ow->addressSingle(id);
-        ow->writeByte(CONVERT_T);
+        ow->writeByte(CMD_CONVERT_T);
 
 #ifdef PARASITE_POWER
         /* power the bus until the next activity on it */
@@ -129,7 +129,7 @@ void loop()
         delay(750);
 
         uint8_t touchScrpd[] = {
-            READ_SCRATCHPAD,
+            CMD_READ_SCRATCHPAD,
             /* the read scratchpad will be placed here (9 bytes) */
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
         };

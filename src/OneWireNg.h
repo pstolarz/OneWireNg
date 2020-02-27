@@ -28,11 +28,11 @@
  * The class relies on virtual functions provided by derivative class to
  * perform platform specific operations. The platform specific class shall
  * provide at least:
- * - @sa reset() - reset cycle transmission,
- * - @sa touchBit() - 1-wire touch (write and read are touch derived).
+ * - @ref reset() - reset cycle transmission,
+ * - @ref touchBit() - 1-wire touch (write and read are touch derived).
  *
  * and optionally:
- * - @sa powerBus() - if parasite powering is supported.
+ * - @ref powerBus() - if parasite powering is supported.
  */
 class OneWireNg
 {
@@ -79,9 +79,9 @@ public:
      * Transmit reset cycle on the 1-wire bus.
      *
      * @return Error codes:
-     *     - @sa EC_SUCCESS: Detected device(s) connected to the bus (presence
+     *     - @c EC_SUCCESS: Detected device(s) connected to the bus (presence
      *         pulse observed after the reset cycle).
-     *     - @sa EC_NO_DEVS: No devices on the bus.
+     *     - @c EC_NO_DEVS: No devices on the bus.
      */
     virtual ErrorCode reset() = 0;
 
@@ -158,7 +158,7 @@ public:
 
     /**
      * Perform single search step to recognize slave devices connected to
-     * the bus. Before calling this routine @sa searchReset() must be called
+     * the bus. Before calling this routine @ref searchReset() must be called
      * to initialize the search context.
      *
      * @param id In case of success will be filled with an id of the slave
@@ -168,21 +168,21 @@ public:
      *
      * @return
      *     Non-failure error codes:
-     *     - @sa EC_MORE: More devices available by subsequent calls of this
+     *     - @c EC_MORE: More devices available by subsequent calls of this
      *         routine. @c id is written with slave id.
-     *     - @sa EC_DONE (aka @sa EC_SUCCESS): No more devices available.
+     *     - @c EC_DONE (aka @c EC_SUCCESS): No more devices available.
      *         @c id is written with slave id.
-     *     - @sa EC_NO_DEVS: No slave devices (@c id not returned - undefined).
+     *     - @c EC_NO_DEVS: No slave devices (@c id not returned - undefined).
      *         The code may be returned in 2 cases:
      *         - No devices detected on the bus,
      *         - No more devices available. Returned only if search filtering
      *           is enabled and slave ids detected at the last searching step
-     *           have been all filtered out (therefore @sa EC_DONE doesn't
+     *           have been all filtered out (therefore @c EC_DONE doesn't
      *           apply).
      *
      *     Failure error codes:
-     *     - @sa EC_BUS_ERROR: Bus error.
-     *     - @sa EC_CRC_ERROR: CRC error.
+     *     - @c EC_BUS_ERROR: Bus error.
+     *     - @c EC_CRC_ERROR: CRC error.
      */
     virtual ErrorCode search(Id& id, bool alarm = false);
 
@@ -200,8 +200,8 @@ public:
      * are filtered from the whole set of devices connected to the bus.
      *
      * @return Error codes:
-     *     - @sa EC_SUCCESS: The @c code added to the filters set.
-     *     - @sa EC_FULL: No more place in filters table to add the code.
+     *     - @c EC_SUCCESS: The @c code added to the filters set.
+     *     - @c EC_FULL: No more place in filters table to add the code.
      */
     ErrorCode searchFilterAdd(uint8_t code);
 
@@ -232,9 +232,9 @@ public:
      *   received data.
      *
      * @return Error codes:
-     *     - @sa EC_SUCCESS: Success, the result written to @c id.
-     *     - @sa EC_NO_DEVS: No slave devices.
-     *     - @sa EC_CRC_ERROR: Probably more than one slave on the bus.
+     *     - @c EC_SUCCESS: Success, the result written to @c id.
+     *     - @c EC_NO_DEVS: No slave devices.
+     *     - @c EC_CRC_ERROR: Probably more than one slave on the bus.
      */
     ErrorCode readSingleId(Id &id)
     {
@@ -256,7 +256,7 @@ public:
      * After calling this routine subsequent data send over the bus will be
      * received by the selected slave until the next reset pulse.
      *
-     * @return Same as for @sa reset().
+     * @return Same as for @ref reset().
      */
     ErrorCode addressSingle(const Id& id)
     {
@@ -277,7 +277,7 @@ public:
      * After calling this routine subsequent data send over the bus will be
      * received by all connected slaves until the next reset pulse.
      *
-     * @return Same as for @sa reset().
+     * @return Same as for @ref reset().
      */
     ErrorCode addressAll()
     {
@@ -300,8 +300,8 @@ public:
      * @param on If @true - power the bus, @false - depower the bus.
      *
      * @return Error codes:
-     *     - @sa EC_UNSUPPORED: Service is unsupported by the platform.
-     *     - @sa EC_SUCCESS: Otherwise.
+     *     - @c EC_UNSUPPORED: Service is unsupported by the platform.
+     *     - @c EC_SUCCESS: Otherwise.
      */
     virtual ErrorCode powerBus(bool on) {
         UNUSED(on);
@@ -361,8 +361,8 @@ public:
      * @endcode
      *
      * @return Error codes:
-     *     - @sa EC_SUCCESS: Compliant CRC.
-     *     - @sa EC_CRC_ERROR: CRC mismatch.
+     *     - @c EC_SUCCESS: Compliant CRC.
+     *     - @c EC_CRC_ERROR: CRC mismatch.
      */
     static ErrorCode checkInvCrc16(const void *in, size_t len, uint16_t invCrc) {
         return (!(uint16_t)(crc16(in, len) ^ ~invCrc) ? EC_SUCCESS : EC_CRC_ERROR);
@@ -372,8 +372,8 @@ public:
     /**
      * Check CRC-8/MAXIM for a given @c id.
      * @return Error codes:
-     *     - @sa EC_SUCCESS: Compliant CRC.
-     *     - @sa EC_CRC_ERROR: CRC mismatch.
+     *     - @c EC_SUCCESS: Compliant CRC.
+     *     - @c EC_CRC_ERROR: CRC mismatch.
      */
     static ErrorCode checkCrcId(const Id& id)
     {
@@ -391,7 +391,7 @@ public:
      */
     static uint16_t getLSB_u16(void *addr)
     {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || defined(__LITTLE_ENDIAN__)
         return *(uint16_t*)addr;
 #else
         return (uint16_t)((uint8_t*)addr)[0] |
@@ -407,7 +407,7 @@ public:
      */
     static uint32_t getLSB_u32(void *addr)
     {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || defined(__LITTLE_ENDIAN__)
         return *(uint32_t*)addr;
 #else
         return (uint32_t)((uint8_t*)addr)[0] |

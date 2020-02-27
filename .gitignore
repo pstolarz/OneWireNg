@@ -1,3 +1,4 @@
+doc/
 *.o
 *.sw[a-p]
 tags

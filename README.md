@@ -48,6 +48,9 @@ devices (e.g. Dallas/Maxim thermometers).
 * Arduino megaAVR (recent Microchip AVR architecture).
     * Platform class: `OneWireNg_ArduinoMegaAVR`.
     * **Not tested**.
+* Arduino SAM.
+    * Platform class: `OneWireNg_ArduinoSAM`.
+    * **Not tested**.
 * Arduino SAMD/SAMD-Beta.
     * Platform class: `OneWireNg_ArduinoSAMD`.
     * **Not tested**.

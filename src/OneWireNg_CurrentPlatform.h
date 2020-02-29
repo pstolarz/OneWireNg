@@ -23,6 +23,9 @@
 #elif defined(ARDUINO_ARCH_MEGAAVR)
 # include "platform/OneWireNg_ArduinoMegaAVR.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoMegaAVR
+#elif defined(ARDUINO_ARCH_SAM)
+# include "platform/OneWireNg_ArduinoSAM.h"
+# define OneWireNg_CurrentPlatform OneWireNg_ArduinoSAM
 #elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_SAMD_BETA)
 # include "platform/OneWireNg_ArduinoSAMD.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoSAMD

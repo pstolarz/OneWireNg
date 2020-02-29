@@ -13,7 +13,7 @@
         "type": "git",
         "url": "https://github.com/pstolarz/OneWireNg"
     },
-    "version": "0.4.1",
+    "version": "0.5.0",
     "homepage": "https://github.com/pstolarz/OneWireNg",
     "frameworks": "Arduino",
     "examples": [

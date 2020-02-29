@@ -114,11 +114,11 @@ protected:
     virtual void setGpioAsOutput(GpioType gpio, int state)
     {
         if (gpio == GPIO_DTA) {
-            __GPIO_AS_OUTPUT(_dtaPin);
             __WRITE_GPIO(_dtaPin, state);
+            __GPIO_AS_OUTPUT(_dtaPin);
         } else {
-            __GPIO_AS_OUTPUT(_pwrCtrlPin);
             __WRITE_GPIO(_pwrCtrlPin, state);
+            __GPIO_AS_OUTPUT(_pwrCtrlPin);
         }
     }
 

@@ -99,11 +99,11 @@ protected:
     virtual void setGpioAsOutput(GpioType gpio, int state)
     {
         if (gpio == GPIO_DTA) {
-            __GPIO_AS_OUTPUT(_dtaGpio);
             __WRITE_GPIO(_dtaGpio, state);
+            __GPIO_AS_OUTPUT(_dtaGpio);
         } else {
-            __GPIO_AS_OUTPUT(_pwrCtrlGpio);
             __WRITE_GPIO(_pwrCtrlGpio, state);
+            __GPIO_AS_OUTPUT(_pwrCtrlGpio);
         }
     }
 

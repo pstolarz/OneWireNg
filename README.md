@@ -69,6 +69,8 @@ eager to help me with porting and testing the library for new platforms.
 
 ## Architecture details
 
+![OneWirNg class diagram](extras/schema/classOneWireNg__inherit__graph.png)
+
 ### OneWireNg
 
 The class provides public interface for 1-wire service. Object of this class

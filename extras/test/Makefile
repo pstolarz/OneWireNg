@@ -1,7 +1,8 @@
 .SILENT:
 .PHONY: all clean
 
-CXXFLAGS+=-D__TEST__ -Wall -DOWNG_CONFIG_FILE="\"test_config.h\"" -I../../src -I.
+LIBDIR=../../src
+CXXFLAGS+=-D__TEST__ -Wall -DOWNG_CONFIG_FILE="\"test_config.h\"" -I$(LIBDIR) -I.
 
 TESTS=\
     OneWireNg_Test \
@@ -12,15 +13,15 @@ all: $(TESTS)
 	./OneWireNg_BitBang_Test
 
 clean:
-	$(RM) ../../src/*.o
+	$(RM) $(LIBDIR)/*.o
 	$(RM) *.o $(TESTS)
 
-OneWireNg_BitBang_Test: ../../src/OneWireNg.o
+OneWireNg_BitBang_Test: $(LIBDIR)/OneWireNg.o
 
-%_Test: %_Test.o ../../src/%.o
+%_Test: %_Test.o $(LIBDIR)/%.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-../../src/OneWireNg_BitBang.o: ../../src/OneWireNg.h
+$(LIBDIR)/OneWireNg_BitBang.o: $(LIBDIR)/OneWireNg.h
 
-../../src/%.o: ../../src/%.cpp ../../src/%.h test_config.h
+$(LIBDIR)/%.o: $(LIBDIR)/%.cpp $(LIBDIR)/%.h test_config.h
 	$(CXX) -c $(CXXFLAGS) $< -o $@

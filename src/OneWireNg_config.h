@@ -10,9 +10,6 @@
  * See the License for more information.
  */
 
-/**
- * @file config.h Default library configuration.
- */
 #ifndef __OWNG_CONFIG__
 #define __OWNG_CONFIG__
 

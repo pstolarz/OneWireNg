@@ -1,4 +1,4 @@
-doc/
+extras/doc/
 *.o
 *.sw[a-p]
 tags

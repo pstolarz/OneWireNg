@@ -253,7 +253,7 @@ public:
      * - If presence pulse indicates some slave(s) present on the bus, send
      *   "Match ROM" command (0x55) followed by the slave id.
      *
-     * After calling this routine subsequent data send over the bus will be
+     * After calling this routine subsequent data sent over the bus will be
      * received by the selected slave until the next reset pulse.
      *
      * @return Same as for @ref reset().
@@ -274,7 +274,7 @@ public:
      * - If presence pulse indicates some slave(s) present on the bus, send
      *   "Skip ROM" command (0xCC).
      *
-     * After calling this routine subsequent data send over the bus will be
+     * After calling this routine subsequent data sent over the bus will be
      * received by all connected slaves until the next reset pulse.
      *
      * @return Same as for @ref reset().

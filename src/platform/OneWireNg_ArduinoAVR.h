@@ -17,12 +17,24 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
+#ifdef CONFIG_OVERDRIVE_ENABLED
+# if (F_CPU < 16000000L)
+#  warning "Overdrive mode supported for 16MHz CPU freq."
+# endif
+#endif
+
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)
 
+#define __WRITE0_GPIO(gs) \
+    *gs.outReg &= ~gs.bmsk
+
+#define __WRITE1_GPIO(gs) \
+    *gs.outReg |= gs.bmsk
+
 #define __WRITE_GPIO(gs, st) \
-    if (st) *gs.outReg |= gs.bmsk; \
-    else *gs.outReg &= ~gs.bmsk
+    if (st) __WRITE1_GPIO(gs); \
+    else __WRITE0_GPIO(gs)
 
 #define __GPIO_AS_INPUT(gs) \
     *gs.modReg &= ~gs.bmsk
@@ -106,6 +118,22 @@ protected:
             __WRITE_GPIO(_pwrCtrlGpio, state);
         }
     }
+
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    virtual int touch1Overdrive()
+    {
+        __GPIO_AS_OUTPUT(_dtaGpio);
+        __WRITE0_GPIO(_dtaGpio);
+        /* ~1.5 usec at nominal freq. */
+
+# ifdef CONFIG_BUS_BLINK_PROTECTION
+        __WRITE1_GPIO(_dtaGpio);
+# endif
+        __GPIO_AS_INPUT(_dtaGpio);
+        /* start sampling at ~2.5-3 usec at nominal freq. */
+        return __READ_GPIO(_dtaGpio);
+    }
+#endif
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {

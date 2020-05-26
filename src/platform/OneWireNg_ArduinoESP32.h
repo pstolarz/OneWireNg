@@ -17,12 +17,26 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
+#ifdef CONFIG_OVERDRIVE_ENABLED
+# if (F_CPU < 160000000L)
+#  warning "Overdrive mode supported for 160MHz, 240MHz (recommended) CPU freq."
+# elif (F_CPU != 240000000L)
+#  warning "240MHz CPU freq. is recommended for overdrive mode"
+# endif
+#endif
+
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)
 
+#define __WRITE0_GPIO(gs) \
+    *gs.outClrReg = gs.bmsk
+
+#define __WRITE1_GPIO(gs) \
+    *gs.outSetReg = gs.bmsk
+
 #define __WRITE_GPIO(gs, st) \
-    if (st) *gs.outSetReg = gs.bmsk; \
-    else *gs.outClrReg = gs.bmsk
+    if (st) __WRITE1_GPIO(gs); \
+    else __WRITE0_GPIO(gs)
 
 #define __GPIO_AS_INPUT(gs) \
     *gs.modClrReg = gs.bmsk
@@ -106,6 +120,24 @@ protected:
             __GPIO_AS_OUTPUT(_pwrCtrlGpio);
         }
     }
+
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    virtual int touch1Overdrive()
+    {
+        __GPIO_AS_OUTPUT(_dtaGpio);
+        __WRITE0_GPIO(_dtaGpio);
+        /* ~1 usec at nominal freq. */
+        delayMicroseconds(0);
+
+# ifdef CONFIG_BUS_BLINK_PROTECTION
+        __WRITE1_GPIO(_dtaGpio);
+# endif
+        __GPIO_AS_INPUT(_dtaGpio);
+        delayMicroseconds(0);
+        /* start sampling at ~2 usec at nominal freq. */
+        return __READ_GPIO(_dtaGpio);
+    }
+#endif
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {

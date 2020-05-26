@@ -10,6 +10,9 @@
  * See the License for more information.
  */
 
+/**
+ * Dallas family thermometers access example.
+ */
 #include "OneWireNg_CurrentPlatform.h"
 
 #define OW_PIN          10

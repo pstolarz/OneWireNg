@@ -269,7 +269,7 @@ public:
     }
 
     /**
-     * Address all the slave devices connected to the bus by:
+     * Address all slave devices connected to the bus by:
      * - Send the reset pulse.
      * - If presence pulse indicates some slave(s) present on the bus, send
      *   "Skip ROM" command (0xCC).
@@ -287,6 +287,91 @@ public:
         }
         return ret;
     }
+
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    /**
+     * Enable overdrive mode for single slave device (the device must support
+     * the mode):
+     * - Send the reset pulse (standard mode).
+     * - If presence pulse indicates some slave(s) present on the bus, send
+     *   "Match ROM Overdrive" command (0x69) followed by the slave id. The id
+     *   is sent in the overdrive (high-speed) mode.
+     * - Turn on overdrive mode for all subsequent 1-wire activities performed
+     *   by the library (reset, read, write, touch, search).
+     *
+     * The routine is intended to start high-speed 1-wire communication with
+     * single overdrive enabled devices. There is no need to perform additional
+     * reset after calling the routine since the "Match ROM Overdrive" command
+     * selects the overdrive enabled device, therefore device specific command
+     * may be sent directly after calling the routine.
+     *
+     * To switch back to the standard mode @c setOverdrive(false) need to be
+     * called. After performing 1-wire reset in the standard mode the overdrive
+     * mode is disabled on all devices connected to the bus - only standard mode
+     * communication is possible.
+     */
+    ErrorCode overdriveSingle(const Id& id)
+    {
+        setOverdrive(false);
+        ErrorCode ret = reset();
+        if (ret == EC_SUCCESS) {
+            writeByte(CMD_MATCH_ROM_OVERDRIVE);
+            setOverdrive(true);
+            writeBytes(&id[0], sizeof(Id));
+        }
+        return ret;
+    }
+
+    /**
+     * Enable overdrive mode for all slave devices supporting the mode:
+     * - Send the reset pulse (standard mode).
+     * - If presence pulse indicates some slave(s) present on the bus, send
+     *   "Skip ROM Overdrive" command (0x3C).
+     * - Turn on overdrive mode for all subsequent 1-wire activities performed
+     *   by the library (reset, read, write, touch, search).
+     *
+     * The routine is intended to start high-speed 1-wire communication with
+     * overdrive enabled devices. All 1-wire activities after calling this
+     * routine are confined to overdrive enabled devices. For example a user
+     * may need to:
+     * - Perform @ref search() to get ids of overdrive enabled devices.
+     * - Address specific device(s) via @ref addressAll() or @ref addressSingle()
+     *   to perform commands in the overdrive mode.
+     *
+     * To switch back to the standard mode @c setOverdrive(false) need to be
+     * called. After performing 1-wire reset in the standard mode the overdrive
+     * mode is disabled on all devices connected to the bus - only standard mode
+     * communication is possible.
+     *
+     * @return Same as for @ref reset().
+     */
+    ErrorCode overdriveAll()
+    {
+        setOverdrive(false);
+        ErrorCode ret = reset();
+        if (ret == EC_SUCCESS) {
+            writeByte(CMD_SKIP_ROM_OVERDRIVE);
+            setOverdrive(true);
+        }
+        return ret;
+    }
+
+    /**
+     * Set the library in the standard/overdrive mode. After calling the routine
+     * all 1-wire activities performed on the bus by the library (reset, read,
+     * write, touch, search) are performed in a configured mode.
+     *
+     * It's important to note the routine doesn't enable/disable overdrive mode
+     * on slave devices connected to the bus. See @ref overdriveAll() and @ref
+     * overdriveSingle() for more information.
+     *
+     * @param true Library works in the overdrive mode.
+     * @param false Library works in the standard mode.
+     */
+    void setOverdrive(bool on) {
+        _overdrive = on;
+    }
+#endif
 
     /**
      * Power the 1-wire bus via direct connection a voltage source to the bus.
@@ -417,12 +502,15 @@ public:
 #endif
     }
 
-    const static uint8_t CMD_READ_ROM        = 0x33;
-    const static uint8_t CMD_MATCH_ROM       = 0x55;
-    const static uint8_t CMD_SKIP_ROM        = 0xCC;
-
-    const static uint8_t CMD_SEARCH_ROM      = 0xF0;
-    const static uint8_t CMD_SEARCH_ROM_COND = 0xEC;
+    const static uint8_t CMD_READ_ROM            = 0x33;
+    const static uint8_t CMD_MATCH_ROM           = 0x55;
+    const static uint8_t CMD_SKIP_ROM            = 0xCC;
+    const static uint8_t CMD_SEARCH_ROM_COND     = 0xEC;
+    const static uint8_t CMD_SEARCH_ROM          = 0xF0;
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    const static uint8_t CMD_SKIP_ROM_OVERDRIVE  = 0x3C;
+    const static uint8_t CMD_MATCH_ROM_OVERDRIVE = 0x69;
+#endif
 
 protected:
    /**
@@ -432,6 +520,9 @@ protected:
         searchReset();
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
         searchFilterDelAll();
+#endif
+#ifdef CONFIG_OVERDRIVE_ENABLED
+        _overdrive = false;
 #endif
     }
 
@@ -468,6 +559,13 @@ protected:
 
     int _n_fltrs;       /* number of elements in _fltrs */
 #endif /* CONFIG_MAX_SRCH_FILTERS */
+
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    /**
+     * Overdrive tunrned on.
+     */
+    bool _overdrive;
+#endif
 
 private:
     ErrorCode transmitSearchTriplet(int n, Id& id, int& lzero);

@@ -138,6 +138,29 @@ protected:
      */
     virtual void setGpioAsOutput(GpioType gpio, int state) = 0;
 
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    /**
+     * 1-wire touch-1 in overdrive mode is defined by 2-steps procedure:
+     * 1. Set data bus low for 1 usec.
+     * 2. Switch the bus into input and sample it at 2 usec max (measuring
+     *    from setting the bus low in the previous step).
+     *
+     * The timings here are very strict and vulnerable for improper values.
+     * In case the library is not able to properly bit-bang overdriven touch-1
+     * via standard OneWireNg_BitBang's GPIO interface (read/write/set mode)
+     * due to insufficient platform's CPU frequency causing too long timings,
+     * the platform's GPIO implementation may override this method to directly
+     * implement the touch-1 activity.
+     *
+     * @note The routine is called inside time critical section.
+     *
+     * @note Implementation shall respect @ref CONFIG_BUS_BLINK_PROTECTION
+     *     configuration if the platform doesn't guarantee input to output GPIO
+     *     switch with a desired initial state.
+     */
+    virtual int touch1Overdrive();
+#endif
+
     /**
      * Set 1-wire data bus state: high (1) or low (0).
      */

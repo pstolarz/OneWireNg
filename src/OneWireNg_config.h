@@ -87,5 +87,10 @@
  */
 #define CONFIG_MAX_SRCH_FILTERS 10
 
+/**
+ * Overdrive (high-speed) mode enabled.
+ */
+#define CONFIG_OVERDRIVE_ENABLED
+
 #endif /* !OWNG_DISABLE_DEFAULT_CONFIG */
 #endif /* __OWNG_CONFIG__ */

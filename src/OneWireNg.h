@@ -288,6 +288,26 @@ public:
         return ret;
     }
 
+    /**
+     * Resume communication with a slave device which was previously addressed
+     * by @ref addressSingle(), @ref overdriveSingle() or @ref search().
+     * Activities perfomed by the routine:
+     * - Send the reset pulse.
+     * - If presence pulse indicates some slave(s) present on the bus, send
+     *   "Resume" command (0xA5).
+     *
+     * @note The command is supported only by limited number of 1-wire devices
+     *     (e.g. DS2408, DS2431).
+     */
+    ErrorCode resume()
+    {
+        ErrorCode ret = reset();
+        if (ret == EC_SUCCESS) {
+            writeByte(CMD_RESUME);
+        }
+        return ret;
+    }
+
 #ifdef CONFIG_OVERDRIVE_ENABLED
     /**
      * Enable overdrive mode for single slave device (the device must support
@@ -504,6 +524,7 @@ public:
 
     const static uint8_t CMD_READ_ROM            = 0x33;
     const static uint8_t CMD_MATCH_ROM           = 0x55;
+    const static uint8_t CMD_RESUME              = 0xA5;
     const static uint8_t CMD_SKIP_ROM            = 0xCC;
     const static uint8_t CMD_SEARCH_ROM_COND     = 0xEC;
     const static uint8_t CMD_SEARCH_ROM          = 0xF0;

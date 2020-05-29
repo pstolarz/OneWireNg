@@ -44,6 +44,18 @@
 /* DS2431 memory size */
 #define MEM_SIZE    (18 * ROW_SIZE)
 
+#ifndef CONFIG_CRC16_ENABLED
+# error "Example requires CONFIG_CRC16_ENABLED to be configured"
+#endif
+
+#if (CONFIG_MAX_SRCH_FILTERS < 1)
+# error "Example requires CONFIG_MAX_SRCH_FILTERS >= 1 to be configured"
+#endif
+
+#if defined(USE_OD_MODE) && !defined(CONFIG_OVERDRIVE_ENABLED)
+# error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured for USE_OD_MODE"
+#endif
+
 static OneWireNg *ow = nullptr;
 
 static void printId(const OneWireNg::Id& id)

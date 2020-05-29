@@ -17,6 +17,10 @@
 
 #define OW_PIN          10
 
+#ifndef CONFIG_OVERDRIVE_ENABLED
+# error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured"
+#endif
+
 static OneWireNg *ow = NULL;
 
 static void printId(const OneWireNg::Id& id)

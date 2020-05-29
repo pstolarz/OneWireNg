@@ -29,16 +29,16 @@
 /* DS therms commands */
 #define CMD_CONVERT_T           0x44
 #define CMD_COPY_SCRATCHPAD     0x48
-#define CMD_WRITE_SCRATCHPAD    0x4e
-#define CMD_RECALL_EEPROM       0xb8
-#define CMD_READ_POW_SUPPLY     0xb4
-#define CMD_READ_SCRATCHPAD     0xbe
+#define CMD_WRITE_SCRATCHPAD    0x4E
+#define CMD_RECALL_EEPROM       0xB8
+#define CMD_READ_POW_SUPPLY     0xB4
+#define CMD_READ_SCRATCHPAD     0xBE
 
 /* supported DS therms families */
 #define DS18S20     0x10
 #define DS1822      0x22
 #define DS18B20     0x28
-#define DS1825      0x3b
+#define DS1825      0x3B
 #define DS28EA00    0x42
 
 #define ARRSZ(t) (sizeof(t)/sizeof((t)[0]))
@@ -134,7 +134,7 @@ void loop()
         uint8_t touchScrpd[] = {
             CMD_READ_SCRATCHPAD,
             /* the read scratchpad will be placed here (9 bytes) */
-            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+            0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
         };
 
         ow->addressSingle(id);

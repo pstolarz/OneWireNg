@@ -132,8 +132,11 @@ Refer to `examples/Dallas_Temperature` example for the usage details.
 
 ## Usage
 
-Refer to `examples` directory for usage details. For API details refer to sources
-inline docs (mainly `OneWireNg` class).
+Refer to [`examples`](examples) directory for usage details. For API details
+refer to sources inline docs (mainly `OneWireNg` class).
+
+File [`src/OneWireNg_config.h`](src/OneWireNg_config.h) contains parameters
+configuring the library functionality. See the file for more details.
 
 ## Overdrive mode
 
@@ -210,4 +213,4 @@ the ported library version. Releases are tagged staring with `OneWireNg_` prefix
 
 ## License
 
-2 clause BSD license. See LICENSE file for details.
+2 clause BSD license. See [`LICENSE`](LICENSE) file for details.

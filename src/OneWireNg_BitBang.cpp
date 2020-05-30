@@ -29,6 +29,48 @@
 # error "Unsupported platform"
 #endif
 
+/* Standard mode timings
+ */
+/* min. 480 us */
+#define STD_RESET_LOW   480
+/* reset high; presence-detect sampling: 68-75 us */
+#define STD_RESET_SMPL  70
+/* reset trailing high */
+#define STD_RESET_END   410
+
+/* write-0 low: 60-120 us */
+#define STD_WRITE0_LOW  60
+/* write-0 trailing high: 5-15 us */
+#define STD_WRITE0_END  10
+
+/* write-1 low */
+#define STD_WRITE1_LOW  5
+/* write-1 high; sampling max 15 us (low + high) */
+#define STD_WRITE1_SMPL 8
+/* write-1 trailing high */
+#define STD_WRITE1_END  56
+
+/* Overdrive mode timings
+ */
+/* reset low: 53-80 us */
+#define OD_RESET_LOW    68
+/* reset high; presence-detect sampling: 8-9 us */
+#define OD_RESET_SMPL   8
+/* reset high; trailing part */
+#define OD_RESET_END    40
+
+/* write-0 low: 8-13 us */
+#define OD_WRITE0_LOW   8
+/* write-0 trailing high: 1-2 us */
+#define OD_WRITE0_END   1
+
+/* write-1 low */
+#define OD_WRITE1_LOW   1
+/* write-1 high; sampling max 2 us (low + high) */
+#define OD_WRITE1_SMPL  1
+/* write-1 trailing high */
+#define OD_WRITE1_END   7
+
 OneWireNg::ErrorCode OneWireNg_BitBang::reset()
 {
     int presPulse;
@@ -39,27 +81,29 @@ OneWireNg::ErrorCode OneWireNg_BitBang::reset()
 #ifdef CONFIG_OVERDRIVE_ENABLED
     if (_overdrive)
     {
-        /* overdrive mode */
+        /* Overdrive mode
+         */
         setBus(0);
-        delayUs(68);    /* 53-80 us */
+        delayUs(OD_RESET_LOW);
         setBus(1);
-        delayUs(8);     /* presence-detect sample at 8-9 us */
+        delayUs(OD_RESET_SMPL);
         presPulse = readGpioIn(GPIO_DTA);
         timeCriticalExit();
-        delayUs(40);
+        delayUs(OD_RESET_END);
     } else
 #endif
     {
-        /* standard mode */
+        /* Standard mode
+         */
         setBus(0);
         timeCriticalExit();
-        delayUs(480);   /* min 480 us */
+        delayUs(STD_RESET_LOW);
         timeCriticalEnter();
         setBus(1);
-        delayUs(70);    /* presence-detect sample at 68-75 us */
+        delayUs(STD_RESET_SMPL);
         presPulse = readGpioIn(GPIO_DTA);
         timeCriticalExit();
-        delayUs(410);
+        delayUs(STD_RESET_END);
     }
     return (presPulse ? EC_NO_DEVS : EC_SUCCESS);
 }
@@ -74,49 +118,61 @@ int OneWireNg_BitBang::touchBit(int bit)
 #ifdef CONFIG_OVERDRIVE_ENABLED
     if (_overdrive)
     {
-        /* overdrive mode */
+        /* Overdrive mode
+         */
         if (bit != 0)
         {
-            /* write-1 w/ sampling alias read */
+            /* write-1 with sampling (alias read) */
             smpl = touch1Overdrive();
             timeCriticalExit();
-            delayUs(7);
+            delayUs(OD_WRITE1_END);
         } else
         {
             /* write-0 */
             setBus(0);
-            delayUs(8);     /* 8-13 us */
+            delayUs(OD_WRITE0_LOW);
             setBus(1);
             timeCriticalExit();
-            delayUs(1);     /* 1-2 us */
+            delayUs(OD_WRITE0_END);
         }
     } else
 #endif
     {
-        /* standard mode */
+        /* Standard mode
+         */
         if (bit != 0)
         {
-            /* write-1 w/ sampling alias read */
+            /* write-1 with sampling (alias read) */
             setBus(0);
-            delayUs(5);
+            delayUs(STD_WRITE1_LOW);
             setBus(1);
-            delayUs(8);
-            /* start sampling at 13us; max at 15 us */
+            delayUs(STD_WRITE1_SMPL);
             smpl = readGpioIn(GPIO_DTA);
             timeCriticalExit();
-            delayUs(56);
+            delayUs(STD_WRITE1_END);
         } else
         {
             /* write-0 */
             setBus(0);
-            delayUs(60);    /* 60-120 us */
+            delayUs(STD_WRITE0_LOW);
             setBus(1);
             timeCriticalExit();
-            delayUs(10);    /* 5-15 us */
+            delayUs(STD_WRITE0_END);
         }
     }
     return smpl;
 }
+
+#ifdef CONFIG_OVERDRIVE_ENABLED
+int OneWireNg_BitBang::touch1Overdrive()
+{
+    setBus(0);
+    delayUs(OD_WRITE1_LOW);
+    setBus(1);
+    delayUs(OD_WRITE1_SMPL);
+    return readGpioIn(GPIO_DTA);
+}
+#endif
 
 OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
 {
@@ -135,15 +191,3 @@ OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
     _flgs.pwre = (on != 0);
     return EC_SUCCESS;
 }
-
-#ifdef CONFIG_OVERDRIVE_ENABLED
-int OneWireNg_BitBang::touch1Overdrive()
-{
-    setBus(0);
-    delayUs(1);
-    setBus(1);
-    delayUs(1);
-    /* start sampling at 2 us */
-    return readGpioIn(GPIO_DTA);
-}
-#endif

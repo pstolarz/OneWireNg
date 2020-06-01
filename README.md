@@ -148,7 +148,7 @@ The mode is confirmed to work on the following platforms and CPU frequencies:
 * Arduino AVR.
     * Arduino UNO (ATmega328P); 16MHz.
 * Arduino ESP32.
-    * ESP32-DevKitC (ESP32-WROOM-32); 240MHz(recommended), 160MHz.
+    * ESP32-DevKitC (ESP32-WROOM-32); 240MHz(recommended), 160MHz (error prone).
 
 ## Parasite powering
 

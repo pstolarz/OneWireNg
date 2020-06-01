@@ -285,7 +285,7 @@ uint8_t OneWireNg::crc8(const void *in, size_t len, uint8_t crc_in)
     while (len--) {
         crc ^= *in_bts++;
         crc = tabRead_u8(CRC8_16L + (crc & 0x0f)) ^
-            tabRead_u8(CRC8_16H + ((crc >> 4) & 0x0f));
+            tabRead_u8(CRC8_16H + (crc >> 4));
     }
 #else
     crc = OneWireNg::crc<uint8_t, 0x8c>(in, len, crc);

@@ -311,7 +311,7 @@ void setup()
 
 #ifdef WRITE_DEMO
     /* if no DS2431 found finish the demo */
-    if (!dev) return;
+    if (dev[0] != DS2431) return;
 
     uint8_t pageData[PAGE_SIZE] = {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,

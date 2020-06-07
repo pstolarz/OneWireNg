@@ -65,9 +65,9 @@
 #define OD_WRITE0_END   1
 
 /* write-1 low */
-#define OD_WRITE1_LOW   1
+#define OD_WRITE1_LOW   0   /* <0: no delay, 0: delay(0)==NOP, >1: usec delay */
 /* write-1 high; sampling max 2 us (low + high) */
-#define OD_WRITE1_SMPL  1
+#define OD_WRITE1_SMPL (-1) /* <0: no delay, 0: delay(0)==NOP, >1: usec delay */
 /* write-1 trailing high */
 #define OD_WRITE1_END   7
 
@@ -167,9 +167,13 @@ int OneWireNg_BitBang::touchBit(int bit)
 int OneWireNg_BitBang::touch1Overdrive()
 {
     setBus(0);
+#if OD_WRITE1_LOW >= 0
     delayUs(OD_WRITE1_LOW);
+#endif
     setBus(1);
+#if OD_WRITE1_SMPL >= 0
     delayUs(OD_WRITE1_SMPL);
+#endif
     return readGpioIn(GPIO_DTA);
 }
 #endif

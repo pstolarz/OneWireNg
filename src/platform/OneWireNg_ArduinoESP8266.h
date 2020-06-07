@@ -17,24 +17,33 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
-#define __READ_GPIO(pin) \
-    (pin < 16 ? GPIP(pin) : (pin == 16 ? (GP16I & 0x01) : 1))
+#define __READ_GPIO(gs) \
+    ((*gs.inReg & gs.bmsk) != 0)
 
-#define __WRITE_GPIO(pin, st) \
-    if (pin < 16) { \
-        if (st) GPOS = (uint32_t)(1UL << pin); else GPOC = (uint32_t)(1UL << pin); \
-    } else \
-    if (pin == 16) { \
-        if (st) GP16O |= 1; else GP16O &= ~(uint32_t)1; \
+#define __WRITE0_GPIO(gs) GPOC = gs.bmsk
+#define __WRITE0_GPIO16() GP16O &= ~(uint32_t)1
+
+#define __WRITE1_GPIO(gs) GPOS = gs.bmsk
+#define __WRITE1_GPIO16() GP16O |= (uint32_t)1
+
+#define __WRITE_GPIO(gs, st) \
+    if (gs.pin < 16) { \
+        if (st) { __WRITE1_GPIO(gs); } else { __WRITE0_GPIO(gs); } \
+    } else { \
+        if (st) { __WRITE1_GPIO16(); } else { __WRITE0_GPIO16(); } \
     }
 
-#define __GPIO_AS_INPUT(pin) \
-    if (pin < 16) { GPEC = (uint32_t)(1UL << pin); } \
-    else if (pin == 16) { GP16E &= ~(uint32_t)1; }
+#define __GPIO_SET_INPUT(gs) GPEC = gs.bmsk
+#define __GPIO16_SET_INPUT() GP16E &= ~(uint32_t)1
 
-#define __GPIO_AS_OUTPUT(pin) \
-    if (pin < 16) { GPES = (uint32_t)(1UL << pin); } \
-    else if (pin == 16) { GP16E |= 1; }
+#define __GPIO_AS_INPUT(gs) \
+    if (gs.pin < 16) { __GPIO_SET_INPUT(gs); } else { __GPIO16_SET_INPUT(); }
+
+#define __GPIO_SET_OUTPUT(gs) GPES = gs.bmsk
+#define __GPIO16_SET_OUTPUT() GP16E |= (uint32_t)1
+
+#define __GPIO_AS_OUTPUT(gs) \
+    if (gs.pin < 16) { __GPIO_SET_OUTPUT(gs); } else { __GPIO16_SET_OUTPUT(); }
 
 /**
  * Arduino ESP8266 platform GPIO specific implementation.
@@ -55,11 +64,7 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, bool pullUp):
         OneWireNg_BitBang(false)
     {
-        /* only pins < 16 can be configured with internal pull-up */
-        assert(pullUp ? pin < 16 : pin <= 16);
-
-        _dtaPin = pin;
-        initDtaGpio(pullUp);
+        initDtaGpio(pin, pullUp);
     }
 
     /**
@@ -80,63 +85,104 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, unsigned pwrCtrlPin, bool pullUp):
         OneWireNg_BitBang(true)
     {
-        assert((pullUp ? pin < 16 : pin <= 16) && pwrCtrlPin <= 16);
-
-        _dtaPin = pin;
-        _pwrCtrlPin = pwrCtrlPin;
-
-        initDtaGpio(pullUp);
-        initPwrCtrlGpio();
+        initDtaGpio(pin, pullUp);
+        initPwrCtrlGpio(pwrCtrlPin);
     }
 
 protected:
     virtual int readGpioIn(GpioType gpio)
     {
         UNUSED(gpio);
-        return __READ_GPIO(_dtaPin);
+        return __READ_GPIO(_dtaGpio);
     }
 
     virtual void writeGpioOut(GpioType gpio, int state)
     {
         if (gpio == GPIO_DTA) {
-            __WRITE_GPIO(_dtaPin, state);
+            __WRITE_GPIO(_dtaGpio, state);
         } else {
-            __WRITE_GPIO(_pwrCtrlPin, state);
+            __WRITE_GPIO(_pwrCtrlGpio, state);
         }
     }
 
     virtual void setGpioAsInput(GpioType gpio)
     {
         UNUSED(gpio);
-        __GPIO_AS_INPUT(_dtaPin);
+        __GPIO_AS_INPUT(_dtaGpio);
     }
 
     virtual void setGpioAsOutput(GpioType gpio, int state)
     {
         if (gpio == GPIO_DTA) {
-            __WRITE_GPIO(_dtaPin, state);
-            __GPIO_AS_OUTPUT(_dtaPin);
+            __WRITE_GPIO(_dtaGpio, state);
+            __GPIO_AS_OUTPUT(_dtaGpio);
         } else {
-            __WRITE_GPIO(_pwrCtrlPin, state);
-            __GPIO_AS_OUTPUT(_pwrCtrlPin);
+            __WRITE_GPIO(_pwrCtrlGpio, state);
+            __GPIO_AS_OUTPUT(_pwrCtrlGpio);
         }
     }
 
-    void initDtaGpio(bool pullUp)
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    virtual int touch1Overdrive()
     {
-        pinMode(_dtaPin, (pullUp ? INPUT_PULLUP : INPUT));
+        if (_dtaGpio.pin < 16)
+        {
+            __WRITE0_GPIO(_dtaGpio);
+            __GPIO_SET_OUTPUT(_dtaGpio);
+            /* 0.5-1 usec at nominal freq. */
+            delayMicroseconds(0);
+
+            /* speed up low-to-high transition */
+            __WRITE1_GPIO(_dtaGpio);
+            __GPIO_SET_INPUT(_dtaGpio);
+        } else
+        {
+            __WRITE0_GPIO16();
+            __GPIO16_SET_OUTPUT();
+            /* 1 usec at nominal freq. */
+
+            __GPIO16_SET_INPUT();
+        }
+        /* start sampling at <=2 usec at nominal freq. */
+        return __READ_GPIO(_dtaGpio);
+    }
+#endif
+
+    void initDtaGpio(unsigned pin, bool pullUp)
+    {
+        /* only pins < 16 can be configured with internal pull-up */
+        assert(pullUp ? pin < 16 : pin <= 16);
+
+        _dtaGpio.pin = pin;
+        _dtaGpio.bmsk = (pin < 16 ? (uint32_t)(1UL << pin) : 1);
+        _dtaGpio.inReg = (pin < 16 ? &GPI : &GP16I);
+
+        pinMode(pin, (pullUp ? INPUT_PULLUP : INPUT));
         setupDtaGpio();
     }
 
-    void initPwrCtrlGpio(void)
+    void initPwrCtrlGpio(unsigned pin)
     {
-        pinMode(_pwrCtrlPin, OUTPUT);
+        assert(pin <= 16);
+
+        _pwrCtrlGpio.pin = pin;
+        _pwrCtrlGpio.bmsk = (pin < 16 ? (uint32_t)(1UL << pin) : 1);
+
+        pinMode(pin, OUTPUT);
         setupPwrCtrlGpio(true);
     }
 
 private:
-    unsigned _dtaPin;
-    unsigned _pwrCtrlPin;
+    struct {
+        uint32_t pin;
+        uint32_t bmsk;
+        volatile uint32_t *inReg;
+    } _dtaGpio;
+
+    struct {
+        uint32_t pin;
+        uint32_t bmsk;
+    } _pwrCtrlGpio;
 };
 
 #undef __GPIO_AS_OUTPUT

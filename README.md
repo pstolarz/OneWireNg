@@ -61,7 +61,7 @@ devices (e.g. Dallas/Maxim thermometers).
     * **Not tested**.
 * Arduino ESP8266.
     * Platform class: `OneWireNg_ArduinoESP8266`.
-    * **Not tested**.
+    * Tested on WemOS D1
 * Arduino ESP32.
     * Platform class: `OneWireNg_ArduinoESP32`.
     * Tested on ESP32-DevKitC (ESP32-WROOM-32)
@@ -147,8 +147,10 @@ The mode is confirmed to work on the following platforms and CPU frequencies:
 
 * Arduino AVR.
     * Arduino UNO (ATmega328P); 16MHz.
+* Arduino ESP8266.
+    * WemOS D1; 160MHz,80MHz.
 * Arduino ESP32.
-    * ESP32-DevKitC (ESP32-WROOM-32); 240MHz(recommended), 160MHz (error prone).
+    * ESP32-DevKitC (ESP32-WROOM-32); 240MHz(recommended),160MHz. Errors observed.
 
 ## Parasite powering
 

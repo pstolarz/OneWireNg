@@ -61,17 +61,6 @@ void setup()
 
     /* back to the standard mode */
     ow->setOverdrive(false);
-
-    /* search for all connected devices */
-    Serial.println("All devices:");
-    do
-    {
-        ec = ow->search(id);
-        if (!(ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE))
-            break;
-
-        printId(id);
-    } while (ec == OneWireNg::EC_MORE);
 }
 
 void loop()

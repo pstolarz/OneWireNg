@@ -17,12 +17,11 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
-# if (F_CPU < 160000000L)
-#  warning "Overdrive mode supported for 160MHz, 240MHz (recommended) CPU freq."
-# elif (F_CPU != 240000000L)
-#  warning "240MHz CPU freq. is recommended for overdrive mode"
-# endif
+#if (F_CPU < 160000000L)
+# warning "1-wire dysfunctional for CPU freq. less than 160MHz"
+#endif
+#if defined(CONFIG_OVERDRIVE_ENABLED) && (F_CPU < 240000000)
+# warning "240MHz CPU freq. is recommended for overdrive mode"
 #endif
 
 #define __READ_GPIO(gs) \
@@ -124,16 +123,16 @@ protected:
 #ifdef CONFIG_OVERDRIVE_ENABLED
     virtual int touch1Overdrive()
     {
-        __GPIO_AS_OUTPUT(_dtaGpio);
         __WRITE0_GPIO(_dtaGpio);
-        /* ~1 usec at nominal freq. */
+        __GPIO_AS_OUTPUT(_dtaGpio);
+        /* 0.5-1.5 usec at nominal freq. */
+# if (F_CPU >= 240000000L)
         delayMicroseconds(0);
-
-# ifdef CONFIG_BUS_BLINK_PROTECTION
-        __WRITE1_GPIO(_dtaGpio);
 # endif
+
+        /* speed up low-to-high transition */
+        __WRITE1_GPIO(_dtaGpio);
         __GPIO_AS_INPUT(_dtaGpio);
-        delayMicroseconds(0);
         /* start sampling at ~2 usec at nominal freq. */
         return __READ_GPIO(_dtaGpio);
     }

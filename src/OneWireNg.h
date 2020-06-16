@@ -319,8 +319,8 @@ public:
      * - Turn on overdrive mode for all subsequent 1-wire activities performed
      *   by the library (reset, read, write, touch, search).
      *
-     * The routine is intended to start high-speed 1-wire communication with
-     * single overdrive enabled devices. There is no need to perform additional
+     * The routine is intended to start high-speed 1-wire communication with a
+     * single, overdrive enabled device. There is no need to perform additional
      * reset after calling the routine since the "Match ROM Overdrive" command
      * selects the overdrive enabled device, therefore device specific command
      * may be sent directly after calling the routine.

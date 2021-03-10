@@ -222,7 +222,8 @@ public:
 
     /**
      * In case there is only one slave connected to the 1-wire bus the routine
-     * enables read its id (without performing the whole searching process) by:
+     * enables reading its id (without performing the whole searching process)
+     * by:
      * - Send the reset pulse.
      * - If presence pulse indicates some slave(s) present on the bus, send
      *   "Read ROM" command (0x33).

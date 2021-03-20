@@ -25,9 +25,7 @@ devices (e.g. Dallas/Maxim thermometers).
 * Parasite powering support.
 
   The 1-wire bus may be powered directly by the master MCU GPIO or via a switching
-  transistor controlled by a dedicated MCU GPIO, if the target platform's GPIOs
-  (in the output mode) work in the open-drain mode only. More details
-  [below](#parasite-powering).
+  transistor controlled by a dedicated MCU GPIO. More details [below](#parasite-powering).
 
 * Search filtering.
 
@@ -85,21 +83,45 @@ implementing platform specific details.
 As an example:
 
 ```cpp
-OneWireNg::Id id;
-OneWireNg::ErrorCode ec;
+#include "OneWireNg_CurrentPlatform.h"
 
-OneWireNg *ow = new OneWireNg_ArduinoAVR(10);
-do
+static OneWireNg *ow = nullptr;
+
+void setup()
 {
-    ec = ow->search(id);
-    if (ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE) {
-        // `id' contains 1-wire address of a connected slave
-    }
-} while (ec == OneWireNg::EC_MORE);
+    OneWireNg::Id id;
+    OneWireNg::ErrorCode ec;
+
+    ow = new OneWireNg_CurrentPlatform(10);
+
+    do
+    {
+        ec = ow->search(id);
+        if (ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE) {
+            // `id' contains 1-wire address of a connected slave
+        }
+    } while (ec == OneWireNg::EC_MORE);
+}
 ```
 
-creates 1-wire service interface for Arduino AVR platform and perform search on
-the bus. The bus is controlled by Arduino pin number 10.
+creates 1-wire service interface for current platform and performs search on
+the bus. The bus is controlled by MCU pin number 10.
+
+NOTE: If heap allocation is inadvisable use in-place `new` operator:
+
+```cpp
+#include <new>
+#include "OneWireNg_CurrentPlatform.h"
+
+static OneWireNg *ow = nullptr;
+static uint8_t OneWireNg_buf[sizeof(OneWireNg_CurrentPlatform)];
+
+void setup()
+{
+    ow = new (OneWireNg_buf) OneWireNg_CurrentPlatform(10);
+    // ...
+}
+```
 
 ### OneWireNg_BitBang
 
@@ -174,44 +196,46 @@ Choice between the two types is made by selecting appropriate constructor of a
 platform class. For example:
 
 ```cpp
-/*
- * Macro-defines used:
- *
- * OW_PIN: GPIO pin number used for bit-banging 1-wire bus.
- * PWR_CTRL_PIN: power-control-GPIO pin number (optional).
- */
+#include "OneWireNg_CurrentPlatform.h"
 
+static OneWireNg *ow = nullptr;
+
+void setup()
+{
+    /*
+     * Macro-defines used:
+     *
+     * OW_PIN: GPIO pin number used for bit-banging 1-wire bus.
+     * PWR_CTRL_PIN: power-control-GPIO pin number (optional).
+     */
 #ifdef PWR_CTRL_PIN
-// switching transistor powering
-OneWireNg_ArduinoAVR owAvr(OW_PIN, PWR_CTRL_PIN);
+    // switching transistor powering
+    ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN);
 #else
-// GPIO bit-bang powering
-OneWireNg_ArduinoAVR owAvr(OW_PIN);
+    // GPIO bit-bang powering
+    ow = new OneWireNg_CurrentPlatform(OW_PIN);
 #endif
 
-OneWireNg& ow = owAvr;
+    // ...
 
-// ...
+    // power the bus until explicit unpowering or next 1-wire bus activity
+    ow->powerBus(true);
 
-// power the bus until explicit unpowering or next 1-wire bus activity
-ow.powerBus(true);
+    // wait for connected slaves to fulfill their task requiring extra powering
+    delay(750);
 
-// wait for connected slaves to fulfill their task requiring extra powering
-delay(750);
-
-// unpower the bus
-ow.powerBus(false);
+    // unpower the bus
+    ow->powerBus(false);
+}
 ```
 
-configures 1-wire service to work in one of the above modes (AVR platform).
+configures 1-wire service to work in one of the above modes.
 
 ## DallasTemperature library
 
 The [following fork](https://github.com/pstolarz/Arduino-Temperature-Control-Library/tree/OneWireNg)
 provides [DallasTemperature](https://github.com/milesburton/Arduino-Temperature-Control-Library)
-library ported with OneWireNg library. `OneWireNg` branch of the fork contains
-the ported library version. Releases are tagged staring with `OneWireNg_` prefix
-(e.g. `OneWireNg_3.8.1`).
+library ported with OneWireNg library.
 
 ## License
 

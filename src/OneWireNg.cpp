@@ -179,9 +179,9 @@ void OneWireNg::searchFilterSelect(int n, int bit)
 /**
  * Transmit search triplet on the bus (for a given bit position @c n)
  * consisting of the following bits:
- * - bit 1: 0 present for this bit position (master read, slave write),
- * - bit 2: 1 present for this bit position (master read, slave write),
- * - bit 3: select slave with a given bit value (master write, slave read).
+ * - bit 1: 0 present for this bit position (master reads, slave writes),
+ * - bit 2: 1 present for this bit position (master reads, slave writes),
+ * - bit 3: select slave with a given bit value (master writes, slave reads).
  *     This bit may not be transmitted in case it has no sense (no slave
  *     devices on the bus or bus error).
  *

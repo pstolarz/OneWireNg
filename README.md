@@ -43,6 +43,11 @@ devices (e.g. Dallas/Maxim thermometers).
   The code architecture allows fast and easy porting for new Arduino platforms
   or even usage of the core part of library outside the Arduino environment.
 
+* OneWire compatibility interface.
+
+  The interface allows effortless switch into OneWireNg for projects using
+  OneWire library. See [below](#onewire-compatibility) for details.
+
 ## Supported platforms
 
 * Arduino AVR.
@@ -231,11 +236,22 @@ void setup()
 
 configures 1-wire service to work in one of the above modes.
 
+## OneWire Compatibility
+
+[`OneWire`](src/OneWire.h) class provides compatibility interface between
+OneWireNg and [OneWire](https://github.com/PaulStoffregen/OneWire) library.
+The main purpose of this class is to provide fast and effortless mechanism for
+developers experiencing issues with OneWire and eager to give OneWireNg a try.
+Finally it's strongly recommended to switch into OneWireNg interface rather than
+stay with the OneWire one due to OneWireNg's more mature and feature-rich API
+(search filtering, OD mode etc.)
+
 ## DallasTemperature library
 
-The [following fork](https://github.com/pstolarz/Arduino-Temperature-Control-Library/tree/OneWireNg)
-provides [DallasTemperature](https://github.com/milesburton/Arduino-Temperature-Control-Library)
-library ported with OneWireNg library.
+As an example of usage of the compatibility interface there has been created
+the [following fork](https://github.com/pstolarz/Arduino-Temperature-Control-Library/tree/OneWireNg)
+of [DallasTemperature](https://github.com/milesburton/Arduino-Temperature-Control-Library)
+library ported with OneWireNg.
 
 ## License
 

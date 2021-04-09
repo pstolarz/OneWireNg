@@ -43,6 +43,11 @@ devices (e.g. Dallas/Maxim thermometers).
   The code architecture allows fast and easy porting for new Arduino platforms
   or even usage of the core part of library outside the Arduino environment.
 
+* OneWire compatibility interface.
+
+  The interface allows effortless switch into OneWireNg for projects using
+  OneWire library. See [below](#onewire-compatibility) for details.
+
 ## Supported platforms
 
 * Arduino AVR.
@@ -233,8 +238,8 @@ configures 1-wire service to work in one of the above modes.
 
 ## OneWire Compatibility
 
-[OneWire.h](src/OneWire.h) class provides compatibility interface between
-OneWireNg and classic [OneWire](https://github.com/PaulStoffregen/OneWire) library.
+[`OneWire`](src/OneWire.h) class provides compatibility interface between
+OneWireNg and [OneWire](https://github.com/PaulStoffregen/OneWire) library.
 The main purpose of this class is to provide fast and effortless mechanism for
 developers experiencing issues with OneWire and eager to give OneWireNg a try.
 Finally it's strongly recommended to switch into OneWireNg interface rather than

@@ -43,9 +43,13 @@
 class OneWire
 {
 public:
-    OneWire(): _srch_done(false), _ow(NULL) {}
+    OneWire():
+        _srch_done(false), _ow(NULL)
+    {}
 
-    OneWire(uint8_t pin) {
+    OneWire(uint8_t pin):
+        _srch_done(false), _ow(NULL)
+    {
         begin(pin);
     }
 

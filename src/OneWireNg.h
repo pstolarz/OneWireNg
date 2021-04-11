@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019,2020 Piotr Stolarz
+ * Copyright (c) 2019-2021 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -495,13 +495,13 @@ public:
      *     routine reading multi-byte integers sent over 1-wire bus
      *     (characterised by LSB first byte order).
      */
-    static uint16_t getLSB_u16(void *addr)
+    static uint16_t getLSB_u16(const void *addr)
     {
 #if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || defined(__LITTLE_ENDIAN__)
-        return *(uint16_t*)addr;
+        return *(const uint16_t*)addr;
 #else
-        return (uint16_t)((uint8_t*)addr)[0] |
-            ((uint16_t)((uint8_t*)addr)[1] << 8);
+        return (uint16_t)((const uint8_t*)addr)[0] |
+            ((uint16_t)((const uint8_t*)addr)[1] << 8);
 #endif
     }
 
@@ -511,15 +511,15 @@ public:
      *
      * @see getLSB_u16()
      */
-    static uint32_t getLSB_u32(void *addr)
+    static uint32_t getLSB_u32(const void *addr)
     {
 #if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || defined(__LITTLE_ENDIAN__)
-        return *(uint32_t*)addr;
+        return *(const uint32_t*)addr;
 #else
-        return (uint32_t)((uint8_t*)addr)[0] |
-            ((uint32_t)((uint8_t*)addr)[1] << 8) |
-            ((uint32_t)((uint8_t*)addr)[2] << 16) |
-            ((uint32_t)((uint8_t*)addr)[3] << 24);
+        return (uint32_t)((const uint8_t*)addr)[0] |
+            ((uint32_t)((const uint8_t*)addr)[1] << 8) |
+            ((uint32_t)((const uint8_t*)addr)[2] << 16) |
+            ((uint32_t)((const uint8_t*)addr)[3] << 24);
 #endif
     }
 

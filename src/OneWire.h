@@ -43,6 +43,10 @@
 class OneWire
 {
 public:
+    // NOTE: The default (no-args) constructor requires begin() method to be
+    // called subsequently with MCU's GPIO pin number controlling the 1-wire
+    // data bus as an argument. Any attempt to call OneWire API w/o this
+    // begin() call will cause NULL pointer dereference inside OneWire logic.
     OneWire():
         _srch_done(false), _ow(NULL)
     {}

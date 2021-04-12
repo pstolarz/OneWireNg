@@ -179,7 +179,6 @@ public:
      *           is enabled and slave ids detected at the last searching step
      *           have been all filtered out (therefore @c EC_DONE doesn't
      *           apply).
-     *
      *     Failure error codes:
      *     - @c EC_BUS_ERROR: Bus error.
      *     - @c EC_CRC_ERROR: CRC error.
@@ -218,6 +217,18 @@ public:
         _n_fltrs = 0;
     }
 
+    /**
+     * Get number of family codes already added to the search filters.
+     *
+     * Note, adding the same family code into search filters results with only
+     * one code effectively added. For this reason the value returned by this
+     * function indicates number of different family codes configured to be
+     * filtered out (not number of calls to @ref searchFilterAdd()) and is
+     * always less or equal than @CONFIG_MAX_SRCH_FILTERS.
+     */
+    int searchFilterSize() {
+        return _n_fltrs;
+    }
 #endif /* CONFIG_MAX_SRCH_FILTERS */
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019,2020 Piotr Stolarz
+ * Copyright (c) 2019-2021 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -91,6 +91,15 @@
  * Overdrive (high-speed) mode enabled.
  */
 #define CONFIG_OVERDRIVE_ENABLED
+
+/**
+ * Dallas thermometers specific.
+ *
+ * By default DS18S20 uses 9-bits temperature measurement resolution.
+ * Enabling this parameter turns on extended resolution calculation for this
+ * type of sensors.
+ */
+//#define CONFIG_DS18S20_EXT_RES
 
 #endif /* !OWNG_DISABLE_DEFAULT_CONFIG */
 #endif /* __OWNG_CONFIG__ */

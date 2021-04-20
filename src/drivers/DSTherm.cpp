@@ -157,27 +157,28 @@ OneWireNg::ErrorCode DSTherm::Scratchpad::writeScratchpad()
     return ec;
 }
 
+/* right shift (sign aware) */
+inline long rsh(long v, int sh) {
+    return (v < 0 ? -((-v) >> sh) : (v >> sh));
+}
+
 long DSTherm::Scratchpad::getTemp()
 {
     long temp = ((long)(int8_t)_scrpd[1] << 8) | _scrpd[0];
 
-    /* while truncating fractional part of a temperature value * and / are used
-       instead of << and >> operators, since the temperature may be negative */
     if (_id[0] != DS18S20) {
         unsigned res = (_scrpd[4] >> 5) & 3;
 
-        /* truncate fractional undefined bits */
-        temp = (temp / (1 << (3 - res))) * (1 << (3 - res));
-        temp = (1000 * temp) / 16;
+        temp = rsh(temp, 3 - res); /* truncate fractional undefined bits */
+        temp = rsh(temp * 1000, res + 1);
     } else {
 #ifdef CONFIG_DS18S20_EXT_RES
         if (_scrpd[7]) {
-            /* truncate fractional part */
-            temp = (temp / 2) * 1000;
-            temp += (1000 * (_scrpd[7] - _scrpd[6]) / _scrpd[7]) - 250;
+            temp = rsh(temp, 1) * 1000; /* truncate fractional part */
+            temp += (1000L * (int8_t)(_scrpd[7] - _scrpd[6]) / _scrpd[7]) - 250;
         } else
 #endif
-            temp = (1000 * temp) / 2;
+            temp = rsh(temp * 1000, 1);
     }
     return temp;
 }

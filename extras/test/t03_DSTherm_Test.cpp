@@ -124,6 +124,8 @@ public:
 
         /* DS18S20 (const 9-bits resolution) */
         scrpd._id[0] = DSTherm::DS18S20;
+        scrpd._scrpd[7] = 0x10;
+        scrpd._scrpd[6] = 0x0c;
 
         scrpd._scrpd[0] = 0xaa; scrpd._scrpd[1] = 0x00;
         assert(scrpd.getTemp() == 85000);

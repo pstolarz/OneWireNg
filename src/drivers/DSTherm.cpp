@@ -173,7 +173,7 @@ long DSTherm::Scratchpad::getTemp()
 #ifdef CONFIG_DS18S20_EXT_RES
         if (_scrpd[7]) {
             /* truncate fractional part */
-            temp = (temp / 2) * 2;
+            temp = (temp / 2) * 1000;
             temp += (1000 * (_scrpd[7] - _scrpd[6]) / _scrpd[7]) - 250;
         } else
 #endif

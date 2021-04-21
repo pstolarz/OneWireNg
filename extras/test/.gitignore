@@ -1,2 +1,3 @@
-OneWireNg_Test
-OneWireNg_BitBang_Test
+t01_OneWireNg_Test
+t02_OneWireNg_BitBang_Test
+t03_DSTherm_Test

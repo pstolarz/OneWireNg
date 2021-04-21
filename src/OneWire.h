@@ -13,9 +13,9 @@
 #ifndef __OWNG_ONEWIRE__
 #define __OWNG_ONEWIRE__
 
-#include <new>       // in-place new-operator
+#include <new>       /* in-place new-operator */
 #include <stdint.h>
-#include <string.h>  // memcpy
+#include <string.h>  /* memcpy */
 #include "OneWireNg_CurrentPlatform.h"
 
 /**
@@ -24,9 +24,10 @@
  * This class implements classic Arduino OneWire library interface using
  * OneWireNg service API. The main purpose of this class is to provide fast
  * and effortless mechanism for developers experiencing issues with OneWire
- * and eager to give OneWireNg a try. Finally it's strongly recommended to
- * switch into OneWireNg interface rather than stay with the OneWire one due to
- * OneWireNg's more mature and feature-rich API (search filtering, OD mode etc.)
+ * and eager to give OneWireNg a try. Finally, it's strongly recommended to
+ * switch into OneWireNg interface rather than stay with the OneWire due to
+ * OneWireNg's more mature and feature-rich API (search filtering, OD mode,
+ * touch support).
  *
  * For OneWire API specification refer to its source repository:
  * https://github.com/PaulStoffregen/OneWire
@@ -43,10 +44,12 @@
 class OneWire
 {
 public:
-    // NOTE: The default (no-args) constructor requires begin() method to be
-    // called subsequently with MCU's GPIO pin number controlling the 1-wire
-    // data bus as an argument. Any attempt to call OneWire API w/o this
-    // begin() call will cause NULL pointer dereference inside OneWire logic.
+    /*
+     * NOTE: The default (no-args) constructor requires begin() method to be
+     * called subsequently with MCU's GPIO pin number controlling the 1-wire
+     * data bus as an argument. Any attempt to call OneWire API w/o this
+     * begin() call will cause NULL pointer dereference inside OneWire logic.
+     */
     OneWire():
         _srch_done(false), _ow(NULL)
     {}
@@ -64,7 +67,7 @@ public:
 
         _ow = new (_ow_buf) OneWireNg_CurrentPlatform(
             pin,
-            false   // turn off internal pull-up
+            false   /* turn off internal pull-up */
         );
     }
 

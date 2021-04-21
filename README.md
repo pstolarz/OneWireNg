@@ -4,7 +4,7 @@ This is an Arduino 1-wire service library, intended as an alternative for the
 classic [OneWire](https://github.com/PaulStoffregen/OneWire) library. The library
 provides basic 1-wire services (reset, search, touch, read, write, parasite
 powering) and may serve for further work while interfacing with various 1-wire
-devices (e.g. Dallas/Maxim thermometers).
+devices.
 
 ## Features
 
@@ -30,23 +30,29 @@ devices (e.g. Dallas/Maxim thermometers).
 * Search filtering.
 
   Search algorithm allows efficient filtering basing on a selected set of family
-  codes. Maximum size of the set is configurable by `CONFIG_MAX_SRCH_FILTERS`
-  configuration macro-define.
+  codes. Maximum size of the set is configurable by `CONFIG_MAX_SRCH_FILTERS`.
 
 * Overdrive (high-speed) mode support.
 
   The overdrive mode enables speed up the 1-wire communication by a factor of 10.
   Only limited number of 1-wire devices support this mode (e.g. DS2408, DS2431).
 
-* Clear and flexible architecture.
+* Dallas thermometers driver.
 
-  The code architecture allows fast and easy porting for new Arduino platforms
-  or even usage of the core part of library outside the Arduino environment.
+  [`DSTherm`](src/drivers/DSTherm.h) class provides general purpose driver for
+  handling Dallas thermometers.
+  See [`DallasTemperature.ino`](examples/DallasTemperature/DallasTemperature.ino)
+  sketch for an example of usage.
 
 * OneWire compatibility interface.
 
   The interface allows effortless switch into OneWireNg for projects using
   OneWire library. See [below](#onewire-compatibility) for details.
+
+* Clear and flexible architecture.
+
+  The code architecture allows fast and easy porting for new Arduino platforms
+  or even usage of core part of the library outside the Arduino environment.
 
 ## Supported platforms
 
@@ -72,14 +78,14 @@ devices (e.g. Dallas/Maxim thermometers).
     * Platform class: `OneWireNg_ArduinoSTM32`.
     * **Not tested**.
 
-NOTE: Expect more platforms support in the future. **I'm inviting all developers**,
+NOTE: Expect more platforms support in the future. **I'm inviting all developers**
 eager to help me with porting and testing the library for new platforms.
 
 ## Architecture details
 
 ![OneWirNg class diagram](extras/schema/classOneWireNg__inherit__graph.png)
 
-### OneWireNg
+### `OneWireNg`
 
 The class provides public interface for 1-wire service. Object of this class
 isn't constructed directly rather than casted from a derived class object
@@ -128,14 +134,14 @@ void setup()
 }
 ```
 
-### OneWireNg_BitBang
+### `OneWireNg_BitBang`
 
 The class is derived from `OneWireNg` and implements the 1-wire interface basing
 on GPIO bit-banging. Object of this class isn't constructed directly rather than
 the class is intended to be inherited by a derived class providing protected
 interface implementation for low level GPIO activities (set mode, read, write).
 
-### OneWireNg_PLATFORM
+### `OneWireNg_PLATFORM`
 
 Are family of classes providing platform specific implementation (`PLATFORM`
 states for a platform name e.g. `OneWireNg_ArduinoAVR` provides AVR implementation
@@ -155,12 +161,10 @@ header which tries to detect platform the compilation is proceeded and:
  * include proper platform class header,
  * assign `OneWireNg_CurrentPlatform` macro-define to the detected platform class.
 
-Refer to `examples/Dallas_Temperature` example for the usage details.
-
 ## Usage
 
 Refer to [`examples`](examples) directory for usage details. For API details
-refer to sources inline docs (mainly `OneWireNg` class).
+refer to sources inline docs (mainly [`OneWireNg`](src/OneWireNg.h) class).
 
 File [`src/OneWireNg_config.h`](src/OneWireNg_config.h) contains parameters
 configuring the library functionality. See the file for more details.
@@ -242,9 +246,9 @@ configures 1-wire service to work in one of the above modes.
 OneWireNg and [OneWire](https://github.com/PaulStoffregen/OneWire) library.
 The main purpose of this class is to provide fast and effortless mechanism for
 developers experiencing issues with OneWire and eager to give OneWireNg a try.
-Finally it's strongly recommended to switch into OneWireNg interface rather than
-stay with the OneWire one due to OneWireNg's more mature and feature-rich API
-(search filtering, OD mode etc.)
+Finally, it's strongly recommended to switch into OneWireNg interface rather
+than stay with the OneWire due to OneWireNg's more mature and feature-rich API
+(search filtering, OD mode, touch support).
 
 ## DallasTemperature library
 

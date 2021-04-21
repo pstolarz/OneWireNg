@@ -1,27 +1,39 @@
 .SILENT:
-.PHONY: all clean
+.PHONY: all build clean lib libclean
 
 LIBDIR=../../src
 CXXFLAGS+=-D__TEST__ -Wall -DOWNG_CONFIG_FILE="\"test_config.h\"" -I$(LIBDIR) -I.
 
+LIBOBJS=\
+	$(LIBDIR)/OneWireNg.o \
+	$(LIBDIR)/OneWireNg_BitBang.o \
+	$(LIBDIR)/drivers/DSTherm.o
+
 TESTS=\
-    OneWireNg_Test \
-    OneWireNg_BitBang_Test
+	t01_OneWireNg_Test \
+	t02_OneWireNg_BitBang_Test \
+	t03_DSTherm_Test
 
-all: $(TESTS)
-	./OneWireNg_Test
-	./OneWireNg_BitBang_Test
+t01_OneWireNg_Test: TDEFS=-DT01
+t02_OneWireNg_BitBang_Test: TDEFS=-DT02
+t03_DSTherm_Test: TDEFS=-DT03
 
-clean:
-	$(RM) $(LIBDIR)/*.o
-	$(RM) *.o $(TESTS)
+all: build
+	for t in $(TESTS); do echo "TEST: $$t"; ./$$t; echo; done;
 
-OneWireNg_BitBang_Test: $(LIBDIR)/OneWireNg.o
+build: $(TESTS)
 
-%_Test: %_Test.o $(LIBDIR)/%.o
-	$(CXX) $(CXXFLAGS) $^ -o $@
+lib: libclean $(LIBOBJS)
 
-$(LIBDIR)/OneWireNg_BitBang.o: $(LIBDIR)/OneWireNg.h
+clean: libclean
+	$(RM) $(TESTS)
 
-$(LIBDIR)/%.o: $(LIBDIR)/%.cpp $(LIBDIR)/%.h test_config.h
-	$(CXX) -c $(CXXFLAGS) $< -o $@
+libclean:
+	$(RM) $(LIBOBJS)
+
+%: %.cpp
+	CXXFLAGS="$(TDEFS)" $(MAKE) lib
+	$(CXX) $(CXXFLAGS) $(TDEFS) $< -o $@ $(LIBOBJS)
+
+$(LIBDIR)/%.o: $(LIBDIR)/%.c $(LIBDIR)/%.h $(LIBDIR)/OneWire.h test_config.h
+	$(CC) -c $(CFLAGS) $< -o $@

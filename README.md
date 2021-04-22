@@ -240,7 +240,7 @@ void setup()
 
 configures 1-wire service to work in one of the above modes.
 
-## OneWire Compatibility
+## OneWire compatibility
 
 [`OneWire`](src/OneWire.h) class provides compatibility interface between
 OneWireNg and [OneWire](https://github.com/PaulStoffregen/OneWire) library.

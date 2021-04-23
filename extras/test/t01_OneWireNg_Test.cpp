@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019,2020 Piotr Stolarz
+ * Copyright (c) 2019-2021 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -134,7 +134,7 @@ private:
     int _slaves_n;
 
 public:
-    virtual ErrorCode reset()
+    ErrorCode reset()
     {
         _trans_n = 0;
         _cmd = 0x00;
@@ -145,7 +145,7 @@ public:
         return (_slaves_n > 0 ? EC_SUCCESS : EC_NO_DEVS);
     }
 
-    virtual int touchBit(int bit)
+    int touchBit(int bit)
     {
         if (_trans_n < 8)
         {

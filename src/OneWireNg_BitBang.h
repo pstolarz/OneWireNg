@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019,2020 Piotr Stolarz
+ * Copyright (c) 2019-2021 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -24,12 +24,16 @@
  * shall provide:
  * - @ref readGpioIn(), @ref writeGpioOut(): read/write operations.
  * - @ref setGpioAsInput(), @ref setGpioAsOutput(): set GPIO working mode.
+ *
+ * and optionally:
+ * - @ref touch1Overdrive(): if overdrive mode is enabled and requires specific
+ *       implementation.
  */
 class OneWireNg_BitBang: public OneWireNg
 {
 public:
-    virtual ErrorCode reset();
-    virtual int touchBit(int bit);
+    ErrorCode reset();
+    int touchBit(int bit);
 
     /**
      * Enable/disable direct voltage source provisioning on the 1-wire data bus
@@ -39,7 +43,7 @@ public:
      *
      * @see setupPwrCtrlGpio().
      */
-    virtual ErrorCode powerBus(bool on);
+    ErrorCode powerBus(bool on);
 
 protected:
     typedef enum

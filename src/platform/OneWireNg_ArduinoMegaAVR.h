@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019,2020 Piotr Stolarz
+ * Copyright (c) 2019-2021 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -76,13 +76,13 @@ public:
     }
 
 protected:
-    virtual int readGpioIn(GpioType gpio)
+    int readGpioIn(GpioType gpio)
     {
         UNUSED(gpio);
         return __READ_GPIO(_dtaGpio);
     }
 
-    virtual void writeGpioOut(GpioType gpio, int state)
+    void writeGpioOut(GpioType gpio, int state)
     {
         if (gpio == GPIO_DTA) {
             __WRITE_GPIO(_dtaGpio, state);
@@ -91,13 +91,13 @@ protected:
         }
     }
 
-    virtual void setGpioAsInput(GpioType gpio)
+    void setGpioAsInput(GpioType gpio)
     {
         UNUSED(gpio);
         __GPIO_AS_INPUT(_dtaGpio);
     }
 
-    virtual void setGpioAsOutput(GpioType gpio, int state)
+    void setGpioAsOutput(GpioType gpio, int state)
     {
         if (gpio == GPIO_DTA) {
             __WRITE_GPIO(_dtaGpio, state);

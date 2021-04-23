@@ -201,11 +201,11 @@ public:
 private:
     DSTherm_Test() {}
 
-    virtual ErrorCode reset() {
+    ErrorCode reset() {
         return OneWireNg::EC_SUCCESS;
     }
 
-    virtual int touchBit(int bit) {
+    int touchBit(int bit) {
         return bit;
     }
 };

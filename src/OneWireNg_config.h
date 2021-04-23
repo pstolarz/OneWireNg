@@ -93,6 +93,17 @@
 #define CONFIG_OVERDRIVE_ENABLED
 
 /**
+ * Enable extended virtual interface.
+ *
+ * The extended interface enables more advance 1-wire service drivers to be
+ * implemented in the future. The penalty is additional overhead needed for
+ * calling the virtual methods being part of this interface. Since current
+ * implementation doesn't leverage the interface it's recommended to disable
+ * this parameter for slower platforms.
+ */
+//#define CONFIG_EXT_VIRTUAL_INTF
+
+/**
  * Dallas thermometers specific.
  *
  * By default DS18S20 uses 9-bits temperature measurement resolution.

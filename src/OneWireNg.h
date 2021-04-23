@@ -22,17 +22,26 @@
 # define UNUSED(x) ((void)(x))
 #endif
 
+#ifdef CONFIG_EXT_VIRTUAL_INTF
+# define EXT_VIRTUAL_INTF virtual
+#else
+# define EXT_VIRTUAL_INTF
+#endif
+
 /**
  * 1-wire service interface specification.
  *
  * The class relies on virtual functions provided by derivative class to
  * perform platform specific operations. The platform specific class shall
- * provide at least:
+ * provide:
  * - @ref reset() - reset cycle transmission,
  * - @ref touchBit() - 1-wire touch (write and read are touch derived).
  *
  * and optionally:
  * - @ref powerBus() - if parasite powering is supported.
+ *
+ * @note If the extended virtual interface is enabled a derivative class may
+ *     override additional methods being part of this extended interface.
  */
 class OneWireNg
 {
@@ -98,60 +107,78 @@ public:
 
     /**
      * Byte touch with least significant bit transmitted first.
+     *
      * @return Touching result.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual uint8_t touchByte(uint8_t byte);
+    EXT_VIRTUAL_INTF uint8_t touchByte(uint8_t byte);
 
     /**
      * Array of bytes touch.
      * Result is passed back in the same buffer.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual void touchBytes(uint8_t *bytes, size_t len) {
+    EXT_VIRTUAL_INTF void touchBytes(uint8_t *bytes, size_t len) {
         for (size_t i=0; i < len; i++)
             bytes[i] = touchByte(bytes[i]);
     }
 
     /**
      * Bit write.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual void writeBit(int bit) {
+    EXT_VIRTUAL_INTF void writeBit(int bit) {
         touchBit(bit);
     }
 
     /**
      * Byte write with least significant bit transmitted first.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual void writeByte(uint8_t byte) {
+    EXT_VIRTUAL_INTF void writeByte(uint8_t byte) {
         touchByte(byte);
     }
 
     /**
      * Array of bytes write.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual void writeBytes(const uint8_t *bytes, size_t len) {
+    EXT_VIRTUAL_INTF void writeBytes(const uint8_t *bytes, size_t len) {
         for (size_t i=0; i < len; i++)
             touchByte(bytes[i]);
     }
 
     /**
      * Bit read.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual int readBit() {
+    EXT_VIRTUAL_INTF int readBit() {
         return touchBit(1);
     }
 
     /**
      * Byte read with least significant bit transmitted first.
+     *
      * @return Reading result.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual uint8_t readByte() {
+    EXT_VIRTUAL_INTF uint8_t readByte() {
         return touchByte(0xff);
     }
 
     /**
      * Array of bytes read.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual void readBytes(uint8_t *bytes, size_t len) {
+    EXT_VIRTUAL_INTF void readBytes(uint8_t *bytes, size_t len) {
         for (size_t i=0; i < len; i++)
             bytes[i] = touchByte(0xff);
     }
@@ -182,13 +209,17 @@ public:
      *     Failure error codes:
      *     - @c EC_BUS_ERROR: Bus error.
      *     - @c EC_CRC_ERROR: CRC error.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual ErrorCode search(Id& id, bool alarm = false);
+    EXT_VIRTUAL_INTF ErrorCode search(Id& id, bool alarm = false);
 
     /**
      * Reset 1-wire search state.
+     *
+     * @note This method is part of the extended virtual interface.
      */
-    virtual void searchReset() {
+    EXT_VIRTUAL_INTF void searchReset() {
         _lzero = -1;
     }
 
@@ -611,4 +642,5 @@ friend class OneWireNg_Test;
 #endif
 };
 
+#undef EXT_VIRTUAL_INTF
 #endif /* __OWNG__ */

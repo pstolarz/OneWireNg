@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Piotr Stolarz
+ * Copyright (c) 2019,2021 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -17,15 +17,15 @@ class OneWireNg_BitBang_Test: OneWireNg_BitBang
 private:
     OneWireNg_BitBang_Test(): OneWireNg_BitBang(false) {}
 
-    virtual int readGpioIn(GpioType gpio) {
+    int readGpioIn(GpioType gpio) {
         return 1;
     }
 
-    virtual void writeGpioOut(GpioType gpio, int state) {}
+    void writeGpioOut(GpioType gpio, int state) {}
 
-    virtual void setGpioAsInput(GpioType gpio) {}
+    void setGpioAsInput(GpioType gpio) {}
 
-    virtual void setGpioAsOutput(GpioType gpio, int state) {}
+    void setGpioAsOutput(GpioType gpio, int state) {}
 };
 
 int main(void)

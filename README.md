@@ -163,8 +163,13 @@ header which tries to detect platform the compilation is proceeded and:
 
 ## Usage
 
-Refer to [`examples`](examples) directory for usage details. For API details
-refer to sources inline docs (mainly [`OneWireNg`](src/OneWireNg.h) class).
+Refer to [`examples`](examples) directory for usage details.
+
+For API specification refer to sources inline documentation (mainly
+[`OneWireNg`](src/OneWireNg.h) class). For your convenience it's possible to
+generate HTML/LaTeX [Doxygen](https://www.doxygen.nl/index.html) documentation
+by issuing `doxygen` from the main library directory. The documentation will
+be placed in `extras/doc`.
 
 File [`src/OneWireNg_config.h`](src/OneWireNg_config.h) contains parameters
 configuring the library functionality. See the file for more details.

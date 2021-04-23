@@ -19,7 +19,7 @@
 #define OW_PIN          10
 
 /*
- * Set to true for if a sensors are parasitically powered.
+ * Set to true for parasitically powered sensors.
  */
 #define PARASITE_POWER  false
 

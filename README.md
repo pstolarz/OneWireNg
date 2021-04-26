@@ -81,86 +81,6 @@ devices.
 NOTE: Expect more platforms support in the future. **I'm inviting all developers**
 eager to help me with porting and testing the library for new platforms.
 
-## Architecture details
-
-![OneWirNg class diagram](extras/schema/classOneWireNg__inherit__graph.png)
-
-### `OneWireNg`
-
-The class provides public interface for 1-wire service. Object of this class
-isn't constructed directly rather than casted from a derived class object
-implementing platform specific details.
-
-As an example:
-
-```cpp
-#include "OneWireNg_CurrentPlatform.h"
-
-static OneWireNg *ow = nullptr;
-
-void setup()
-{
-    OneWireNg::Id id;
-    OneWireNg::ErrorCode ec;
-
-    ow = new OneWireNg_CurrentPlatform(10);
-
-    do
-    {
-        ec = ow->search(id);
-        if (ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE) {
-            // `id' contains 1-wire address of a connected slave
-        }
-    } while (ec == OneWireNg::EC_MORE);
-}
-```
-
-creates 1-wire service interface for current platform and performs search on
-the bus. The bus is controlled by MCU pin number 10.
-
-NOTE: If heap allocation is inadvisable use in-place `new` operator:
-
-```cpp
-#include <new>
-#include "OneWireNg_CurrentPlatform.h"
-
-static OneWireNg *ow = nullptr;
-static uint8_t OneWireNg_buf[sizeof(OneWireNg_CurrentPlatform)];
-
-void setup()
-{
-    ow = new (OneWireNg_buf) OneWireNg_CurrentPlatform(10);
-    // ...
-}
-```
-
-### `OneWireNg_BitBang`
-
-The class is derived from `OneWireNg` and implements the 1-wire interface basing
-on GPIO bit-banging. Object of this class isn't constructed directly rather than
-the class is intended to be inherited by a derived class providing protected
-interface implementation for low level GPIO activities (set mode, read, write).
-
-### `OneWireNg_PLATFORM`
-
-Are family of classes providing platform specific implementation (`PLATFORM`
-states for a platform name e.g. `OneWireNg_ArduinoAVR` provides AVR implementation
-for Arduino environment).
-
-The platform classes implement `OneWireNg` interface directly (via direct
-`OneWireNg` class inheritance) or indirectly (e.g. GPIO bit-banging implementation
-bases on `OneWireNg_BitBang`, which provides GPIO bit-banging 1-wire service
-implementation leaving the platform class to provide platform specific low-level
-GPIO activities details).
-
-Platform classes have a public constructor allowing to create 1-wire service for
-a particular platform (see [above](#architecture-details)).
-
-NOTE: For the convenience there has been provided `OneWireNg_CurrentPlatform.h`
-header which tries to detect platform the compilation is proceeded and:
- * include proper platform class header,
- * assign `OneWireNg_CurrentPlatform` macro-define to the detected platform class.
-
 ## Usage
 
 Refer to [`examples`](examples) directory for usage details.
@@ -245,6 +165,86 @@ void setup()
 
 configures 1-wire service to work in one of the above modes.
 
+## Architecture details
+
+![OneWirNg class diagram](extras/schema/classOneWireNg__inherit__graph.png)
+
+### `OneWireNg`
+
+The class provides public interface for 1-wire service. Object of this class
+isn't constructed directly rather than casted from a derived class object
+implementing platform specific details.
+
+As an example:
+
+```cpp
+#include "OneWireNg_CurrentPlatform.h"
+
+static OneWireNg *ow = nullptr;
+
+void setup()
+{
+    OneWireNg::Id id;
+    OneWireNg::ErrorCode ec;
+
+    ow = new OneWireNg_CurrentPlatform(10);
+
+    do
+    {
+        ec = ow->search(id);
+        if (ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE) {
+            // `id' contains 1-wire address of a connected slave
+        }
+    } while (ec == OneWireNg::EC_MORE);
+}
+```
+
+creates 1-wire service interface for current platform and performs search on
+the bus. The bus is controlled by MCU pin number 10.
+
+NOTE: If heap allocation is inadvisable use in-place `new` operator:
+
+```cpp
+#include <new>
+#include "OneWireNg_CurrentPlatform.h"
+
+static OneWireNg *ow = nullptr;
+static uint8_t OneWireNg_buf[sizeof(OneWireNg_CurrentPlatform)];
+
+void setup()
+{
+    ow = new (OneWireNg_buf) OneWireNg_CurrentPlatform(10);
+    // ...
+}
+```
+
+### `OneWireNg_BitBang`
+
+The class is derived from `OneWireNg` and implements the 1-wire interface basing
+on GPIO bit-banging. Object of this class isn't constructed directly rather than
+the class is intended to be inherited by a derived class providing protected
+interface implementation for low level GPIO activities (set mode, read, write).
+
+### `OneWireNg_PLATFORM`
+
+Are family of classes providing platform specific implementation (`PLATFORM`
+states for a platform name e.g. `OneWireNg_ArduinoAVR` provides AVR implementation
+for Arduino environment).
+
+The platform classes implement `OneWireNg` interface directly (via direct
+`OneWireNg` class inheritance) or indirectly (e.g. GPIO bit-banging implementation
+bases on `OneWireNg_BitBang`, which provides GPIO bit-banging 1-wire service
+implementation leaving the platform class to provide platform specific low-level
+GPIO activities details).
+
+Platform classes have a public constructor allowing to create 1-wire service for
+a particular platform (see [above](#architecture-details)).
+
+NOTE: For the convenience there has been provided `OneWireNg_CurrentPlatform.h`
+header which tries to detect platform the compilation is proceeded and:
+ * include proper platform class header,
+ * assign `OneWireNg_CurrentPlatform` macro-define to the detected platform class.
+
 ## OneWire compatibility
 
 [`OneWire`](src/OneWire.h) class provides compatibility interface between
@@ -255,7 +255,7 @@ Finally, it's strongly recommended to switch into OneWireNg interface rather
 than stay with the OneWire due to OneWireNg's more mature and feature-rich API
 (search filtering, OD mode, touch support).
 
-## DallasTemperature library
+### DallasTemperature library
 
 As an example of usage of the compatibility interface there has been created
 the [following fork](https://github.com/pstolarz/Arduino-Temperature-Control-Library/tree/OneWireNg)

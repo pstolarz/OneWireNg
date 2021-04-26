@@ -11,7 +11,8 @@
  */
 
 #include "OneWireNg_BitBang.h"
-#include "platform/OneWireNg_defs.h"
+#include "platform/Platform_Delay.h"
+#include "platform/Platform_TimeCritical.h"
 
 /* Standard mode timings
  */
@@ -55,7 +56,7 @@
 /* write-1 trailing high */
 #define OD_WRITE1_END   7
 
-OneWireNg::ErrorCode OneWireNg_BitBang::reset()
+TIME_CRITICAL OneWireNg::ErrorCode OneWireNg_BitBang::reset()
 {
     int presPulse;
 
@@ -92,7 +93,7 @@ OneWireNg::ErrorCode OneWireNg_BitBang::reset()
     return (presPulse ? EC_NO_DEVS : EC_SUCCESS);
 }
 
-int OneWireNg_BitBang::touchBit(int bit)
+TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
 {
     int smpl = 0;
 
@@ -153,6 +154,10 @@ int OneWireNg_BitBang::touch1Overdrive()
     setBus(0);
 #if OD_WRITE1_LOW >= 0
     delayUs(OD_WRITE1_LOW);
+#endif
+    /* speed up low-to-high transition */
+#ifndef CONFIG_BUS_BLINK_PROTECTION
+    writeGpioOut(GPIO_DTA, 1);
 #endif
     setBus(1);
 #if OD_WRITE1_SMPL >= 0

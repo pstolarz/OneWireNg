@@ -78,6 +78,9 @@
  *     connected to the bus. This is an additional state provided by @c
  *     CONFIG_BUS_BLINK_PROTECTION parameter.
  *  3. High state visible via pull-up resistor (GPIO configured as input).
+ *
+ * @note @c CONFIG_BUS_BLINK_PROTECTION may be useful to improve 1-wire
+ *     communication on long cables by speeding-up low-to-high transition.
  */
 //#define CONFIG_BUS_BLINK_PROTECTION
 

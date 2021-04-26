@@ -126,9 +126,8 @@ protected:
         __WRITE0_GPIO(_dtaGpio);
         /* ~1.5 usec at nominal freq. */
 
-# ifdef CONFIG_BUS_BLINK_PROTECTION
+        /* speed up low-to-high transition */
         __WRITE1_GPIO(_dtaGpio);
-# endif
         __GPIO_AS_INPUT(_dtaGpio);
         /* start sampling at ~2.5-3 usec at nominal freq. */
         return __READ_GPIO(_dtaGpio);

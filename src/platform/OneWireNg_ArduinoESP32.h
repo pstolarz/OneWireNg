@@ -17,13 +17,6 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
-#if (F_CPU < 160000000L)
-# warning "1-wire dysfunctional for CPU freq. less than 160MHz"
-#endif
-#if defined(CONFIG_OVERDRIVE_ENABLED) && (F_CPU < 240000000)
-# warning "240MHz CPU freq. is recommended for overdrive mode"
-#endif
-
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)
 
@@ -126,9 +119,7 @@ protected:
         __WRITE0_GPIO(_dtaGpio);
         __GPIO_AS_OUTPUT(_dtaGpio);
         /* 0.5-1.5 usec at nominal freq. */
-# if (F_CPU >= 240000000L)
         delayMicroseconds(0);
-# endif
 
         /* speed up low-to-high transition */
         __WRITE1_GPIO(_dtaGpio);

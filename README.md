@@ -186,7 +186,7 @@ The mode is confirmed to work on the following platforms and CPU frequencies:
 * Arduino ESP8266.
     * WemOS D1; 160MHz,80MHz.
 * Arduino ESP32.
-    * ESP32-DevKitC (ESP32-WROOM-32); 240MHz(recommended),160MHz. Errors observed.
+    * ESP32-DevKitC (ESP32-WROOM-32); 240MHz-26MHz.
 
 ## Parasite powering
 

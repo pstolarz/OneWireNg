@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Piotr Stolarz
+ * Copyright (c) 2020,2021 Piotr Stolarz
  * OneWireNg: Ardiono 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -23,10 +23,10 @@
 #define OW_PIN      10
 
 /* if defined use overdrive mode */
-// #define USE_OD_MODE
+//#define USE_OD_MODE
 
 /* if defined write demo is enabled */
-#define WRITE_DEMO
+//#define WRITE_DEMO
 
 /* DS2431 family code */
 #define DS2431      0x2D
@@ -269,7 +269,7 @@ static bool writePage(const OneWireNg::Id *id,
     }
     return true;
 }
-#endif
+#endif /* WRITE_DEMO */
 
 void setup()
 {

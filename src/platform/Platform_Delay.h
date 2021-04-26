@@ -10,27 +10,19 @@
  * See the License for more information.
  */
 
-/*
- * This header specifies platform specific defines used by the library.
- */
-
-#ifndef __OWNG_PLATFORM_DEFS__
-#define __OWNG_PLATFORM_DEFS__
+#ifndef __OWNG_PLATFORM_DELAY__
+#define __OWNG_PLATFORM_DELAY__
 
 #ifdef ARDUINO
 # include "Arduino.h"
 # define delayUs(__us) delayMicroseconds(__us)
 # define delayMs(__ms) delay(__ms)
-# define timeCriticalEnter() noInterrupts()
-# define timeCriticalExit() interrupts()
 #elif defined(__TEST__)
 # include <unistd.h>
 # define delayUs(__us) usleep(__us)
 # define delayMs(__ms) usleep(1000L * (__ms))
-# define timeCriticalEnter()
-# define timeCriticalExit()
 #else
 # error "Unsupported platform"
 #endif
 
-#endif /* __OWNG_PLATFORM_DEFS__ */
+#endif /* __OWNG_PLATFORM_DELAY__ */

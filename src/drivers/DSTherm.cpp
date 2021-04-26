@@ -11,7 +11,7 @@
  */
 
 #include "drivers/DSTherm.h"
-#include "platform/OneWireNg_defs.h"
+#include "platform/Platform_Delay.h"
 
 #define TAB_SZ(t) (sizeof(t)/sizeof((t)[0]))
 

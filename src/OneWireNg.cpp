@@ -29,23 +29,11 @@
 # error Invalid CONFIG_CRC16_ALGO
 #endif
 
-/* flash storage API */
 #ifdef CONFIG_FLASH_CRC_TAB
-# ifdef ARDUINO
-#  include "Arduino.h"
-#  define CRCTAB_STORAGE PROGMEM
-#  define tabRead_u8(addr) pgm_read_byte(addr)
-#  define tabRead_u16(addr) pgm_read_word(addr)
-#  define tabRead_u32(addr) pgm_read_dword(addr)
-# else
-#  ifndef __TEST__
-#   warning "CONFIG_FLASH_CRC_TAB unsupported for the target platform"
-#  endif
-#  define CRCTAB_STORAGE
-#  define tabRead_u8(addr) ((uint8_t)(*(addr)))
-#  define tabRead_u16(addr) ((uint16_t)(*(addr)))
-#  define tabRead_u32(addr) ((uint32_t)(*(addr)))
-# endif
+# include "platform/Platform_FlashMem.h"
+# define tabRead_u8 flashRead_u8
+# define tabRead_u16 flashRead_u16
+# define tabRead_u32 flashRead_u32
 #else
 # define CRCTAB_STORAGE
 # define tabRead_u8(addr) ((uint8_t)(*(addr)))

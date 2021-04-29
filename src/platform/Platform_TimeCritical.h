@@ -25,6 +25,10 @@
  * This implementation of time critical enter/exit routines bases on Xtensa
  * FreeRTOS API for disabling/enabling interrupts locally (exclusively for
  * a CPU core the routine is called on).
+ *
+ * Time critical routines need to be marked by TIME_CRITICAL attribute.
+ * Currently it's required for ESP32 platforms only to place the routines
+ * into IRAM due to xPortGetCoreID() usage, which is IRAM inlined.
  */
 static unsigned _int_level[portNUM_PROCESSORS];
 
@@ -37,19 +41,14 @@ static unsigned _int_level[portNUM_PROCESSORS];
 #  define timeCriticalEnter() noInterrupts()
 #  define timeCriticalExit() interrupts()
 # endif
-#elif defined(__TEST__)
+#else
+# ifndef __TEST__
+#  warning "Time critical API unsupported for the target platform. Disabled."
+# endif
 # define timeCriticalEnter()
 # define timeCriticalExit()
-#else
-# error "Unsupported platform"
 #endif
 
-/*
- * Time critical routines need to be marked by TIME_CRITICAL attribute.
- *
- * Currently it's required for ESP32 platforms only to place the routines
- * into IRAM due to xPortGetCoreID() usage, which is IRAM inlined.
- */
 #ifndef TIME_CRITICAL
 # define TIME_CRITICAL
 #endif

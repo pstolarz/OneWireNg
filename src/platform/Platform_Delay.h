@@ -17,12 +17,14 @@
 # include "Arduino.h"
 # define delayUs(__us) delayMicroseconds(__us)
 # define delayMs(__ms) delay(__ms)
-#elif defined(__TEST__)
-# include <unistd.h>
-# define delayUs(__us) usleep(__us)
-# define delayMs(__ms) usleep(1000L * (__ms))
 #else
-# error "Unsupported platform"
+# ifdef __TEST__
+#  include <unistd.h>
+#  define delayUs(__us) usleep(__us)
+#  define delayMs(__ms) usleep(1000L * (__ms))
+# else
+#  error "ERROR: Delay API unsupported for the target platform."
+# endif
 #endif
 
 #endif /* __OWNG_PLATFORM_DELAY__ */

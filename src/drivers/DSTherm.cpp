@@ -129,7 +129,7 @@ OneWireNg::ErrorCode DSTherm::_writeScratchpad(
         };
 
         /*
-         * While sending the command for all sensors on the bus, all 3
+         * While sending the command to all sensors on the bus, all 3
          * bytes of configuration are sent event though DS18S20 requires
          * only first 2 of them. This approach seems to be more safe on
          * environments where various types of sensors are connected.

@@ -36,9 +36,9 @@
 # define tabRead_u32 flashRead_u32
 #else
 # define CRCTAB_STORAGE
-# define tabRead_u8(addr) ((uint8_t)(*(addr)))
-# define tabRead_u16(addr) ((uint16_t)(*(addr)))
-# define tabRead_u32(addr) ((uint32_t)(*(addr)))
+# define tabRead_u8(addr) (*(const uint8_t*)(addr))
+# define tabRead_u16(addr) (*(const uint16_t*)(addr))
+# define tabRead_u32(addr) (*(const uint32_t*)(addr))
 #endif
 
 uint8_t OneWireNg::touchByte(uint8_t byte)

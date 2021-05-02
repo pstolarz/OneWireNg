@@ -24,9 +24,9 @@
 #  warning "Flash memory API unsupported for the target platform. Disabled."
 # endif
 # define CRCTAB_STORAGE
-# define flashRead_u8(addr) ((uint8_t)(*(addr)))
-# define flashRead_u16(addr) ((uint16_t)(*(addr)))
-# define flashRead_u32(addr) ((uint32_t)(*(addr)))
+# define flashRead_u8(addr) (*(const uint8_t*)(addr))
+# define flashRead_u16(addr) (*(const uint16_t*)(addr))
+# define flashRead_u32(addr) (*(const uint32_t*)(addr))
 #endif
 
 #endif /* __OWNG_PLATFORM_FLASH_MEM__ */

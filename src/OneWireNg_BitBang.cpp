@@ -10,9 +10,9 @@
  * See the License for more information.
  */
 
-#include "OneWireNg_BitBang.h"
 #include "platform/Platform_Delay.h"
 #include "platform/Platform_TimeCritical.h"
+#include "OneWireNg_BitBang.h"
 
 /* Standard mode timings
  */

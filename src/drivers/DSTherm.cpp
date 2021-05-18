@@ -10,8 +10,8 @@
  * See the License for more information.
  */
 
-#include "drivers/DSTherm.h"
 #include "platform/Platform_Delay.h"
+#include "drivers/DSTherm.h"
 
 #define TAB_SZ(t) (sizeof(t)/sizeof((t)[0]))
 

@@ -205,7 +205,7 @@ the bus. The bus is controlled by MCU pin number 10.
 NOTE: If heap allocation is inadvisable use in-place `new` operator:
 
 ```cpp
-#include <new>
+#include "platform/Platform_New.h"
 #include "OneWireNg_CurrentPlatform.h"
 
 static OneWireNg *ow = nullptr;

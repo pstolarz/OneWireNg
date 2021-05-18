@@ -13,8 +13,8 @@
 #ifndef __OWNG_DSTHERM__
 #define __OWNG_DSTHERM__
 
-#include <new>          /* in-place new-operator */
 #include <string.h>     /* memcpy() */
+#include "platform/Platform_New.h"
 #include "OneWireNg.h"
 
 /**
@@ -285,8 +285,6 @@ public:
      *    object representing read scratchpad will be created in-pace:
      *
      * @code
-     * #include <new>
-     *
      * uint8_t scrpd_buf[sizeof(DSTherm::Scratchpad)];
      * DSTherm::Scratchpad *scrpd =
      *     reinterpret_cast<DSTherm::Scratchpad*>(&scrpd_buf[0]);
@@ -300,8 +298,6 @@ public:
      * creation:
      *
      * @code
-     * #include <new>
-     *
      * MAKE_SCRATCHPAD(scrpd);
      * dsth.readScratchpad(id, scrpd);
      * @endcode
@@ -310,8 +306,6 @@ public:
      * without explicit calls to Scratchpad destructor:
      *
      * @code
-     * #include <new>
-     *
      * MAKE_SCRATCHPAD(scrpd);
      * dsth.readScratchpad(id1, scrpd);
      * // ...

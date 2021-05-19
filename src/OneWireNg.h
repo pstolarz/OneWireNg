@@ -16,7 +16,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "OneWireNg_config.h"
+#include "OneWireNg_Config.h"
 
 #ifndef UNUSED
 # define UNUSED(x) ((void)(x))

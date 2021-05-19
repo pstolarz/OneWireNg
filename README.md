@@ -91,7 +91,7 @@ generate HTML/LaTeX [Doxygen](https://www.doxygen.nl/index.html) documentation
 by issuing `doxygen` from the main library directory. The documentation will
 be placed in `extras/doc`.
 
-File [`src/OneWireNg_config.h`](src/OneWireNg_config.h) contains parameters
+File [`src/OneWireNg_Config.h`](src/OneWireNg_Config.h) contains parameters
 configuring the library functionality. See the file for more details.
 
 ## Overdrive mode

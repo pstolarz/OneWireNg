@@ -184,9 +184,10 @@ public:
     }
 
     /**
-     * Perform single search step to recognize slave devices connected to
-     * the bus. Before calling this routine @ref searchReset() must be called
-     * to initialize the search context.
+     * Perform single search step in the search-scan process to detect slave
+     * devices connected to the bus. Before calling this routine for the first
+     * time in the search-scan @ref searchReset() must be called to initialize
+     * the search context.
      *
      * @param id In case of success will be filled with an id of the slave
      *     device detected in this step.
@@ -203,9 +204,8 @@ public:
      *         The code may be returned in 2 cases:
      *         - No devices detected on the bus,
      *         - No more devices available. Returned only if search filtering
-     *           is enabled and slave ids detected at the last searching step
-     *           have been all filtered out (therefore @c EC_DONE doesn't
-     *           apply).
+     *           is enabled and slave ids detected at the last search step have
+     *           been all filtered out (therefore @c EC_DONE doesn't apply).
      *     Failure error codes:
      *     - @c EC_BUS_ERROR: Bus error.
      *     - @c EC_CRC_ERROR: CRC error.
@@ -215,7 +215,7 @@ public:
     EXT_VIRTUAL_INTF ErrorCode search(Id& id, bool alarm = false);
 
     /**
-     * Reset 1-wire search state.
+     * Reset 1-wire search state for a subsequent search-scan process.
      *
      * @note This method is part of the extended virtual interface.
      */
@@ -264,7 +264,7 @@ public:
 
     /**
      * In case there is only one slave connected to the 1-wire bus the routine
-     * enables reading its id (without performing the whole searching process)
+     * enables reading its id (without performing the whole search-scan process)
      * by:
      * - Send the reset pulse.
      * - If presence pulse indicates some slave(s) present on the bus, send
@@ -462,7 +462,7 @@ public:
      * Template parameters:
      * @param Ret CRC type: uint8_t for CRC-8, uint16_t for CRC-16, uint32_t for
      *     CRC-32
-     * @param RevPoly CRC polynomial coefficients in a reverse order, e.g. 0x8C
+     * @param RevPoly CRC polynomial coefficients in reverse order, e.g. 0x8C
      *     (not 0x31) for CRC-8/MAXIM, 0xA001 (not 0x8005) for CRC-16/ARC.
      */
     template<class Ret, Ret RevPoly>

@@ -13,9 +13,9 @@
 #ifndef __OWNG_ONEWIRE__
 #define __OWNG_ONEWIRE__
 
-#include <new>       /* in-place new-operator */
 #include <stdint.h>
 #include <string.h>  /* memcpy */
+#include "platform/Platform_New.h"
 #include "OneWireNg_CurrentPlatform.h"
 
 /**

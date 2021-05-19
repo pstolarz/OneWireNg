@@ -2,7 +2,7 @@
 .PHONY: all build clean lib libclean
 
 LIBDIR=../../src
-CXXFLAGS+=-D__TEST__ -Wall -DOWNG_CONFIG_FILE="\"test_config.h\"" -I$(LIBDIR) -I.
+CXXFLAGS+=-D__TEST__ -std=c++98 -Wall -DOWNG_CONFIG_FILE="\"test_config.h\"" -I$(LIBDIR) -I.
 
 LIBOBJS=\
 	$(LIBDIR)/OneWireNg.o \

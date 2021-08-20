@@ -136,15 +136,13 @@ void loop()
         if (!(ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE))
             break;
 
-        if (!printId(id))
-            continue;
-
-        if (dsth->readScratchpad(id, scrpd) != OneWireNg::EC_SUCCESS) {
-            Serial.println("  Invalid CRC!");
-            continue;
+        if (printId(id)) {
+            if (dsth->readScratchpad(id, scrpd) == OneWireNg::EC_SUCCESS) {
+                printScratchpad(scrpd);
+            } else {
+                Serial.println("  Invalid CRC!");
+            }
         }
-
-        printScratchpad(scrpd);
     } while (ec == OneWireNg::EC_MORE);
 
     Serial.println("----------");

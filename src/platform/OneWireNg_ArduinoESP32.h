@@ -17,6 +17,13 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
+/* determine if target is ESP32-C3 */
+#ifdef CONFIG_IDF_TARGET_ESP32C3
+    #define IDF_IS_TARGET_ESP32C3   CONFIG_IDF_TARGET_ESP32C3
+#else
+    #define IDF_IS_TARGET_ESP32C3   0
+#endif
+
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)
 
@@ -131,6 +138,16 @@ protected:
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {
+#if IDF_IS_TARGET_ESP32C3
+        assert(pin > 0 && pin < 22);
+
+       _dtaGpio.bmsk = (uint32_t)(1UL << pin);
+       _dtaGpio.inReg = (volatile uint32_t*)(GPIO_IN_REG);
+       _dtaGpio.outSetReg = (volatile uint32_t*)(GPIO_OUT_W1TS_REG);
+       _dtaGpio.outClrReg = (volatile uint32_t*)(GPIO_OUT_W1TC_REG);
+       _dtaGpio.modSetReg = (volatile uint32_t*)(GPIO_ENABLE_W1TS_REG);
+       _dtaGpio.modClrReg = (volatile uint32_t*)(GPIO_ENABLE_W1TC_REG);
+#else
         /* pins above 33 can only be inputs */
         assert(pin < 34);
 
@@ -149,12 +166,22 @@ protected:
             _dtaGpio.modSetReg = &GPIO.enable1_w1ts.val;
             _dtaGpio.modClrReg = &GPIO.enable1_w1tc.val;
         }
+#endif
         pinMode(pin, INPUT | (pullUp ? PULLUP : 0));
         setupDtaGpio();
     }
 
     void initPwrCtrlGpio(unsigned pin)
     {
+#if IDF_IS_TARGET_ESP32C3
+        assert(pin > 0 && pin < 22);
+
+        _pwrCtrlGpio.bmsk = (uint32_t)(1UL << pin);
+        _pwrCtrlGpio.outSetReg = (volatile uint32_t*)(GPIO_OUT_W1TS_REG);
+        _pwrCtrlGpio.outClrReg = (volatile uint32_t*)(GPIO_OUT_W1TC_REG);
+        _pwrCtrlGpio.modSetReg = (volatile uint32_t*)(GPIO_ENABLE_W1TS_REG);
+        _pwrCtrlGpio.modClrReg = (volatile uint32_t*)(GPIO_ENABLE_W1TC_REG);
+#else
         /* pins above 33 can only be inputs */
         assert(pin < 34);
 
@@ -171,6 +198,7 @@ protected:
             _pwrCtrlGpio.modSetReg = &GPIO.enable1_w1ts.val;
             _pwrCtrlGpio.modClrReg = &GPIO.enable1_w1tc.val;
         }
+#endif
         pinMode(pin, OUTPUT);
         setupPwrCtrlGpio(true);
     }

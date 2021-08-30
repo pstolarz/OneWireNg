@@ -150,7 +150,7 @@ protected:
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {
-        assert(digitalPinIsValid(pin) && digitalPinCanOutput(pin));
+        assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
 
         if (pin < 32) {
             _dtaGpio.bmsk = (uint32_t)(1UL << pin);
@@ -176,7 +176,8 @@ protected:
 
     void initPwrCtrlGpio(unsigned pin)
     {
-        assert(digitalPinIsValid(pin) && digitalPinCanOutput(pin));
+        assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
+
         if (pin < 32) {
             _pwrCtrlGpio.bmsk = (uint32_t)(1UL << pin);
             _pwrCtrlGpio.outSetReg = &REG_GPIO_OUT_SET_LO;

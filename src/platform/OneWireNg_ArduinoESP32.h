@@ -17,6 +17,25 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
+#if (SOC_GPIO_PIN_COUNT < 32)
+# define REG_GPIO_IN_LO GPIO.in.val
+# define REG_GPIO_OUT_SET_LO GPIO.out_w1ts.val
+# define REG_GPIO_OUT_CLR_LO GPIO.out_w1tc.val
+# define REG_GPIO_MOD_SET_LO GPIO.enable_w1ts.val
+# define REG_GPIO_MOD_CLR_LO GPIO.enable_w1tc.val
+#else
+# define REG_GPIO_IN_LO GPIO.in
+# define REG_GPIO_IN_HI GPIO.in1.val
+# define REG_GPIO_OUT_SET_LO GPIO.out_w1ts
+# define REG_GPIO_OUT_SET_HI GPIO.out1_w1ts.val
+# define REG_GPIO_OUT_CLR_LO GPIO.out_w1tc
+# define REG_GPIO_OUT_CLR_HI GPIO.out1_w1tc.val
+# define REG_GPIO_MOD_SET_LO GPIO.enable_w1ts
+# define REG_GPIO_MOD_SET_HI GPIO.enable1_w1ts.val
+# define REG_GPIO_MOD_CLR_LO GPIO.enable_w1tc
+# define REG_GPIO_MOD_CLR_HI GPIO.enable1_w1tc.val
+#endif
+
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)
 
@@ -131,46 +150,50 @@ protected:
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {
-        /* pins above 33 can only be inputs */
-        assert(pin < 34);
+        assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
 
         if (pin < 32) {
             _dtaGpio.bmsk = (uint32_t)(1UL << pin);
-            _dtaGpio.inReg = &GPIO.in;
-            _dtaGpio.outSetReg = &GPIO.out_w1ts;
-            _dtaGpio.outClrReg = &GPIO.out_w1tc;
-            _dtaGpio.modSetReg = &GPIO.enable_w1ts;
-            _dtaGpio.modClrReg = &GPIO.enable_w1tc;
-        } else {
-            _dtaGpio.bmsk = (uint32_t)(1UL << (pin-32));
-            _dtaGpio.inReg = &GPIO.in1.val;
-            _dtaGpio.outSetReg = &GPIO.out1_w1ts.val;
-            _dtaGpio.outClrReg = &GPIO.out1_w1tc.val;
-            _dtaGpio.modSetReg = &GPIO.enable1_w1ts.val;
-            _dtaGpio.modClrReg = &GPIO.enable1_w1tc.val;
+            _dtaGpio.inReg = &REG_GPIO_IN_LO;
+            _dtaGpio.outSetReg = &REG_GPIO_OUT_SET_LO;
+            _dtaGpio.outClrReg = &REG_GPIO_OUT_CLR_LO;
+            _dtaGpio.modSetReg = &REG_GPIO_MOD_SET_LO;
+            _dtaGpio.modClrReg = &REG_GPIO_MOD_CLR_LO;
         }
+#if (SOC_GPIO_PIN_COUNT >= 32)
+        else {
+            _dtaGpio.bmsk = (uint32_t)(1UL << (pin-32));
+            _dtaGpio.inReg = &REG_GPIO_IN_HI;
+            _dtaGpio.outSetReg = &REG_GPIO_OUT_SET_HI;
+            _dtaGpio.outClrReg = &REG_GPIO_OUT_CLR_HI;
+            _dtaGpio.modSetReg = &REG_GPIO_MOD_SET_HI;
+            _dtaGpio.modClrReg = &REG_GPIO_MOD_CLR_HI;
+        }
+#endif
         pinMode(pin, INPUT | (pullUp ? PULLUP : 0));
         setupDtaGpio();
     }
 
     void initPwrCtrlGpio(unsigned pin)
     {
-        /* pins above 33 can only be inputs */
-        assert(pin < 34);
+        assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
 
         if (pin < 32) {
             _pwrCtrlGpio.bmsk = (uint32_t)(1UL << pin);
-            _pwrCtrlGpio.outSetReg = &GPIO.out_w1ts;
-            _pwrCtrlGpio.outClrReg = &GPIO.out_w1tc;
-            _pwrCtrlGpio.modSetReg = &GPIO.enable_w1ts;
-            _pwrCtrlGpio.modClrReg = &GPIO.enable_w1tc;
-        } else {
-            _pwrCtrlGpio.bmsk = (uint32_t)(1UL << (pin-32));
-            _pwrCtrlGpio.outSetReg = &GPIO.out1_w1ts.val;
-            _pwrCtrlGpio.outClrReg = &GPIO.out1_w1tc.val;
-            _pwrCtrlGpio.modSetReg = &GPIO.enable1_w1ts.val;
-            _pwrCtrlGpio.modClrReg = &GPIO.enable1_w1tc.val;
+            _pwrCtrlGpio.outSetReg = &REG_GPIO_OUT_SET_LO;
+            _pwrCtrlGpio.outClrReg = &REG_GPIO_OUT_CLR_LO;
+            _pwrCtrlGpio.modSetReg = &REG_GPIO_MOD_SET_LO;
+            _pwrCtrlGpio.modClrReg = &REG_GPIO_MOD_CLR_LO;
         }
+#if (SOC_GPIO_PIN_COUNT >= 32)
+        else {
+            _pwrCtrlGpio.bmsk = (uint32_t)(1UL << (pin-32));
+            _pwrCtrlGpio.outSetReg = &REG_GPIO_OUT_SET_HI;
+            _pwrCtrlGpio.outClrReg = &REG_GPIO_OUT_CLR_HI;
+            _pwrCtrlGpio.modSetReg = &REG_GPIO_MOD_SET_HI;
+            _pwrCtrlGpio.modClrReg = &REG_GPIO_MOD_CLR_HI;
+        }
+#endif
         pinMode(pin, OUTPUT);
         setupPwrCtrlGpio(true);
     }

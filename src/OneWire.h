@@ -52,11 +52,11 @@ public:
      * logic.
      */
     OneWire():
-        _srch_done(false), _ow(NULL)
+        _ow(NULL), _srch_done(false)
     {}
 
     OneWire(uint8_t pin):
-        _srch_done(false), _ow(NULL)
+        _ow(NULL), _srch_done(false)
     {
         begin(pin);
     }
@@ -155,9 +155,15 @@ public:
 #endif
 
 private:
-    bool _srch_done;
+#if __cplusplus >= 201103L
+    alignas(void*)
+#else
+    __attribute__ ((aligned(sizeof(void*))))
+#endif
     uint8_t _ow_buf[sizeof(OneWireNg_CurrentPlatform)];
+
     OneWireNg *_ow;
+    bool _srch_done;
 };
 
 #endif  /* __OWNG_ONEWIRE__ */

@@ -17,7 +17,11 @@
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
 
-#if (SOC_GPIO_PIN_COUNT < 32)
+#ifndef GPIO_PIN_COUNT
+# error "GPIO_PIN_COUNT not defined for this version of SDK"
+#endif
+
+#if (GPIO_PIN_COUNT <= 32)
 # define REG_GPIO_IN_LO GPIO.in.val
 # define REG_GPIO_OUT_SET_LO GPIO.out_w1ts.val
 # define REG_GPIO_OUT_CLR_LO GPIO.out_w1tc.val
@@ -160,7 +164,7 @@ protected:
             _dtaGpio.modSetReg = &REG_GPIO_MOD_SET_LO;
             _dtaGpio.modClrReg = &REG_GPIO_MOD_CLR_LO;
         }
-#if (SOC_GPIO_PIN_COUNT >= 32)
+#if (GPIO_PIN_COUNT > 32)
         else {
             _dtaGpio.bmsk = (uint32_t)(1UL << (pin-32));
             _dtaGpio.inReg = &REG_GPIO_IN_HI;
@@ -185,7 +189,7 @@ protected:
             _pwrCtrlGpio.modSetReg = &REG_GPIO_MOD_SET_LO;
             _pwrCtrlGpio.modClrReg = &REG_GPIO_MOD_CLR_LO;
         }
-#if (SOC_GPIO_PIN_COUNT >= 32)
+#if (GPIO_PIN_COUNT > 32)
         else {
             _pwrCtrlGpio.bmsk = (uint32_t)(1UL << (pin-32));
             _pwrCtrlGpio.outSetReg = &REG_GPIO_OUT_SET_HI;

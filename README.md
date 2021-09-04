@@ -209,7 +209,7 @@ NOTE: If heap allocation is inadvisable use in-place `new` operator:
 #include "OneWireNg_CurrentPlatform.h"
 
 static OneWireNg *ow = nullptr;
-static uint8_t OneWireNg_buf[sizeof(OneWireNg_CurrentPlatform)];
+PTR_ALIGNED static uint8_t OneWireNg_buf[sizeof(OneWireNg_CurrentPlatform)];
 
 void setup()
 {

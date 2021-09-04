@@ -39,4 +39,10 @@ inline void *operator new(size_t size, void *ptr)
 # include <new>
 #endif
 
+#if __cplusplus >= 201103L
+# define PTR_ALIGNED alignas(void*)
+#else
+# define PTR_ALIGNED __attribute__ ((aligned(sizeof(void*))))
+#endif
+
 #endif /* __OWNG_PLATFORM_NEW__ */

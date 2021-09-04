@@ -274,7 +274,7 @@ public:
     }
 
 #define MAKE_SCRATCHPAD(__scrpd) \
-    uint8_t __scrpd##_buf[sizeof(DSTherm::Scratchpad)]; \
+    PTR_ALIGNED uint8_t __scrpd##_buf[sizeof(DSTherm::Scratchpad)]; \
     DSTherm::Scratchpad *__scrpd = reinterpret_cast<DSTherm::Scratchpad*>(__scrpd##_buf)
 
     /**
@@ -282,10 +282,10 @@ public:
      *
      * @param id Sensor id the scratchpad shall be read from.
      * @param scratchpad Points to memory region where DSTherm_Test::Scratchpad
-     *    object representing read scratchpad will be created in-pace:
+     *    object representing read scratchpad will be created in-place:
      *
      * @code
-     * uint8_t scrpd_buf[sizeof(DSTherm::Scratchpad)];
+     * alignas(void*) uint8_t scrpd_buf[sizeof(DSTherm::Scratchpad)];
      * DSTherm::Scratchpad *scrpd =
      *     reinterpret_cast<DSTherm::Scratchpad*>(&scrpd_buf[0]);
      *

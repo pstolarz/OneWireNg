@@ -163,13 +163,7 @@ public:
 #endif
 
 private:
-#if __cplusplus >= 201103L
-    alignas(void*)
-#else
-    __attribute__ ((aligned(sizeof(void*))))
-#endif
-    uint8_t _ow_buf[sizeof(OneWireNg_CurrentPlatform)];
-
+    PTR_ALIGNED uint8_t _ow_buf[sizeof(OneWireNg_CurrentPlatform)];
     OneWireNg *_ow;
     bool _srch_done;
 };

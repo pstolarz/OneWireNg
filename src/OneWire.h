@@ -61,6 +61,14 @@ public:
         begin(pin);
     }
 
+    ~OneWire()
+    {
+        if (_ow)
+            _ow->OneWireNg::~OneWireNg();
+
+        _ow = NULL;
+    }
+
     void begin(uint8_t pin)
     {
         if (_ow)

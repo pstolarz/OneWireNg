@@ -13,6 +13,14 @@
 #ifndef __OWNG_PLATFORM_NEW__
 #define __OWNG_PLATFORM_NEW__
 
+#if __cplusplus >= 201103L
+# define PTR_ALIGNED alignas(void*)
+# define NOEXCEPT noexcept
+#else
+# define PTR_ALIGNED __attribute__ ((aligned(sizeof(void*))))
+# define NOEXCEPT throw()
+#endif
+
 /*
  * Some toolchains (e.g. Arduino megaAVR) don't provide standard C++ headers
  * but only implement supported features partially. This header tries to detect
@@ -20,29 +28,16 @@
  * new-operator for the in-place variant (as required by the library).
  */
 #ifdef ARDUINO
-/* if an Arduino toolchain supports <new> it's usually included by Arduino.h */
 # include "Arduino.h"
 
-# ifndef _NEW
-inline void *operator new(size_t size, void *ptr)
-#  if __cplusplus >= 201103L
-    noexcept
-#  else
-    throw()
-#  endif
-{
+# if !(defined(_NEW) || defined(NEW_H))
+inline void *operator new(size_t size, void *ptr) NOEXCEPT {
     (void)size;
     return ptr;
 }
 # endif
 #else
 # include <new>
-#endif
-
-#if __cplusplus >= 201103L
-# define PTR_ALIGNED alignas(void*)
-#else
-# define PTR_ALIGNED __attribute__ ((aligned(sizeof(void*))))
 #endif
 
 #endif /* __OWNG_PLATFORM_NEW__ */

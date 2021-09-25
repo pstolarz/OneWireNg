@@ -56,7 +56,7 @@
 # error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured for USE_OD_MODE"
 #endif
 
-static OneWireNg *ow = nullptr;
+static OneWireNg *ow = NULL;
 
 static void printId(const OneWireNg::Id& id)
 {
@@ -255,7 +255,7 @@ static bool writePage(const OneWireNg::Id *id,
     uint8_t row = pageAddr * (PAGE_SIZE / ROW_SIZE);
 
     for (i = 0; i < (PAGE_SIZE / ROW_SIZE); i++, row++) {
-        if (!writeRow((!i ? id : nullptr),
+        if (!writeRow((!i ? id : NULL),
             row, &pageData[i * ROW_SIZE], checkDataIntegr)) break;
     }
 
@@ -304,7 +304,7 @@ void setup()
             memcpy(&dev, &id, sizeof(OneWireNg::Id));
 
         printId(id);
-        printMem(nullptr);
+        printMem(NULL);
 
         Serial.println("----------");
     } while (ec == OneWireNg::EC_MORE);

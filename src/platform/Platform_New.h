@@ -12,6 +12,12 @@
 
 #ifndef __OWNG_PLATFORM_NEW__
 #define __OWNG_PLATFORM_NEW__
+/*
+ * The header defines inline new/delete operators. The main purpose of this
+ * is to provide basic C++ allocation functionality as C's malloc(), free()
+ * counterparts for toolchains that don't support C++ <new> header or the
+ * support is insufficient.
+ */
 
 #if __cplusplus >= 201103L
 # define PTR_ALIGNED alignas(void*)
@@ -21,23 +27,53 @@
 # define NOEXCEPT throw()
 #endif
 
-/*
- * Some toolchains (e.g. Arduino megaAVR) don't provide standard C++ headers
- * but only implement supported features partially. This header tries to detect
- * if current toolchain provides C++ <new> header and if not overloads
- * new-operator for the in-place variant (as required by the library).
- */
-#ifdef ARDUINO
-# include "Arduino.h"
+#if !defined(CONFIG_CPP_NEW_ALT) && \
+    (defined(__has_include) && __has_include(<new>))
+# include <new>
+#else
+# if defined(CONFIG_CPP_NEW_ALT) && defined(_NEW)
+#  warning "CONFIG_CPP_NEW_ALT ignored to avoid conflict with already included <new> header"
+# else
+#  include <stdlib.h>
 
-# if !(defined(_NEW) || defined(NEW_H))
-inline void *operator new(size_t size, void *ptr) NOEXCEPT {
-    (void)size;
+#  if __cpp_aligned_new
+static_assert(alignof(max_align_t) >= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
+    "Alt. allocation implementation can't guarantee proper C++17 alignment");
+#  endif
+
+inline void *operator new(size_t sz) {
+    return malloc(sz);
+}
+
+inline void *operator new[](size_t sz) {
+    return malloc(sz);
+}
+
+inline void *operator new(size_t sz, void *ptr) NOEXCEPT {
+    (void)sz;
     return ptr;
 }
+
+inline void operator delete(void *ptr) NOEXCEPT {
+    free(ptr);
+}
+
+inline void operator delete[](void *ptr) NOEXCEPT {
+    free(ptr);
+}
+
+#  if __cpp_sized_deallocation
+inline void operator delete(void* ptr, size_t sz) NOEXCEPT {
+    (void)sz;
+    free(ptr);
+}
+
+inline void operator delete[](void* ptr, size_t sz) NOEXCEPT {
+    (void)sz;
+    free(ptr);
+}
+#  endif
 # endif
-#else
-# include <new>
 #endif
 
 #endif /* __OWNG_PLATFORM_NEW__ */

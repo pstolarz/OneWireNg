@@ -132,7 +132,7 @@ platform class. For example:
 ```cpp
 #include "OneWireNg_CurrentPlatform.h"
 
-static OneWireNg *ow = nullptr;
+static OneWireNg *ow = NULL;
 
 void setup()
 {
@@ -180,7 +180,7 @@ As an example:
 ```cpp
 #include "OneWireNg_CurrentPlatform.h"
 
-static OneWireNg *ow = nullptr;
+static OneWireNg *ow = NULL;
 
 void setup()
 {
@@ -205,10 +205,9 @@ the bus. The bus is controlled by MCU pin number 10.
 NOTE: If heap allocation is inadvisable use in-place `new` operator:
 
 ```cpp
-#include "platform/Platform_New.h"
 #include "OneWireNg_CurrentPlatform.h"
 
-static OneWireNg *ow = nullptr;
+static OneWireNg *ow = NULL;
 PTR_ALIGNED static uint8_t OneWireNg_buf[sizeof(OneWireNg_CurrentPlatform)];
 
 void setup()

@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "OneWireNg_Config.h"
+#include "platform/Platform_New.h"
 
 #ifndef UNUSED
 # define UNUSED(x) ((void)(x))
@@ -81,7 +82,13 @@ public:
         EC_FILTERED = 100
     } ErrorCode;
 
-    /* destructor need to be virtual */
+    /**
+     * Destructor needs to be virtual.
+     *
+     * @note This is a deleting-destructor which means operator delete is
+     *     called under the hood to free memory occupied by the inheriting
+     *     object.
+     */
     virtual ~OneWireNg() {}
 
     /**
@@ -368,7 +375,7 @@ public:
      * selects the overdrive enabled device, therefore device specific command
      * may be sent directly after calling the routine.
      *
-     * To switch back to the standard mode @c setOverdrive(false) need to be
+     * To switch back to the standard mode @c setOverdrive(false) needs to be
      * called. After performing 1-wire reset in the standard mode the overdrive
      * mode is disabled on all devices connected to the bus - only standard mode
      * communication is possible.
@@ -401,7 +408,7 @@ public:
      * - Address specific device(s) via @ref addressAll() or @ref addressSingle()
      *   to perform commands in the overdrive mode.
      *
-     * To switch back to the standard mode @c setOverdrive(false) need to be
+     * To switch back to the standard mode @c setOverdrive(false) needs to be
      * called. After performing 1-wire reset in the standard mode the overdrive
      * mode is disabled on all devices connected to the bus - only standard mode
      * communication is possible.

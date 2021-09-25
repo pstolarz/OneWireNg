@@ -115,5 +115,12 @@
  */
 //#define CONFIG_DS18S20_EXT_RES
 
+/**
+ * In case a toolchain doesn't support C++ <new> header or the support is
+ * insufficient, use this parameter to enable alternative implementation
+ * of basic C++ allocation functionality as C's malloc(), free() counterparts.
+ */
+//#define CONFIG_CPP_NEW_ALT
+
 #endif /* !OWNG_DISABLE_DEFAULT_CONFIG */
 #endif /* __OWNG_CONFIG__ */

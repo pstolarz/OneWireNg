@@ -15,7 +15,6 @@
 
 #include <stdint.h>
 #include <string.h>  /* memcpy */
-#include "platform/Platform_New.h"
 #include "OneWireNg_CurrentPlatform.h"
 
 /**

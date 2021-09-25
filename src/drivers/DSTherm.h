@@ -14,7 +14,6 @@
 #define __OWNG_DSTHERM__
 
 #include <string.h>     /* memcpy() */
-#include "platform/Platform_New.h"
 #include "OneWireNg.h"
 
 /**

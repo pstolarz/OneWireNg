@@ -85,9 +85,11 @@ public:
     /**
      * Destructor needs to be virtual.
      *
-     * @note This is a deleting-destructor which means operator delete is
-     *     called under the hood to free memory occupied by the inheriting
-     *     object.
+     * @note As part of implementation of a virtual destructor body the C++
+     *     compiler provides deleting-destructor code responsible for object
+     *     deallocation via delete. This implies operator delete() (global or
+     *     class specific) needs to be accessible for any class with virtual
+     *     destructor defined.
      */
     virtual ~OneWireNg() {}
 

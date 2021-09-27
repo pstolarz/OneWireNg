@@ -273,7 +273,7 @@ public:
     }
 
 #define MAKE_SCRATCHPAD(__scrpd) \
-    PTR_ALIGNED uint8_t __scrpd##_buf[sizeof(DSTherm::Scratchpad)]; \
+    ALLOC_ALIGNED uint8_t __scrpd##_buf[sizeof(DSTherm::Scratchpad)]; \
     DSTherm::Scratchpad *__scrpd = reinterpret_cast<DSTherm::Scratchpad*>(__scrpd##_buf)
 
     /**

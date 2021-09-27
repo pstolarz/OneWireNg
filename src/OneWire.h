@@ -162,7 +162,7 @@ public:
 #endif
 
 private:
-    PTR_ALIGNED uint8_t _ow_buf[sizeof(OneWireNg_CurrentPlatform)];
+    ALLOC_ALIGNED uint8_t _ow_buf[sizeof(OneWireNg_CurrentPlatform)];
     OneWireNg *_ow;
     bool _srch_done;
 };

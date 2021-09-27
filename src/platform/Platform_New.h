@@ -20,10 +20,10 @@
  */
 
 #if __cplusplus >= 201103L
-# define PTR_ALIGNED alignas(void*)
+# define ALLOC_ALIGNED alignas(void*)
 # define NOEXCEPT noexcept
 #else
-# define PTR_ALIGNED __attribute__ ((aligned(sizeof(void*))))
+# define ALLOC_ALIGNED __attribute__ ((aligned(sizeof(void*))))
 # define NOEXCEPT throw()
 #endif
 

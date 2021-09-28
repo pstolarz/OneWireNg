@@ -94,10 +94,6 @@ protected:
     /**
      * Write output-mode @c gpio with a given @c state (0: low, 1: high).
      *
-     * Depending on a type of underlying platform (open-drain or non-open-drain
-     * digital outputs) the high state is pulled-up by a resistor or directly
-     * connected to a voltage source.
-     *
      * @note The routine is called for data (@c GPIO_DTA) and power-control-GPIO
      *     (@c GPIO_CTRL_PWR). The latter case happens if and only if
      *     power-control-GPIO has been configured via @ref setupPwrCtrlGpio().
@@ -116,7 +112,9 @@ protected:
      *     switching the GPIO into the output mode and setting the initial
      *     value on the pin. In case of problem with fulfilling such assumption
      *     there may be feasible to compile the library with @ref
-     *     CONFIG_BUS_BLINK_PROTECTION, but such approach has its drawbacks too.
+     *     CONFIG_BUS_BLINK_PROTECTION, but such approach is burdened with its
+     *     own drawbacks too (see the configuration parameter description for
+     *     more details).
      *
      * @note The routine is called for data (@c GPIO_DTA) and power-control-GPIO
      *     (@c GPIO_CTRL_PWR). The latter case happens if and only if

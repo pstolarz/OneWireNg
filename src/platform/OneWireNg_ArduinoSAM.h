@@ -76,9 +76,8 @@ public:
     }
 
 protected:
-    int readGpioIn(GpioType gpio)
+    int readDtaGpioIn()
     {
-        UNUSED(gpio);
         return __READ_GPIO(_dtaGpio);
     }
 
@@ -97,9 +96,8 @@ protected:
         }
     }
 
-    void setGpioAsInput(GpioType gpio)
+    void setDtaGpioAsInput()
     {
-        UNUSED(gpio);
 #ifdef PIN_STATUS_UPDATE
         *_dtaGpio.status = _dtaGpio.inputStatus;
 #endif

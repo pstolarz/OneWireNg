@@ -102,9 +102,8 @@ public:
     }
 
 protected:
-    int readGpioIn(GpioType gpio)
+    int readDtaGpioIn()
     {
-        UNUSED(gpio);
         return __READ_GPIO(_dtaGpio);
     }
 
@@ -117,9 +116,8 @@ protected:
         }
     }
 
-    void setGpioAsInput(GpioType gpio)
+    void setDtaGpioAsInput()
     {
-        UNUSED(gpio);
         __GPIO_AS_INPUT(_dtaGpio);
     }
 

@@ -72,7 +72,7 @@ TIME_CRITICAL OneWireNg::ErrorCode OneWireNg_BitBang::reset()
         delayUs(OD_RESET_LOW);
         setBus(1);
         delayUs(OD_RESET_SMPL);
-        presPulse = readGpioIn(GPIO_DTA);
+        presPulse = readDtaGpioIn();
         timeCriticalExit();
         delayUs(OD_RESET_END);
     } else
@@ -86,7 +86,7 @@ TIME_CRITICAL OneWireNg::ErrorCode OneWireNg_BitBang::reset()
         timeCriticalEnter();
         setBus(1);
         delayUs(STD_RESET_SMPL);
-        presPulse = readGpioIn(GPIO_DTA);
+        presPulse = readDtaGpioIn();
         timeCriticalExit();
         delayUs(STD_RESET_END);
     }
@@ -132,7 +132,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
             delayUs(STD_WRITE1_LOW);
             setBus(1);
             delayUs(STD_WRITE1_SMPL);
-            smpl = readGpioIn(GPIO_DTA);
+            smpl = readDtaGpioIn();
             timeCriticalExit();
             delayUs(STD_WRITE1_END);
         } else
@@ -163,7 +163,7 @@ int OneWireNg_BitBang::touch1Overdrive()
 #if OD_WRITE1_SMPL >= 0
     delayUs(OD_WRITE1_SMPL);
 #endif
-    return readGpioIn(GPIO_DTA);
+    return readDtaGpioIn();
 }
 #endif
 
@@ -174,7 +174,7 @@ OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
     } else if (on) {
         setGpioAsOutput(GPIO_DTA, 1);
     } else {
-        setGpioAsInput(GPIO_DTA);
+        setDtaGpioAsInput();
     }
     _flgs.pwre = (on != 0);
     return EC_SUCCESS;

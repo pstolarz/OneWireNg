@@ -60,9 +60,8 @@ public:
     }
 
 protected:
-    int readGpioIn(GpioType gpio)
+    int readDtaGpioIn()
     {
-        UNUSED(gpio);
         return (digitalReadFast(_dtaGpio.pinName) == LOW ? 0 : 1);
     }
 
@@ -75,9 +74,8 @@ protected:
         }
     }
 
-    void setGpioAsInput(GpioType gpio)
+    void setDtaGpioAsInput()
     {
-        UNUSED(gpio);
         LL_GPIO_SetPinMode(
             _dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_INPUT);
     }

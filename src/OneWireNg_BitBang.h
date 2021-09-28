@@ -22,8 +22,8 @@
  * The class relies on virtual functions provided by derivative class to
  * perform platform specific GPIO operations. The platform specific class
  * shall provide:
- * - @ref readGpioIn(), @ref writeGpioOut(): read/write operations.
- * - @ref setGpioAsInput(), @ref setGpioAsOutput(): set GPIO working mode.
+ * - @ref readDtaGpioIn(), @ref writeGpioOut(): read/write operations.
+ * - @ref setDtaGpioAsInput(), @ref setGpioAsOutput(): set GPIO working mode.
  *
  * and optionally:
  * - @ref touch1Overdrive(): if overdrive mode is enabled and requires specific
@@ -50,8 +50,6 @@ protected:
 
     /**
      * This class is intended to be inherited by specialized classes.
-     *
-     * @see writeGpioOut().
      */
     OneWireNg_BitBang()
     {
@@ -89,13 +87,9 @@ protected:
     }
 
     /**
-     * Read input-mode @c gpio and return its state (0: low, 1: high).
-     *
-     * @note Currently the routine is called for data GPIO only (@c GPIO_DTA).
-     *     However @c gpio parameter is passed to maintain common GPIO interface
-     *     and reserve the parameter for possible future usage.
+     * Read 1-wire data gpio and return its state (0: low, 1: high).
      */
-    virtual int readGpioIn(GpioType gpio) = 0;
+    virtual int readDtaGpioIn() = 0;
 
     /**
      * Write output-mode @c gpio with a given @c state (0: low, 1: high).
@@ -111,13 +105,9 @@ protected:
     virtual void writeGpioOut(GpioType gpio, int state) = 0;
 
     /**
-     * Set @c gpio in the input-mode.
-     *
-     * @note Currently the routine is called for data GPIO only (@c GPIO_DTA).
-     *     However @c gpio parameter is passed to maintain common GPIO interface
-     *     and reserve the parameter for possible future usage.
+     * Set 1-wire data gpio in the input-mode.
      */
-    virtual void setGpioAsInput(GpioType gpio) = 0;
+    virtual void setDtaGpioAsInput() = 0;
 
     /**
      * Set @c gpio in the output-mode with an initial @c state (0: low, 1: high).
@@ -166,7 +156,7 @@ protected:
 #ifdef CONFIG_BUS_BLINK_PROTECTION
             writeGpioOut(GPIO_DTA, 1);
 #endif
-            setGpioAsInput(GPIO_DTA);
+            setDtaGpioAsInput();
         } else {
             setGpioAsOutput(GPIO_DTA, 0);
         }

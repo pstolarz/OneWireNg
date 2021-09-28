@@ -169,17 +169,12 @@ int OneWireNg_BitBang::touch1Overdrive()
 
 OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
 {
-    if (!_flgs.od) {
-        if (on) {
-            setGpioAsOutput(GPIO_DTA, 1);
-        } else {
-            setGpioAsInput(GPIO_DTA);
-        }
-    } else
     if (_flgs.pwrp) {
         writeGpioOut(GPIO_CTRL_PWR, (_flgs.pwrr ? (on != 0) : !on));
+    } else if (on) {
+        setGpioAsOutput(GPIO_DTA, 1);
     } else {
-        return EC_UNSUPPORED;
+        setGpioAsInput(GPIO_DTA);
     }
     _flgs.pwre = (on != 0);
     return EC_SUCCESS;

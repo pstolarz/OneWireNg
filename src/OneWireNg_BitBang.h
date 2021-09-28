@@ -37,11 +37,7 @@ public:
 
     /**
      * Enable/disable direct voltage source provisioning on the 1-wire data bus
-     * parasitically powering connected slave devices. In case of open-drain
-     * type of platform, where no power-control-GPIO has been configured,
-     * the routine returns @c EC_UNSUPPORED, @c EC_SUCCESS.
-     *
-     * @see setupPwrCtrlGpio().
+     * parasitically powering connected slave devices. Function always successes.
      */
     ErrorCode powerBus(bool on);
 
@@ -55,14 +51,10 @@ protected:
     /**
      * This class is intended to be inherited by specialized classes.
      *
-     * @param openDrain Set to @c true if platform's GPIOs are of open-drain
-     *    type (in the output mode).
-     *
      * @see writeGpioOut().
      */
-    OneWireNg_BitBang(bool openDrain = false)
+    OneWireNg_BitBang()
     {
-        _flgs.od = (openDrain != 0);
         _flgs.pwre = 0;
         _flgs.pwrp = 0;
         _flgs.pwrr = 0;
@@ -181,7 +173,6 @@ protected:
     }
 
     struct {
-        unsigned od:   1;   /** open drain indicator */
         unsigned pwre: 1;   /** bus is powered indicator */
         unsigned pwrp: 1;   /** power-control-GPIO pin is valid */
         unsigned pwrr: 1;   /** power-control-GPIO works in reverse polarity */

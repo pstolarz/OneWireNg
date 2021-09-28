@@ -47,8 +47,7 @@ public:
      * @param pin Arduino GPIO pin number used for bit-banging 1-wire bus.
      * @param pullUp If @c true configure internal pull-up resistor for the bus.
      */
-    OneWireNg_ArduinoMegaAVR(unsigned pin, bool pullUp):
-        OneWireNg_BitBang(false)
+    OneWireNg_ArduinoMegaAVR(unsigned pin, bool pullUp)
     {
         initDtaGpio(pin, pullUp);
     }
@@ -68,8 +67,7 @@ public:
      *     transistor.
      * @param pullUp If @c true configure internal pull-up resistor for the bus.
      */
-    OneWireNg_ArduinoMegaAVR(unsigned pin, unsigned pwrCtrlPin, bool pullUp):
-        OneWireNg_BitBang(true)
+    OneWireNg_ArduinoMegaAVR(unsigned pin, unsigned pwrCtrlPin, bool pullUp)
     {
         initDtaGpio(pin, pullUp);
         initPwrCtrlGpio(pwrCtrlPin);

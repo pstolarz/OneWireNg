@@ -42,11 +42,13 @@ public:
     ErrorCode powerBus(bool on);
 
 protected:
+#ifdef CONFIG_PRW_CTRL_ENABLED
     typedef enum
     {
         GPIO_DTA = 0,   /** 1-wire data GPIO */
         GPIO_CTRL_PWR   /** power-control-GPIO */
     } GpioType;
+#endif
 
     /**
      * This class is intended to be inherited by specialized classes.
@@ -54,10 +56,13 @@ protected:
     OneWireNg_BitBang()
     {
         _flgs.pwre = 0;
+#ifdef CONFIG_PRW_CTRL_ENABLED
         _flgs.pwrp = 0;
         _flgs.pwrr = 0;
+#endif
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     /**
      * For open-drain type of platform data bus GPIO can't serve as a voltage
      * source for parasitically power connected slaves. This routine enables /
@@ -71,12 +76,13 @@ protected:
     {
         if (on) {
             _flgs.pwrr = (reversePolarity != 0);
-            setGpioAsOutput(GPIO_CTRL_PWR, (reversePolarity ? 0 : 1));
+            setGpioAsOutput((reversePolarity ? 0 : 1), GPIO_CTRL_PWR);
             _flgs.pwrp = 1;
         } else {
             _flgs.pwrp = 0;
         }
     }
+#endif
 
     /**
      * Utility routine. Shall be called from inheriting class to initialize
@@ -92,18 +98,24 @@ protected:
     virtual int readDtaGpioIn() = 0;
 
     /**
-     * Write output-mode @c gpio with a given @c state (0: low, 1: high).
-     *
-     * @note The routine is called for data (@c GPIO_DTA) and power-control-GPIO
-     *     (@c GPIO_CTRL_PWR). The latter case happens if and only if
-     *     power-control-GPIO has been configured via @ref setupPwrCtrlGpio().
-     */
-    virtual void writeGpioOut(GpioType gpio, int state) = 0;
-
-    /**
      * Set 1-wire data gpio in the input-mode.
      */
     virtual void setDtaGpioAsInput() = 0;
+
+    /**
+     * Write output-mode @c gpio with a given @c state (0: low, 1: high).
+     *
+     * @note If the library is configured with @c CONFIG_PRW_CTRL_ENABLED then
+     *     the routine's second argument is present and specifies a GPIO the
+     *     routine is called for: data (@c GPIO_DTA) or power-control-GPIO
+     *     (@c GPIO_CTRL_PWR). The latter case happens if and only if
+     *     power-control-GPIO has been configured via @ref setupPwrCtrlGpio().
+     */
+#ifdef CONFIG_PRW_CTRL_ENABLED
+    virtual void writeGpioOut(int state, GpioType gpio) = 0;
+#else
+    virtual void writeGpioOut(int state) = 0;
+#endif
 
     /**
      * Set @c gpio in the output-mode with an initial @c state (0: low, 1: high).
@@ -113,14 +125,20 @@ protected:
      *     value on the pin. In case of problem with fulfilling such assumption
      *     there may be feasible to compile the library with @ref
      *     CONFIG_BUS_BLINK_PROTECTION, but such approach is burdened with its
-     *     own drawbacks too (see the configuration parameter description for
-     *     more details).
+     *     own drawback (see the configuration parameter description for more
+     *     details).
      *
-     * @note The routine is called for data (@c GPIO_DTA) and power-control-GPIO
+     * @note If the library is configured with @c CONFIG_PRW_CTRL_ENABLED then
+     *     the routine's second argument is present and specifies a GPIO the
+     *     routine is called for: data (@c GPIO_DTA) or power-control-GPIO
      *     (@c GPIO_CTRL_PWR). The latter case happens if and only if
      *     power-control-GPIO has been configured via @ref setupPwrCtrlGpio().
      */
-    virtual void setGpioAsOutput(GpioType gpio, int state) = 0;
+#ifdef CONFIG_PRW_CTRL_ENABLED
+    virtual void setGpioAsOutput(int state, GpioType gpio) = 0;
+#else
+    virtual void setGpioAsOutput(int state) = 0;
+#endif
 
 #ifdef CONFIG_OVERDRIVE_ENABLED
     /**
@@ -152,19 +170,30 @@ protected:
     {
         if (state) {
 #ifdef CONFIG_BUS_BLINK_PROTECTION
-            writeGpioOut(GPIO_DTA, 1);
+            writeDtaGpioOut(1);
 #endif
             setDtaGpioAsInput();
         } else {
-            setGpioAsOutput(GPIO_DTA, 0);
+            setDtaGpioAsOutput(0);
         }
     }
 
     struct {
         unsigned pwre: 1;   /** bus is powered indicator */
+#ifdef CONFIG_PRW_CTRL_ENABLED
         unsigned pwrp: 1;   /** power-control-GPIO pin is valid */
         unsigned pwrr: 1;   /** power-control-GPIO works in reverse polarity */
+#endif
     } _flgs;
+
+private:
+#ifdef CONFIG_PRW_CTRL_ENABLED
+    void writeDtaGpioOut(int state) { writeGpioOut(state, GPIO_DTA); }
+    void setDtaGpioAsOutput(int state) { setGpioAsOutput(state, GPIO_DTA); }
+#else
+    void writeDtaGpioOut(int state) { writeGpioOut(state); }
+    void setDtaGpioAsOutput(int state) { setGpioAsOutput(state); }
+#endif
 
 #ifdef __TEST__
 friend class OneWireNg_BitBang_Test;

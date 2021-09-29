@@ -15,17 +15,18 @@
 class OneWireNg_BitBang_Test: OneWireNg_BitBang
 {
 private:
-    OneWireNg_BitBang_Test(): OneWireNg_BitBang(false) {}
+    OneWireNg_BitBang_Test() {}
 
-    int readGpioIn(GpioType gpio) {
-        return 1;
-    }
+    int readDtaGpioIn() { return 1; }
+    void setDtaGpioAsInput() {}
 
-    void writeGpioOut(GpioType gpio, int state) {}
-
-    void setGpioAsInput(GpioType gpio) {}
-
-    void setGpioAsOutput(GpioType gpio, int state) {}
+#ifdef CONFIG_PRW_CTRL_ENABLED
+    void writeGpioOut(int state, GpioType gpio) {}
+    void setGpioAsOutput(int state, GpioType gpio) {}
+#else
+    void writeGpioOut(int state) {}
+    void setGpioAsOutput(int state) {}
+#endif
 };
 
 int main(void)

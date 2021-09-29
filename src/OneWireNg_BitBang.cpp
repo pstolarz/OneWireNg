@@ -157,7 +157,7 @@ int OneWireNg_BitBang::touch1Overdrive()
 #endif
     /* speed up low-to-high transition */
 #ifndef CONFIG_BUS_BLINK_PROTECTION
-    writeGpioOut(GPIO_DTA, 1);
+    writeDtaGpioOut(1);
 #endif
     setBus(1);
 #if OD_WRITE1_SMPL >= 0
@@ -169,10 +169,13 @@ int OneWireNg_BitBang::touch1Overdrive()
 
 OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
 {
+#ifdef CONFIG_PRW_CTRL_ENABLED
     if (_flgs.pwrp) {
-        writeGpioOut(GPIO_CTRL_PWR, (_flgs.pwrr ? (on != 0) : !on));
-    } else if (on) {
-        setGpioAsOutput(GPIO_DTA, 1);
+        writeGpioOut((_flgs.pwrr ? (on != 0) : !on), GPIO_CTRL_PWR);
+    } else
+#endif
+    if (on) {
+        setDtaGpioAsOutput(1);
     } else {
         setDtaGpioAsInput();
     }

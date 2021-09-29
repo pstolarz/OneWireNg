@@ -126,6 +126,9 @@ bus to parasitically power connected slaves:
 
 ![Switching transistor parasite powering](extras/schema/parasite.svg)
 
+To enable the second mode the library needs to be configured with
+`CONFIG_PRW_CTRL_ENABLED`.
+
 Choice between the two types is made by selecting appropriate constructor of a
 platform class. For example:
 
@@ -143,6 +146,9 @@ void setup()
      * PWR_CTRL_PIN: power-control-GPIO pin number (optional).
      */
 #ifdef PWR_CTRL_PIN
+# ifndef CONFIG_PRW_CTRL_ENABLED
+#  error "CONFIG_PRW_CTRL_ENABLED needs to be enabled"
+# endif
     // switching transistor powering
     ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN);
 #else

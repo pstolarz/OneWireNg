@@ -19,6 +19,20 @@
 #elif !defined(OWNG_DISABLE_DEFAULT_CONFIG)
 
 /**
+ * By default (for parasitically connected devices) the 1-wire bus is powered
+ * by setting the 1-wire data GPIO into the high state and therefore connecting
+ * a direct GPIO's voltage source into the bus.
+ *
+ * In case the platform GPIO is of an open-drain type (or the data GPIO is not
+ * able to provide sufficient power) the library provides ability to leverage
+ * power-control-GPIO (working in the output mode) controlling power switching
+ * transistor providing the voltage source to the bus. The GPIO is set to the
+ * low state in case the power is enabled on the bus via @ref OneWireNg::powerBus()
+ * routine and to the high state otherwise.
+ */
+//#define CONFIG_PRW_CTRL_ENABLED
+
+/**
  * Type of algorithm used for CRC-8/MAXIM calculation.
  *
  * The macro may be defined as:

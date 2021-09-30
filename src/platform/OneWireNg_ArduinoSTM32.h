@@ -38,6 +38,7 @@ public:
         initDtaGpio(pin, pullUp);
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     /**
      * OneWireNg 1-wire service for Arduino STM32 platform.
      *
@@ -58,20 +59,12 @@ public:
         initDtaGpio(pin, pullUp);
         initPwrCtrlGpio(pwrCtrlPin);
     }
+#endif
 
 protected:
     int readDtaGpioIn()
     {
         return (digitalReadFast(_dtaGpio.pinName) == LOW ? 0 : 1);
-    }
-
-    void writeGpioOut(GpioType gpio, int state)
-    {
-        if (gpio == GPIO_DTA) {
-            digitalWriteFast(_dtaGpio.pinName, state);
-        } else {
-            digitalWriteFast(_pwrCtrlGpio.pinName, state);
-        }
     }
 
     void setDtaGpioAsInput()
@@ -80,7 +73,17 @@ protected:
             _dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_INPUT);
     }
 
-    void setGpioAsOutput(GpioType gpio, int state)
+#ifdef CONFIG_PRW_CTRL_ENABLED
+    void writeGpioOut(int state, GpioType gpio)
+    {
+        if (gpio == GPIO_DTA) {
+            digitalWriteFast(_dtaGpio.pinName, state);
+        } else {
+            digitalWriteFast(_pwrCtrlGpio.pinName, state);
+        }
+    }
+
+    void setGpioAsOutput(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
             digitalWriteFast(_dtaGpio.pinName, state);
@@ -92,6 +95,19 @@ protected:
                 _pwrCtrlGpio.gpio, _pwrCtrlGpio.ll_pin, LL_GPIO_MODE_OUTPUT);
         }
     }
+#else
+    void writeGpioOut(int state)
+    {
+        digitalWriteFast(_dtaGpio.pinName, state);
+    }
+
+    void setGpioAsOutput(int state)
+    {
+        digitalWriteFast(_dtaGpio.pinName, state);
+        LL_GPIO_SetPinMode(
+            _dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_OUTPUT);
+    }
+#endif
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {
@@ -105,6 +121,7 @@ protected:
         setupDtaGpio();
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
         _pwrCtrlGpio.pinName = digitalPinToPinName(pin);
@@ -121,13 +138,14 @@ protected:
         PinName pinName;
         GPIO_TypeDef *gpio;
         uint32_t ll_pin;
-    } _dtaGpio;
+    } _pwrCtrlGpio;
+#endif
 
     struct {
         PinName pinName;
         GPIO_TypeDef *gpio;
         uint32_t ll_pin;
-    } _pwrCtrlGpio;
+    } _dtaGpio;
 };
 
 #endif /* __OWNG_ARDUINO_STM32__ */

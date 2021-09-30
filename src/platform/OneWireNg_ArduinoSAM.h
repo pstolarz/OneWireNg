@@ -54,6 +54,7 @@ public:
         initDtaGpio(pin, pullUp);
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     /**
      * OneWireNg 1-wire service for Arduino SAM platform.
      *
@@ -74,26 +75,12 @@ public:
         initDtaGpio(pin, pullUp);
         initPwrCtrlGpio(pwrCtrlPin);
     }
+#endif
 
 protected:
     int readDtaGpioIn()
     {
         return __READ_GPIO(_dtaGpio);
-    }
-
-    void writeGpioOut(GpioType gpio, int state)
-    {
-        if (gpio == GPIO_DTA) {
-#ifdef PIN_STATUS_UPDATE
-            *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
-#endif
-            __WRITE_GPIO(_dtaGpio, state);
-        } else {
-#ifdef PIN_STATUS_UPDATE
-            *_pwrCtrlGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
-#endif
-            __WRITE_GPIO(_pwrCtrlGpio, state);
-        }
     }
 
     void setDtaGpioAsInput()
@@ -104,22 +91,56 @@ protected:
         __GPIO_AS_INPUT(_dtaGpio);
     }
 
-    void setGpioAsOutput(GpioType gpio, int state)
+#ifdef CONFIG_PRW_CTRL_ENABLED
+    void writeGpioOut(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
-#ifdef PIN_STATUS_UPDATE
+# ifdef PIN_STATUS_UPDATE
             *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
-#endif
+# endif
+            __WRITE_GPIO(_dtaGpio, state);
+        } else {
+# ifdef PIN_STATUS_UPDATE
+            *_pwrCtrlGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
+# endif
+            __WRITE_GPIO(_pwrCtrlGpio, state);
+        }
+    }
+
+    void setGpioAsOutput(int state, GpioType gpio)
+    {
+        if (gpio == GPIO_DTA) {
+# ifdef PIN_STATUS_UPDATE
+            *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
+# endif
             __WRITE_GPIO(_dtaGpio, state);
             __GPIO_AS_OUTPUT(_dtaGpio);
         } else {
-#ifdef PIN_STATUS_UPDATE
+# ifdef PIN_STATUS_UPDATE
             *_pwrCtrlGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
-#endif
+# endif
             __WRITE_GPIO(_pwrCtrlGpio, state);
             __GPIO_AS_OUTPUT(_pwrCtrlGpio);
         }
     }
+#else
+    void writeGpioOut(int state)
+    {
+# ifdef PIN_STATUS_UPDATE
+        *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
+# endif
+        __WRITE_GPIO(_dtaGpio, state);
+    }
+
+    void setGpioAsOutput(int state)
+    {
+# ifdef PIN_STATUS_UPDATE
+        *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
+# endif
+        __WRITE_GPIO(_dtaGpio, state);
+        __GPIO_AS_OUTPUT(_dtaGpio);
+    }
+#endif
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {
@@ -142,6 +163,7 @@ protected:
         setupDtaGpio();
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
         assert(g_APinDescription[pin].ulPinType != PIO_NOT_A_PIN);
@@ -161,6 +183,18 @@ protected:
     }
 
     struct {
+# ifdef PIN_STATUS_UPDATE
+        uint8_t *status;
+# endif
+        uint32_t bmsk;
+        volatile uint32_t *outSetReg;
+        volatile uint32_t *outClrReg;
+        volatile uint32_t *modSetReg;
+        volatile uint32_t *modClrReg;
+    } _pwrCtrlGpio;
+#endif
+
+    struct {
 #ifdef PIN_STATUS_UPDATE
         uint8_t *status;
         uint8_t inputStatus;
@@ -172,17 +206,6 @@ protected:
         volatile uint32_t *modSetReg;
         volatile uint32_t *modClrReg;
     } _dtaGpio;
-
-    struct {
-#ifdef PIN_STATUS_UPDATE
-        uint8_t *status;
-#endif
-        uint32_t bmsk;
-        volatile uint32_t *outSetReg;
-        volatile uint32_t *outClrReg;
-        volatile uint32_t *modSetReg;
-        volatile uint32_t *modClrReg;
-    } _pwrCtrlGpio;
 };
 
 #undef __GPIO_AS_OUTPUT

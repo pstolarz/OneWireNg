@@ -80,6 +80,7 @@ public:
         initDtaGpio(pin, pullUp);
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     /**
      * OneWireNg 1-wire service for Arduino ESP32 platform.
      *
@@ -100,6 +101,7 @@ public:
         initDtaGpio(pin, pullUp);
         initPwrCtrlGpio(pwrCtrlPin);
     }
+#endif
 
 protected:
     int readDtaGpioIn()
@@ -107,7 +109,13 @@ protected:
         return __READ_GPIO(_dtaGpio);
     }
 
-    void writeGpioOut(GpioType gpio, int state)
+    void setDtaGpioAsInput()
+    {
+        __GPIO_AS_INPUT(_dtaGpio);
+    }
+
+#ifdef CONFIG_PRW_CTRL_ENABLED
+    void writeGpioOut(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
             __WRITE_GPIO(_dtaGpio, state);
@@ -116,12 +124,7 @@ protected:
         }
     }
 
-    void setDtaGpioAsInput()
-    {
-        __GPIO_AS_INPUT(_dtaGpio);
-    }
-
-    void setGpioAsOutput(GpioType gpio, int state)
+    void setGpioAsOutput(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
             __WRITE_GPIO(_dtaGpio, state);
@@ -131,6 +134,18 @@ protected:
             __GPIO_AS_OUTPUT(_pwrCtrlGpio);
         }
     }
+#else
+    void writeGpioOut(int state)
+    {
+        __WRITE_GPIO(_dtaGpio, state);
+    }
+
+    void setGpioAsOutput(int state)
+    {
+        __WRITE_GPIO(_dtaGpio, state);
+        __GPIO_AS_OUTPUT(_dtaGpio);
+    }
+#endif
 
 #ifdef CONFIG_OVERDRIVE_ENABLED
     int touch1Overdrive()
@@ -174,6 +189,7 @@ protected:
         setupDtaGpio();
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
         assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
@@ -185,7 +201,7 @@ protected:
             _pwrCtrlGpio.modSetReg = &REG_GPIO_MOD_SET_LO;
             _pwrCtrlGpio.modClrReg = &REG_GPIO_MOD_CLR_LO;
         }
-#if (GPIO_PIN_COUNT > 32)
+# if (GPIO_PIN_COUNT > 32)
         else {
             _pwrCtrlGpio.bmsk = (uint32_t)(1UL << (pin-32));
             _pwrCtrlGpio.outSetReg = &REG_GPIO_OUT_SET_HI;
@@ -193,20 +209,10 @@ protected:
             _pwrCtrlGpio.modSetReg = &REG_GPIO_MOD_SET_HI;
             _pwrCtrlGpio.modClrReg = &REG_GPIO_MOD_CLR_HI;
         }
-#endif
+# endif
         pinMode(pin, OUTPUT);
         setupPwrCtrlGpio(true);
     }
-
-private:
-    struct {
-        uint32_t bmsk;
-        volatile uint32_t *inReg;
-        volatile uint32_t *outSetReg;
-        volatile uint32_t *outClrReg;
-        volatile uint32_t *modSetReg;
-        volatile uint32_t *modClrReg;
-    } _dtaGpio;
 
     struct {
         uint32_t bmsk;
@@ -215,6 +221,16 @@ private:
         volatile uint32_t *modSetReg;
         volatile uint32_t *modClrReg;
     } _pwrCtrlGpio;
+#endif
+
+    struct {
+        uint32_t bmsk;
+        volatile uint32_t *inReg;
+        volatile uint32_t *outSetReg;
+        volatile uint32_t *outClrReg;
+        volatile uint32_t *modSetReg;
+        volatile uint32_t *modClrReg;
+    } _dtaGpio;
 };
 
 #undef __GPIO_AS_OUTPUT

@@ -63,6 +63,7 @@ public:
         initDtaGpio(pin, pullUp);
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     /**
      * OneWireNg 1-wire service for Arduino AVR platform.
      *
@@ -83,6 +84,7 @@ public:
         initDtaGpio(pin, pullUp);
         initPwrCtrlGpio(pwrCtrlPin);
     }
+#endif
 
 protected:
     int readDtaGpioIn()
@@ -90,7 +92,13 @@ protected:
         return __READ_GPIO(_dtaGpio);
     }
 
-    void writeGpioOut(GpioType gpio, int state)
+    void setDtaGpioAsInput()
+    {
+        __GPIO_AS_INPUT(_dtaGpio);
+    }
+
+#ifdef CONFIG_PRW_CTRL_ENABLED
+    void writeGpioOut(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
             __WRITE_GPIO(_dtaGpio, state);
@@ -99,12 +107,7 @@ protected:
         }
     }
 
-    void setDtaGpioAsInput()
-    {
-        __GPIO_AS_INPUT(_dtaGpio);
-    }
-
-    void setGpioAsOutput(GpioType gpio, int state)
+    void setGpioAsOutput(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
             __GPIO_AS_OUTPUT(_dtaGpio);
@@ -114,6 +117,18 @@ protected:
             __WRITE_GPIO(_pwrCtrlGpio, state);
         }
     }
+#else
+    void writeGpioOut(int state)
+    {
+        __WRITE_GPIO(_dtaGpio, state);
+    }
+
+    void setGpioAsOutput(int state)
+    {
+        __GPIO_AS_OUTPUT(_dtaGpio);
+        __WRITE_GPIO(_dtaGpio, state);
+    }
+#endif
 
 #ifdef CONFIG_OVERDRIVE_ENABLED
     int touch1Overdrive()
@@ -153,6 +168,7 @@ protected:
         setupDtaGpio();
     }
 
+#ifdef CONFIG_PRW_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
         uint8_t port = digitalPinToPort(pin);
@@ -167,16 +183,17 @@ protected:
 
     struct {
         uint8_t bmsk;
+        volatile uint8_t *outReg;
+        volatile uint8_t *modReg;
+    } _pwrCtrlGpio;
+#endif
+
+    struct {
+        uint8_t bmsk;
         volatile uint8_t *inReg;
         volatile uint8_t *outReg;
         volatile uint8_t *modReg;
     } _dtaGpio;
-
-    struct {
-        uint8_t bmsk;
-        volatile uint8_t *outReg;
-        volatile uint8_t *modReg;
-    } _pwrCtrlGpio;
 };
 
 #undef __GPIO_AS_OUTPUT

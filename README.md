@@ -171,6 +171,14 @@ void setup()
 
 configures 1-wire service to work in one of the above modes.
 
+**1-wire stability and parasite powering**
+
+Parasite powered slaves are less stable (more error prone) than regularly
+powered devices. If possible, try to avoid parasitically powered setups.
+However, if parasitic powering is unavoidable prefer to use the second variant
+with switching transistor in favor of the first one - it's characterized by
+much better stability.
+
 ## Architecture details
 
 ![OneWirNg class diagram](extras/schema/classOneWireNg__inherit__graph.png)

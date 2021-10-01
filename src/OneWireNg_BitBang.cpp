@@ -152,17 +152,17 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
 int OneWireNg_BitBang::touch1Overdrive()
 {
     setBus(0);
-#if OD_WRITE1_LOW >= 0
+# if OD_WRITE1_LOW >= 0
     delayUs(OD_WRITE1_LOW);
-#endif
+# endif
     /* speed up low-to-high transition */
-#ifndef CONFIG_BUS_BLINK_PROTECTION
+# ifndef CONFIG_BUS_BLINK_PROTECTION
     writeDtaGpioOut(1);
-#endif
+# endif
     setBus(1);
-#if OD_WRITE1_SMPL >= 0
+# if OD_WRITE1_SMPL >= 0
     delayUs(OD_WRITE1_SMPL);
-#endif
+# endif
     return readDtaGpioIn();
 }
 #endif

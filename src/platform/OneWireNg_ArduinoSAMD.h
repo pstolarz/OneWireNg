@@ -116,7 +116,7 @@ protected:
         __WRITE_GPIO(_dtaGpio, state);
         __GPIO_AS_OUTPUT(_dtaGpio);
     }
-#endif
+#endif /* CONFIG_PWR_CTRL_ENABLED */
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {

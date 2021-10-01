@@ -107,7 +107,7 @@ protected:
         LL_GPIO_SetPinMode(
             _dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_OUTPUT);
     }
-#endif
+#endif /* CONFIG_PWR_CTRL_ENABLED */
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {

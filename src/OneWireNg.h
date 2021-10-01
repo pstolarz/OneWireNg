@@ -259,12 +259,12 @@ public:
         Id& ref;
     };
 
-#if __cplusplus >= 201703L
+# if __cplusplus >= 201703L
     typedef nullptr_t end_iterator;
-#else
+# else
     class iterator;
     typedef iterator end_iterator;
-#endif
+# endif
 
     /** Range-loop iterator. */
     class iterator
@@ -535,7 +535,7 @@ public:
     void setOverdrive(bool on) {
         _overdrive = on;
     }
-#endif
+#endif /* CONFIG_OVERDRIVE_ENABLED */
 
     /**
      * Power the 1-wire bus via direct connection a voltage source to the bus.

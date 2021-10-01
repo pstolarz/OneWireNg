@@ -245,29 +245,28 @@ public:
 
 #if __cplusplus >= 201103L
     /**
-     * @c Id class wrapper used inside search range-loops to enable returning
-     * by the loop iterator a copy of @c Id object (aka table of bytes).
+     * @c Id class reference wrapper.
+     * Used to return slave ids by a range-loop iterator.
      */
     struct Id_wrapper
     {
-        Id_wrapper(const Id& id) {
-            memcpy(this->id, id, sizeof(Id));
-        }
+        Id_wrapper(Id& id): ref(id) {}
 
-        /**
-         * This is a copy of object, therefore no need to use @c const
-         * modifier here.
-         */
         operator Id&() {
-            return id;
+            return ref;
         }
 
-        Id id;
+        Id& ref;
     };
 
-    /**
-     * Range-loop iterator.
-     */
+#if __cplusplus >= 201703L
+    typedef nullptr_t end_iterator;
+#else
+    class iterator;
+    typedef iterator end_iterator;
+#endif
+
+    /** Range-loop iterator. */
     class iterator
     {
     public:
@@ -286,19 +285,18 @@ public:
             return Id_wrapper(_id);
         }
 
-        bool operator!=(const iterator& it) noexcept {
-            /*
-             * The operator is called to check last-loop-iteration state,
-             * therefore (for performance reason) there is no additional
-             * checks here.
-             */
-            return (_ow != it._ow);
+        /* called only to detect the final iteration */
+        bool operator!=(const end_iterator&) noexcept {
+            return (_ow != nullptr);
         }
 
     private:
-        /* an iterator is not intended to be created outside search range-loops */
-        iterator(OneWireNg *ow): _ow(ow) { searchStep(); }
-        iterator(): _ow(nullptr) {}
+        /* iterator is not intended to be created outside search range-loops */
+        iterator(): _ow(nullptr) {};
+
+        iterator(OneWireNg *ow): _ow(ow) {
+            searchStep();
+        }
 
         void searchStep()
         {
@@ -321,8 +319,8 @@ public:
         return iterator(this);
     }
 
-    iterator end() {
-        return iterator();
+    end_iterator end() {
+        return end_iterator();
     }
 #endif /* C++11 */
 

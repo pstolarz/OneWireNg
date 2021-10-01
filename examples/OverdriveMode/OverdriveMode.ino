@@ -21,7 +21,7 @@
 # error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured"
 #endif
 
-static OneWireNg *ow = NULL;
+static OneWireNg *ow = nullptr;
 
 static void printId(const OneWireNg::Id& id)
 {
@@ -35,9 +35,6 @@ static void printId(const OneWireNg::Id& id)
 
 void setup()
 {
-    OneWireNg::Id id;
-    OneWireNg::ErrorCode ec;
-
     ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
     delay(500);
 
@@ -50,14 +47,7 @@ void setup()
 
     /* search for OD enabled devices */
     Serial.println("Overdrive enabled devices:");
-    do
-    {
-        ec = ow->search(id);
-        if (!(ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE))
-            break;
-
-        printId(id);
-    } while (ec == OneWireNg::EC_MORE);
+    for (auto id: *ow) printId(id);
 
     /* back to the standard mode */
     ow->setOverdrive(false);

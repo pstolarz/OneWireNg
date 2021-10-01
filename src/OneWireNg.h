@@ -15,7 +15,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
+#include <string.h>
 #include "OneWireNg_Config.h"
 #include "platform/Platform_New.h"
 
@@ -231,6 +231,89 @@ public:
     EXT_VIRTUAL_INTF void searchReset() {
         _lzero = -1;
     }
+
+#if __cplusplus >= 201103L
+    /**
+     * @c Id class wrapper used inside range-loops to enable returning
+     * by the loop iterator a copy of @c Id object (aka table of bytes).
+     */
+    struct Id_wrapper
+    {
+        Id_wrapper(const Id& id) {
+            memcpy(this->id, id, sizeof(Id));
+        }
+
+        /**
+         * This is a copy of object, therefore no need to use @c const
+         * modifier here.
+         */
+        operator Id&() {
+            return id;
+        }
+
+        Id id;
+    };
+
+    /**
+     * Range-loop iterator.
+     */
+    class iterator
+    {
+    public:
+        iterator& operator++() noexcept
+        {
+            if (ec != EC_DONE)
+                searchStep();
+            else
+                /* last id read; mark the iterator as final */
+                ow = nullptr;
+
+            return *this;
+        }
+
+        Id_wrapper operator*() noexcept {
+            return Id_wrapper(id);
+        }
+
+        bool operator!=(const iterator& it) noexcept {
+            /*
+             * The operator is called to check last-loop-iteration state,
+             * therefore (for performance reason) there is no additional
+             * checks here.
+             */
+            return (ow != it.ow);
+        }
+
+    private:
+        /* the iterator is not intended to be created outside range-loops */
+        iterator(OneWireNg *ow): ow(ow) { searchStep(); };
+        iterator(): ow(nullptr) {};
+
+        void searchStep()
+        {
+            ec = ow->search(id);
+
+            if (!(ec == EC_MORE || ec == EC_DONE))
+                /* error occurred; mark the iterator as final */
+                ow = nullptr;
+        }
+
+        Id id;
+        ErrorCode ec;
+        OneWireNg *ow;
+
+    friend class OneWireNg;
+    };
+
+    iterator begin() {
+        searchReset();
+        return iterator(this);
+    }
+
+    iterator end() {
+        return iterator();
+    }
+#endif
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     /**

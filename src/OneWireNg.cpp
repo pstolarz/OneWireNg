@@ -10,7 +10,6 @@
  * See the License for more information.
  */
 
-#include <string.h>
 #include "OneWireNg.h"
 
 #define CRC8_BASIC      1

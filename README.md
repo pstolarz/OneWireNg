@@ -207,7 +207,7 @@ void setup()
     {
         ec = ow->search(id);
         if (ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE) {
-            // `id' contains 1-wire address of a connected slave
+            // 'id' contains 1-wire address of a connected slave
         }
     } while (ec == OneWireNg::EC_MORE);
 }
@@ -228,7 +228,7 @@ void setup()
     ow = new OneWireNg_CurrentPlatform(10);
 
     for (auto id: *ow) {
-        // `id' contains 1-wire address of a connected slave
+        // 'id' contains 1-wire address of a connected slave
     }
 }
 ```

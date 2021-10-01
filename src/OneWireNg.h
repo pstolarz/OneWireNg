@@ -220,6 +220,17 @@ public:
      *     - @c EC_CRC_ERROR: CRC error.
      *
      * @note This method is part of the extended virtual interface.
+     *
+     * @note It is possible to use C++11 range loop to iterate over connected
+     *     slaves as in the following code snippet:
+     *
+     * @code
+     * OneWireNg *ow;
+     *
+     * for (auto id: *ow) {
+     *     // 'id' contains 1-wire address of a connected slave
+     * }
+     * @endcode
      */
     EXT_VIRTUAL_INTF ErrorCode search(Id& id, bool alarm = false);
 
@@ -234,7 +245,7 @@ public:
 
 #if __cplusplus >= 201103L
     /**
-     * @c Id class wrapper used inside range-loops to enable returning
+     * @c Id class wrapper used inside search range-loops to enable returning
      * by the loop iterator a copy of @c Id object (aka table of bytes).
      */
     struct Id_wrapper
@@ -262,17 +273,17 @@ public:
     public:
         iterator& operator++() noexcept
         {
-            if (ec != EC_DONE)
+            if (_ec != EC_DONE)
                 searchStep();
             else
                 /* last id read; mark the iterator as final */
-                ow = nullptr;
+                _ow = nullptr;
 
             return *this;
         }
 
         Id_wrapper operator*() noexcept {
-            return Id_wrapper(id);
+            return Id_wrapper(_id);
         }
 
         bool operator!=(const iterator& it) noexcept {
@@ -281,26 +292,26 @@ public:
              * therefore (for performance reason) there is no additional
              * checks here.
              */
-            return (ow != it.ow);
+            return (_ow != it._ow);
         }
 
     private:
-        /* the iterator is not intended to be created outside range-loops */
-        iterator(OneWireNg *ow): ow(ow) { searchStep(); };
-        iterator(): ow(nullptr) {};
+        /* an iterator is not intended to be created outside search range-loops */
+        iterator(OneWireNg *ow): _ow(ow) { searchStep(); }
+        iterator(): _ow(nullptr) {}
 
         void searchStep()
         {
-            ec = ow->search(id);
+            _ec = _ow->search(_id);
 
-            if (!(ec == EC_MORE || ec == EC_DONE))
+            if (!(_ec == EC_MORE || _ec == EC_DONE))
                 /* error occurred; mark the iterator as final */
-                ow = nullptr;
+                _ow = nullptr;
         }
 
-        Id id;
-        ErrorCode ec;
-        OneWireNg *ow;
+        Id _id;
+        ErrorCode _ec;
+        OneWireNg *_ow;
 
     friend class OneWireNg;
     };
@@ -313,7 +324,7 @@ public:
     iterator end() {
         return iterator();
     }
-#endif
+#endif /* C++11 */
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     /**

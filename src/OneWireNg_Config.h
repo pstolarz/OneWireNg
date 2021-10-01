@@ -30,7 +30,7 @@
  * low state in case the power is enabled on the bus via @ref OneWireNg::powerBus()
  * routine and to the high state otherwise.
  */
-//#define CONFIG_PRW_CTRL_ENABLED
+//#define CONFIG_PWR_CTRL_ENABLED
 
 /**
  * Type of algorithm used for CRC-8/MAXIM calculation.

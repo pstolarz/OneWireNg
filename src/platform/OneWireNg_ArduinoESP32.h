@@ -80,7 +80,7 @@ public:
         initDtaGpio(pin, pullUp);
     }
 
-#ifdef CONFIG_PRW_CTRL_ENABLED
+#ifdef CONFIG_PWR_CTRL_ENABLED
     /**
      * OneWireNg 1-wire service for Arduino ESP32 platform.
      *
@@ -114,7 +114,7 @@ protected:
         __GPIO_AS_INPUT(_dtaGpio);
     }
 
-#ifdef CONFIG_PRW_CTRL_ENABLED
+#ifdef CONFIG_PWR_CTRL_ENABLED
     void writeGpioOut(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
@@ -189,7 +189,7 @@ protected:
         setupDtaGpio();
     }
 
-#ifdef CONFIG_PRW_CTRL_ENABLED
+#ifdef CONFIG_PWR_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
         assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));

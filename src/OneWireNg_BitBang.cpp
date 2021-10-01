@@ -169,7 +169,7 @@ int OneWireNg_BitBang::touch1Overdrive()
 
 OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
 {
-#ifdef CONFIG_PRW_CTRL_ENABLED
+#ifdef CONFIG_PWR_CTRL_ENABLED
     if (_flgs.pwrp) {
         writeGpioOut((_flgs.pwrr ? (on != 0) : !on), GPIO_CTRL_PWR);
     } else

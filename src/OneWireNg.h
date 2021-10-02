@@ -244,6 +244,15 @@ public:
     }
 
 #if __cplusplus >= 201103L
+# if __cplusplus >= 201703L
+    typedef nullptr_t end_iterator;
+    typedef nullptr_t end_iterator_ref;
+# else
+    class iterator;
+    typedef iterator end_iterator;
+    typedef iterator& end_iterator_ref;
+# endif
+
     /**
      * @c Id class reference wrapper.
      * Used to return slave ids by a range-loop iterator.
@@ -258,13 +267,6 @@ public:
 
         Id& ref;
     };
-
-# if __cplusplus >= 201703L
-    typedef nullptr_t end_iterator;
-# else
-    class iterator;
-    typedef iterator end_iterator;
-# endif
 
     /** Range-loop iterator. */
     class iterator
@@ -286,7 +288,7 @@ public:
         }
 
         /* called only to detect the final iteration */
-        bool operator!=(const end_iterator&) noexcept {
+        bool operator!=(const end_iterator_ref) noexcept {
             return (_ow != nullptr);
         }
 

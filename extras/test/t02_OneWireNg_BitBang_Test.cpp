@@ -20,7 +20,7 @@ private:
     int readDtaGpioIn() { return 1; }
     void setDtaGpioAsInput() {}
 
-#ifdef CONFIG_PRW_CTRL_ENABLED
+#ifdef CONFIG_PWR_CTRL_ENABLED
     void writeGpioOut(int state, GpioType gpio) {}
     void setGpioAsOutput(int state, GpioType gpio) {}
 #else

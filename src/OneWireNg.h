@@ -272,8 +272,7 @@ public:
     class iterator
     {
     public:
-        iterator& operator++() noexcept
-        {
+        iterator& operator++() {
             if (_ec != EC_DONE)
                 searchStep();
             else
@@ -283,12 +282,12 @@ public:
             return *this;
         }
 
-        Id_wrapper operator*() noexcept {
+        Id_wrapper operator*() {
             return Id_wrapper(_id);
         }
 
         /* called only to detect the final iteration */
-        bool operator!=(const end_iterator_ref) noexcept {
+        bool operator!=(const end_iterator_ref) {
             return (_ow != nullptr);
         }
 
@@ -300,8 +299,7 @@ public:
             searchStep();
         }
 
-        void searchStep()
-        {
+        void searchStep() {
             _ec = _ow->search(_id, _ow->_italm);
 
             if (!(_ec == EC_MORE || _ec == EC_DONE))

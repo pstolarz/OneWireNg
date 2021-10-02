@@ -175,9 +175,9 @@ configures 1-wire service to work in one of the above modes.
 
 Parasite powered slaves are less stable (more error prone) than regularly
 powered devices. If possible, try to avoid parasitically powered setups.
-However, if parasitic powering is unavoidable prefer to use the second variant
-with switching transistor in favor of the first one - it's characterized by
-much better stability.
+However, if parasitic powering is unavoidable prefer to use the second mode
+(with switching transistor) in favor of the first one - it seems to be more
+stable for some platforms (e.g. AVR).
 
 ## Architecture details
 
@@ -207,7 +207,7 @@ void setup()
     {
         ec = ow->search(id);
         if (ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE) {
-            // `id' contains 1-wire address of a connected slave
+            // 'id' contains 1-wire address of a connected slave
         }
     } while (ec == OneWireNg::EC_MORE);
 }
@@ -216,13 +216,30 @@ void setup()
 creates 1-wire service interface for current platform and performs search on
 the bus. The bus is controlled by MCU pin number 10.
 
+Alternatively it is possible to use C++11 range loop here:
+
+```cpp
+#include "OneWireNg_CurrentPlatform.h"
+
+static OneWireNg *ow = nullptr;
+
+void setup()
+{
+    ow = new OneWireNg_CurrentPlatform(10);
+
+    for (auto id: *ow) {
+        // 'id' contains 1-wire address of a connected slave
+    }
+}
+```
+
 NOTE: If heap allocation is inadvisable use in-place `new` operator:
 
 ```cpp
 #include "OneWireNg_CurrentPlatform.h"
 
-static OneWireNg *ow = NULL;
 ALLOC_ALIGNED static uint8_t OneWireNg_buf[sizeof(OneWireNg_CurrentPlatform)];
+static OneWireNg *ow = NULL;
 
 void setup()
 {

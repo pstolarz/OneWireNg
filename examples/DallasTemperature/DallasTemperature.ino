@@ -29,8 +29,8 @@
  */
 //#define PWR_CTRL_PIN    9
 
-static OneWireNg *ow = NULL;
-static DSTherm *dsth = NULL;
+static OneWireNg *ow = nullptr;
+static DSTherm *dsth = nullptr;
 
 
 /* returns false if not supported */
@@ -124,29 +124,20 @@ void setup()
 
 void loop()
 {
-    OneWireNg::Id id;
-    OneWireNg::ErrorCode ec;
     MAKE_SCRATCHPAD(scrpd);
 
     /* convert temperature on all sensors connected... */
     dsth->convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER);
 
     /* ...and read them one-by-one */
-    ow->searchReset();
-    do
-    {
-        ec = ow->search(id);
-        if (!(ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE))
-            break;
-
+    for (auto id: *ow) {
         if (printId(id)) {
-            if (dsth->readScratchpad(id, scrpd) == OneWireNg::EC_SUCCESS) {
+            if (dsth->readScratchpad(id, scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(scrpd);
-            } else {
+            else
                 Serial.println("  Invalid CRC!");
-            }
         }
-    } while (ec == OneWireNg::EC_MORE);
+    }
 
     Serial.println("----------");
     delay(1000);

@@ -128,7 +128,7 @@ protected:
         __GPIO_AS_OUTPUT(_dtaGpio);
         __WRITE_GPIO(_dtaGpio, state);
     }
-#endif
+#endif /* CONFIG_PWR_CTRL_ENABLED */
 
 #ifdef CONFIG_OVERDRIVE_ENABLED
     int touch1Overdrive()

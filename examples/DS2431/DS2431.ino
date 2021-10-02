@@ -56,7 +56,7 @@
 # error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured for USE_OD_MODE"
 #endif
 
-static OneWireNg *ow = NULL;
+static OneWireNg *ow = nullptr;
 
 static void printId(const OneWireNg::Id& id)
 {
@@ -255,7 +255,7 @@ static bool writePage(const OneWireNg::Id *id,
     uint8_t row = pageAddr * (PAGE_SIZE / ROW_SIZE);
 
     for (i = 0; i < (PAGE_SIZE / ROW_SIZE); i++, row++) {
-        if (!writeRow((!i ? id : NULL),
+        if (!writeRow((!i ? id : nullptr),
             row, &pageData[i * ROW_SIZE], checkDataIntegr)) break;
     }
 
@@ -273,9 +273,6 @@ static bool writePage(const OneWireNg::Id *id,
 
 void setup()
 {
-    OneWireNg::Id id;
-    OneWireNg::ErrorCode ec;
-
     /* id of a DS2431 device for write demo;
        if not set 1st available DS2431 device will be chosen */
     OneWireNg::Id dev = {};
@@ -294,20 +291,15 @@ void setup()
     ow->searchFilterAdd(DS2431);
     Serial.println("Connected DS2431 devices:");
 
-    do
-    {
-        ec = ow->search(id);
-        if (!(ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE))
-            break;
-
+    for (auto id: *ow) {
         if (dev[0] != DS2431)
             memcpy(&dev, &id, sizeof(OneWireNg::Id));
 
         printId(id);
-        printMem(NULL);
+        printMem(nullptr);
 
         Serial.println("----------");
-    } while (ec == OneWireNg::EC_MORE);
+    }
 
 #ifdef WRITE_DEMO
     /* if no DS2431 found finish the demo */

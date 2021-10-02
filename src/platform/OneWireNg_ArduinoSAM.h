@@ -140,7 +140,7 @@ protected:
         __WRITE_GPIO(_dtaGpio, state);
         __GPIO_AS_OUTPUT(_dtaGpio);
     }
-#endif
+#endif /* CONFIG_PWR_CTRL_ENABLED */
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {
@@ -169,9 +169,9 @@ protected:
         assert(g_APinDescription[pin].ulPinType != PIO_NOT_A_PIN);
         const PinDescription *desc = &g_APinDescription[pin];
 
-#ifdef PIN_STATUS_UPDATE
+# ifdef PIN_STATUS_UPDATE
         _pwrCtrlGpio.status = &g_pinStatus[pin];
-#endif
+# endif
         _pwrCtrlGpio.bmsk = desc->ulPin;
         _pwrCtrlGpio.outSetReg = &desc->pPort->PIO_SODR;
         _pwrCtrlGpio.outClrReg = &desc->pPort->PIO_CODR;
@@ -192,7 +192,7 @@ protected:
         volatile uint32_t *modSetReg;
         volatile uint32_t *modClrReg;
     } _pwrCtrlGpio;
-#endif
+#endif /* CONFIG_PWR_CTRL_ENABLED */
 
     struct {
 #ifdef PIN_STATUS_UPDATE

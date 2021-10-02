@@ -15,7 +15,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
+#include <string.h>
 #include "OneWireNg_Config.h"
 #include "platform/Platform_New.h"
 
@@ -220,6 +220,17 @@ public:
      *     - @c EC_CRC_ERROR: CRC error.
      *
      * @note This method is part of the extended virtual interface.
+     *
+     * @note It is possible to use C++11 range loop to iterate over connected
+     *     slaves as in the following code snippet:
+     *
+     * @code
+     * OneWireNg *ow;
+     *
+     * for (auto id: *ow) {
+     *     // 'id' contains 1-wire address of a connected slave
+     * }
+     * @endcode
      */
     EXT_VIRTUAL_INTF ErrorCode search(Id& id, bool alarm = false);
 
@@ -231,6 +242,89 @@ public:
     EXT_VIRTUAL_INTF void searchReset() {
         _lzero = -1;
     }
+
+#if __cplusplus >= 201103L
+# if __cplusplus >= 201703L
+    typedef nullptr_t end_iterator;
+    typedef nullptr_t end_iterator_ref;
+# else
+    class iterator;
+    typedef iterator end_iterator;
+    typedef iterator& end_iterator_ref;
+# endif
+
+    /**
+     * @c Id class reference wrapper.
+     * Used to return slave ids by a range-loop iterator.
+     */
+    struct Id_wrapper
+    {
+        Id_wrapper(Id& id): ref(id) {}
+
+        operator Id&() {
+            return ref;
+        }
+
+        Id& ref;
+    };
+
+    /** Range-loop iterator. */
+    class iterator
+    {
+    public:
+        iterator& operator++() noexcept
+        {
+            if (_ec != EC_DONE)
+                searchStep();
+            else
+                /* last id read; mark the iterator as final */
+                _ow = nullptr;
+
+            return *this;
+        }
+
+        Id_wrapper operator*() noexcept {
+            return Id_wrapper(_id);
+        }
+
+        /* called only to detect the final iteration */
+        bool operator!=(const end_iterator_ref) noexcept {
+            return (_ow != nullptr);
+        }
+
+    private:
+        /* iterator is not intended to be created outside search range-loops */
+        iterator(): _ow(nullptr) {};
+
+        iterator(OneWireNg *ow): _ow(ow) {
+            searchStep();
+        }
+
+        void searchStep()
+        {
+            _ec = _ow->search(_id);
+
+            if (!(_ec == EC_MORE || _ec == EC_DONE))
+                /* error occurred; mark the iterator as final */
+                _ow = nullptr;
+        }
+
+        Id _id;
+        ErrorCode _ec;
+        OneWireNg *_ow;
+
+    friend class OneWireNg;
+    };
+
+    iterator begin() {
+        searchReset();
+        return iterator(this);
+    }
+
+    end_iterator end() {
+        return end_iterator();
+    }
+#endif /* C++11 */
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     /**
@@ -443,7 +537,7 @@ public:
     void setOverdrive(bool on) {
         _overdrive = on;
     }
-#endif
+#endif /* CONFIG_OVERDRIVE_ENABLED */
 
     /**
      * Power the 1-wire bus via direct connection a voltage source to the bus.

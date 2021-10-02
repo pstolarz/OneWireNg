@@ -255,7 +255,7 @@ public:
 
     /**
      * @c Id class reference wrapper.
-     * Used to return slave ids by a range-loop iterator.
+     * Used to return slave ids by a search range-loop iterator.
      */
     struct Id_wrapper
     {
@@ -302,7 +302,7 @@ public:
 
         void searchStep()
         {
-            _ec = _ow->search(_id);
+            _ec = _ow->search(_id, _ow->_italm);
 
             if (!(_ec == EC_MORE || _ec == EC_DONE))
                 /* error occurred; mark the iterator as final */
@@ -323,6 +323,19 @@ public:
 
     end_iterator end() {
         return end_iterator();
+    }
+
+    /**
+     * Set iteration mode for subsequent search range-loops.
+     *
+     * @param alarm If @c true iterate over slaves in alarm mode,
+     *     @c false iterate over all slaves connected to the bus.
+     *
+     * @note Default mode is "all-slaves". A newly configured mode is
+     *     persistent until the next call of this routine changing it.
+     */
+    void setIterationMode(bool alarm) {
+        _italm = alarm;
     }
 #endif /* C++11 */
 
@@ -691,6 +704,9 @@ protected:
 #ifdef CONFIG_OVERDRIVE_ENABLED
         _overdrive = false;
 #endif
+#if __cplusplus >= 201103L
+        _italm = false;
+#endif
     }
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
@@ -720,18 +736,18 @@ protected:
     }
 
     struct {
-        uint8_t code;   /* family code */
-        bool ns;        /* not-selected flag */
+        uint8_t code;   /** family code */
+        bool ns;        /** not-selected flag */
     } _fltrs[CONFIG_MAX_SRCH_FILTERS];
 
-    int _n_fltrs;       /* number of elements in _fltrs */
+    int _n_fltrs;       /** number of configured filters */
 #endif /* CONFIG_MAX_SRCH_FILTERS */
 
 #ifdef CONFIG_OVERDRIVE_ENABLED
-    /**
-     * Overdrive tunrned on.
-     */
-    bool _overdrive;
+    bool _overdrive;    /** overdrive turned on */
+#endif
+#if __cplusplus >= 201103L
+    bool _italm;        /** search range-loop in alarm mode */
 #endif
 
 private:

@@ -96,8 +96,9 @@ configuring the library functionality. See the file for more details.
 
 ## Overdrive mode
 
-The mode requires very strict and short timings while bit-banging data on the
-1-wire bus, therefore is vulnerable for any inaccuracies.
+When configured with `CONFIG_OVERDRIVE_ENABLED` the library supports 1-wire
+overdrive mode. The mode requires very strict and short timings while bit-banging
+data on the 1-wire bus, therefore is vulnerable for any inaccuracies.
 
 The mode is confirmed to work on the following platforms and CPU frequencies:
 

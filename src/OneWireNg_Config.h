@@ -44,6 +44,17 @@
 //#define CONFIG_PWR_CTRL_REV_POLARITY
 
 /**
+ * Maximum number of family codes used for search filtering.
+ * If not defined or 0 - filtering disabled.
+ */
+#define CONFIG_MAX_SRCH_FILTERS 10
+
+/**
+ * Overdrive (high-speed) mode enabled.
+ */
+//#define CONFIG_OVERDRIVE_ENABLED
+
+/**
  * Type of algorithm used for CRC-8/MAXIM calculation.
  *
  * The macro may be defined as:
@@ -108,17 +119,6 @@
  *     communication on long cables by speeding-up low-to-high transition.
  */
 //#define CONFIG_BUS_BLINK_PROTECTION
-
-/**
- * Maximum number of family codes used for search filtering.
- * If not defined or 0 - filtering disabled.
- */
-#define CONFIG_MAX_SRCH_FILTERS 10
-
-/**
- * Overdrive (high-speed) mode enabled.
- */
-#define CONFIG_OVERDRIVE_ENABLED
 
 /**
  * Enable extended virtual interface.

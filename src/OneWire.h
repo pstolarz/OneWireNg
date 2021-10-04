@@ -129,17 +129,22 @@ public:
         _ow->searchReset();
     }
 
-    bool search(uint8_t *newAddr, bool search_mode = true) {
-        OneWireNg::Id id;
-
+    bool search(uint8_t *newAddr, bool search_mode = true)
+    {
         if (!_srch_done) {
+            OneWireNg::Id id;
+
             OneWireNg::ErrorCode ec = _ow->search(id, !search_mode);
             memcpy(newAddr, &id[0], sizeof(id));
 
             _srch_done = (ec == OneWireNg::EC_DONE);
             return (ec == OneWireNg::EC_MORE || _srch_done);
+        } else {
+            /* OneWire automatically resets search
+               state after each completed scan */
+            reset_search();
+            return false;
         }
-        return false;
     }
 
     static uint8_t crc8(const uint8_t *addr, uint8_t len) {

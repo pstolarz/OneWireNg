@@ -20,12 +20,12 @@
 
 #if defined(CONFIG_CRC8_ALGO) && \
     !(CONFIG_CRC8_ALGO == CRC8_BASIC || CONFIG_CRC8_ALGO == CRC8_TAB_16LH)
-# error Invalid CONFIG_CRC8_ALGO
+# error "Invalid CONFIG_CRC8_ALGO"
 #endif
 
 #if defined(CONFIG_CRC16_ALGO) && \
     !(CONFIG_CRC16_ALGO == CRC16_BASIC || CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
-# error Invalid CONFIG_CRC16_ALGO
+# error "Invalid CONFIG_CRC16_ALGO"
 #endif
 
 #ifdef CONFIG_FLASH_CRC_TAB
@@ -43,7 +43,7 @@
 uint8_t OneWireNg::touchByte(uint8_t byte)
 {
     uint8_t ret = 0;
-    for (int i=0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
         if (touchBit(byte & 1)) ret |= 1 << i;
         byte >>= 1;
     }
@@ -71,7 +71,7 @@ restart:
 #endif
     touchByte(alarm ? CMD_SEARCH_ROM_COND : CMD_SEARCH_ROM);
 
-    for (int n=0; n < (int)(8*sizeof(Id)); n++)
+    for (int n = 0; n < (int)(8 * sizeof(Id)); n++)
     {
         ErrorCode ec = transmitSearchTriplet(n, id, lzero);
 
@@ -104,7 +104,7 @@ restart:
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
 OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
 {
-    for (int i=0; i < _n_fltrs; i++) {
+    for (int i = 0; i < _n_fltrs; i++) {
         /* check if the code is already added */
         if (_fltrs[i].code == code)
             return EC_SUCCESS;
@@ -122,7 +122,7 @@ OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
 
 void OneWireNg::searchFilterDel(uint8_t code)
 {
-    for (int i=0; i < _n_fltrs; i++) {
+    for (int i = 0; i < _n_fltrs; i++) {
         if (_fltrs[i].code == code) {
             for (i++; i < _n_fltrs; i++) {
                 _fltrs[i-1].code = _fltrs[i].code;
@@ -139,10 +139,10 @@ int OneWireNg::searchFilterApply(int n)
         /* no filtering - any bit value applies */
         return 2;
 
-    uint8_t ba=0, bo=0, bm=__BITMASK8(n);
+    uint8_t ba = 0, bo = 0, bm = __BITMASK8(n);
     ba--; /* all 1s */
 
-    for (int i=0; i < _n_fltrs; i++) {
+    for (int i = 0; i < _n_fltrs; i++) {
         if (!_fltrs[i].ns) {
             ba &= _fltrs[i].code;
             bo |= _fltrs[i].code;
@@ -153,8 +153,8 @@ int OneWireNg::searchFilterApply(int n)
 
 void OneWireNg::searchFilterSelect(int n, int bit)
 {
-    uint8_t bm=__BITMASK8(n);
-    for (int i=0; i < _n_fltrs; i++) {
+    uint8_t bm = __BITMASK8(n);
+    for (int i = 0; i < _n_fltrs; i++) {
         if (!_fltrs[i].ns) {
             if ((((_fltrs[i].code & bm) != 0) ^ (bit != 0)))
                 _fltrs[i].ns = true;
@@ -200,7 +200,7 @@ OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
         /*
          * Discrepancy detected for this bit position.
          */
-        if (n >= (int)(8*(sizeof(Id)-1))) {
+        if (n >= (int)(8 * (sizeof(Id)-1))) {
             /* no discrepancy is expected for CRC part of the id - bus error */
             return EC_BUS_ERROR;
         } else {

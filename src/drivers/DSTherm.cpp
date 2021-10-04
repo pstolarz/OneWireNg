@@ -57,7 +57,7 @@ OneWireNg::ErrorCode DSTherm::filterSupportedSlaves()
     /* if n-th bit is set corresponding code from FAMILY_NAMES was added */
     uint8_t bm = 0;
 
-    for (i=0; i < TAB_SZ(FAMILY_NAMES); bm <<= 1, i++) {
+    for (i = 0; i < TAB_SZ(FAMILY_NAMES); bm <<= 1, i++) {
         int sz = _ow.searchFilterSize();
 
         if (_ow.searchFilterAdd(FAMILY_NAMES[i].code) != OneWireNg::EC_SUCCESS)
@@ -72,7 +72,7 @@ OneWireNg::ErrorCode DSTherm::filterSupportedSlaves()
         return OneWireNg::EC_SUCCESS;
 
     /* not enough space to add the codes, revert partially added codes */
-    for (i=0; bm; bm >>= 1, i++) {
+    for (i = 0; bm; bm >>= 1, i++) {
         if (bm & 1)
             _ow.searchFilterDel(FAMILY_NAMES[i].code);
     }
@@ -82,7 +82,7 @@ OneWireNg::ErrorCode DSTherm::filterSupportedSlaves()
 
 const char *DSTherm::getFamilyName(const OneWireNg::Id& id)
 {
-    for (size_t i=0; i < TAB_SZ(FAMILY_NAMES); i++) {
+    for (size_t i = 0; i < TAB_SZ(FAMILY_NAMES); i++) {
         if (id[0] == FAMILY_NAMES[i].code)
             return FAMILY_NAMES[i].name;
     }

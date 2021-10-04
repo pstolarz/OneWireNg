@@ -29,6 +29,10 @@
 # define EXT_VIRTUAL_INTF
 #endif
 
+#if __cplusplus >= 201103L
+# define USE_RANGE_LOOP
+#endif
+
 /**
  * 1-wire service interface specification.
  *
@@ -130,7 +134,7 @@ public:
      * @note This method is part of the extended virtual interface.
      */
     EXT_VIRTUAL_INTF void touchBytes(uint8_t *bytes, size_t len) {
-        for (size_t i=0; i < len; i++)
+        for (size_t i = 0; i < len; i++)
             bytes[i] = touchByte(bytes[i]);
     }
 
@@ -158,7 +162,7 @@ public:
      * @note This method is part of the extended virtual interface.
      */
     EXT_VIRTUAL_INTF void writeBytes(const uint8_t *bytes, size_t len) {
-        for (size_t i=0; i < len; i++)
+        for (size_t i = 0; i < len; i++)
             touchByte(bytes[i]);
     }
 
@@ -188,7 +192,7 @@ public:
      * @note This method is part of the extended virtual interface.
      */
     EXT_VIRTUAL_INTF void readBytes(uint8_t *bytes, size_t len) {
-        for (size_t i=0; i < len; i++)
+        for (size_t i = 0; i < len; i++)
             bytes[i] = touchByte(0xff);
     }
 
@@ -243,7 +247,7 @@ public:
         _lzero = -1;
     }
 
-#if __cplusplus >= 201103L
+#ifdef USE_RANGE_LOOP
 # if __cplusplus >= 201703L
     typedef nullptr_t end_iterator;
     typedef nullptr_t end_iterator_ref;
@@ -335,9 +339,13 @@ public:
     void setIterationMode(bool alarm) {
         _italm = alarm;
     }
-#endif /* C++11 */
+#endif /* USE_RANGE_LOOP */
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SRCH_FILTERS > 255)
+#  error "Invalid CONFIG_MAX_SRCH_FILTERS"
+# endif
+
     /**
      * Add a family @c code to the search filters.
      * During the search process slave devices with given family code
@@ -587,7 +595,7 @@ public:
 
         while (len--) {
             crc ^= *in_bts++;
-            for (int i=8; i; i--)
+            for (int i = 8; i; i--)
                 crc = (crc & 1 ? RevPoly : 0) ^ (crc >> 1);
         }
         return crc;
@@ -702,7 +710,7 @@ protected:
 #ifdef CONFIG_OVERDRIVE_ENABLED
         _overdrive = false;
 #endif
-#if __cplusplus >= 201103L
+#ifdef USE_RANGE_LOOP
         _italm = false;
 #endif
     }
@@ -729,7 +737,7 @@ protected:
      * Select all family codes set as search filters.
      */
     void searchFilterSelectAll() {
-        for (int i=0; i < _n_fltrs; i++)
+        for (int i = 0; i < _n_fltrs; i++)
             _fltrs[i].ns = false;
     }
 
@@ -744,7 +752,7 @@ protected:
 #ifdef CONFIG_OVERDRIVE_ENABLED
     bool _overdrive;    /** overdrive turned on */
 #endif
-#if __cplusplus >= 201103L
+#ifdef USE_RANGE_LOOP
     bool _italm;        /** search range-loop in alarm mode */
 #endif
 
@@ -759,5 +767,6 @@ friend class OneWireNg_Test;
 #endif
 };
 
+#undef USE_RANGE_LOOP
 #undef EXT_VIRTUAL_INTF
 #endif /* __OWNG__ */

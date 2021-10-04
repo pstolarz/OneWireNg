@@ -23,7 +23,7 @@
 #  define delayUs(__us) usleep(__us)
 #  define delayMs(__ms) usleep(1000L * (__ms))
 # else
-#  error "ERROR: Delay API unsupported for the target platform."
+#  error "Delay API unsupported for the target platform."
 # endif
 #endif
 

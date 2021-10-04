@@ -19,18 +19,29 @@
 #elif !defined(OWNG_DISABLE_DEFAULT_CONFIG)
 
 /**
- * By default (for parasitically connected devices) the 1-wire bus is powered
- * by setting the 1-wire data GPIO into the high state and therefore connecting
- * a direct GPIO's voltage source into the bus.
+ * The parameter controls the way the 1-wire bus is powered for parasitically
+ * connected devices.
  *
- * In case the platform GPIO is of an open-drain type (or the data GPIO is not
- * able to provide sufficient power) the library provides ability to leverage
- * power-control-GPIO (working in the output mode) controlling power switching
- * transistor providing the voltage source to the bus. The GPIO is set to the
- * low state in case the power is enabled on the bus via @ref OneWireNg::powerBus()
- * routine and to the high state otherwise.
+ * If not configured the bus is powered by setting the 1-wire data GPIO into
+ * the high state and therefore connecting GPIO's voltage source directly to
+ * the bus. The mode is feasible for non open-drain type of platforms where
+ * a GPIO may provide sufficient power to connected slaves.
+ *
+ * If configured the library provides an additional mode with a power-control-GPIO
+ * (working in the output mode) controlling a power switching transistor
+ * providing an external voltage source to the bus. The GPIO is set to the low
+ * state in case the power is enabled on the bus via @ref OneWireNg::powerBus()
+ * and to the high state otherwise (the logic may be reversed by
+ * @c CONFIG_PWR_CTRL_REV_POLARITY parameter).
  */
 //#define CONFIG_PWR_CTRL_ENABLED
+
+/**
+ * Reverse power-control-GPIO logic controlling the power switching transistor.
+ *
+ * @see CONFIG_PWR_CTRL_ENABLED.
+ */
+//#define CONFIG_PWR_CTRL_REV_POLARITY
 
 /**
  * Type of algorithm used for CRC-8/MAXIM calculation.

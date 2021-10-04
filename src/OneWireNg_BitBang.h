@@ -55,10 +55,9 @@ protected:
      */
     OneWireNg_BitBang()
     {
-        _flgs.pwre = 0;
+        pwre = false;
 #ifdef CONFIG_PWR_CTRL_ENABLED
-        _flgs.pwrp = 0;
-        _flgs.pwrr = 0;
+        pwrp = false;
 #endif
     }
 
@@ -70,16 +69,19 @@ protected:
      * power switching transistor providing the voltage source to the bus.
      * The GPIO is set to the low state in case the power is enabled on the
      * bus via @ref powerBus() routine and to the high state otherwise. The
-     * logic may be inverted by setting @c reversePolarity to @c true.
+     * logic may be inverted by @ref CONFIG_PWR_CTRL_REV_POLARITY configuration.
      */
-    void setupPwrCtrlGpio(bool on, bool reversePolarity = false)
+    void setupPwrCtrlGpio(bool on)
     {
         if (on) {
-            _flgs.pwrr = (reversePolarity != 0);
-            setGpioAsOutput((reversePolarity ? 0 : 1), GPIO_CTRL_PWR);
-            _flgs.pwrp = 1;
+# ifdef CONFIG_PWR_CTRL_REV_POLARITY
+            setGpioAsOutput(0, GPIO_CTRL_PWR);
+# else
+            setGpioAsOutput(1, GPIO_CTRL_PWR);
+# endif
+            pwrp = true;
         } else {
-            _flgs.pwrp = 0;
+            pwrp = false;
         }
     }
 #endif
@@ -178,13 +180,8 @@ protected:
         }
     }
 
-    struct {
-        unsigned pwre: 1;   /** bus is powered indicator */
-#ifdef CONFIG_PWR_CTRL_ENABLED
-        unsigned pwrp: 1;   /** power-control-GPIO pin is valid */
-        unsigned pwrr: 1;   /** power-control-GPIO works in reverse polarity */
-#endif
-    } _flgs;
+    bool pwre;  /** bus is powered indicator */
+    bool pwrp;  /** power-control-GPIO pin is valid */
 
 private:
 #ifdef CONFIG_PWR_CTRL_ENABLED

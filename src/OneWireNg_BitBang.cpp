@@ -61,7 +61,7 @@ TIME_CRITICAL OneWireNg::ErrorCode OneWireNg_BitBang::reset()
     int presPulse;
 
     timeCriticalEnter();
-    if (_flgs.pwre) powerBus(false);
+    if (pwre) powerBus(false);
 
 #ifdef CONFIG_OVERDRIVE_ENABLED
     if (_overdrive)
@@ -98,7 +98,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
     int smpl = 0;
 
     timeCriticalEnter();
-    if (_flgs.pwre) powerBus(false);
+    if (pwre) powerBus(false);
 
 #ifdef CONFIG_OVERDRIVE_ENABLED
     if (_overdrive)
@@ -170,8 +170,12 @@ int OneWireNg_BitBang::touch1Overdrive()
 OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
 {
 #ifdef CONFIG_PWR_CTRL_ENABLED
-    if (_flgs.pwrp) {
-        writeGpioOut((_flgs.pwrr ? (on != 0) : !on), GPIO_CTRL_PWR);
+    if (pwrp) {
+# ifdef CONFIG_PWR_CTRL_REV_POLARITY
+        writeGpioOut((on != 0), GPIO_CTRL_PWR);
+# else
+        writeGpioOut(!on, GPIO_CTRL_PWR);
+# endif
     } else
 #endif
     if (on) {
@@ -179,6 +183,6 @@ OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
     } else {
         setDtaGpioAsInput();
     }
-    _flgs.pwre = (on != 0);
+    pwre = on;
     return EC_SUCCESS;
 }

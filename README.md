@@ -110,19 +110,19 @@ The mode is confirmed to work on the following platforms and CPU frequencies:
 
 ## Parasite powering
 
-The library supports two modes of providing direct voltage source on the 1-wire
-bus to parasitically power connected slaves:
+The library supports two modes of providing a direct voltage source on the
+1-wire bus for parasitically powered slaves:
 
-1. If platform's GPIO set to the high-state (in the output mode) is able to serve
-   as a voltage source, the library may leverage this trait. The master MCU GPIO
-   controlling the 1-wire bus is set to the high-state powering the bus when
-   additional energy is needed for connected slaves.
+1. If platform's GPIO set to the high-state (in the output mode) is able to
+   serve as a voltage source, the library may leverage this trait. The master
+   MCU GPIO controlling the 1-wire bus is set to the high-state powering the
+   bus when additional energy is needed for connected slaves.
 
-2. If platform's GPIO in the output mode is of an open-drain type, then the GPIO
-   is not able to directly serve as a voltage source powering the slaves. In this
-   case additional switching transistor is leveraged to provide the power to the
-   bus and is controlled by a dedicated power-control-GPIO as presented on the
-   following figure.
+2. If platform's GPIO is of an open-drain type, then a GPIO is not able to
+   directly serve as a voltage source powering the connected slaves. In this
+   case an additional switching transistor is leveraged to control providing
+   an external power source to the bus and is controlled by a dedicated
+   power-control-GPIO as presented on the following figure.
 
 ![Switching transistor parasite powering](extras/schema/parasite.svg)
 
@@ -203,6 +203,7 @@ void setup()
 
     ow = new OneWireNg_CurrentPlatform(10);
 
+    ow->searchReset();
     do
     {
         ec = ow->search(id);

@@ -127,7 +127,30 @@ public:
     void reset_search() {
         _srch_done = false;
         _ow->searchReset();
+#if (CONFIG_MAX_SRCH_FILTERS > 0)
+        _ow->searchFilterDelAll();
+#endif
     }
+
+#if (CONFIG_MAX_SRCH_FILTERS > 0)
+    /**
+     * @note This routine differs from the original OneWire's counterpart.
+     *     The original @c target_search() returns only the first address
+     *     found (after the search reset) with a given family code. Any
+     *     subsequent calls of this routine return addresses subsequent (in
+     *     the 1-wire binary tree) to the first returned address. In other
+     *     words, there is no way to filter all slaves with a given family
+     *     code in a single search-scan. Usefulness of such routine is
+     *     problematic, therefore this routine is able to maintain filtered
+     *     family code across the whole search-scan (up to the next search
+     *     reset) returning all slaves with a given family code in one scanning
+     *     loop.
+     */
+    void target_search(uint8_t family_code) {
+        reset_search();
+        _ow->searchFilterAdd(family_code);
+    }
+#endif
 
     bool search(uint8_t *newAddr, bool search_mode = true)
     {

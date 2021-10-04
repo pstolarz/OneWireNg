@@ -132,13 +132,14 @@
 //#define CONFIG_EXT_VIRTUAL_INTF
 
 /**
- * Dallas thermometers specific.
+ * For C++11 range-loop used while search-scan process to detect slave devices
+ * connected to the bus, the parameter specifies number or the search command
+ * retries in case of CRC or bus error. The parameter may be usefull for error
+ * prone setups.
  *
- * By default DS18S20 uses 9-bits temperature measurement resolution.
- * Enabling this parameter turns on extended resolution calculation for this
- * type of sensors.
+ * If not defined or 0 - no retires.
  */
-//#define CONFIG_DS18S20_EXT_RES
+#define CONFIG_ITERATION_RETRIES 0
 
 /**
  * In case a toolchain doesn't support C++ <new> header or the support is
@@ -146,6 +147,15 @@
  * of basic C++ allocation functionality as C's malloc(), free() counterparts.
  */
 //#define CONFIG_CPP_NEW_ALT
+
+/**
+ * Dallas thermometers specific.
+ *
+ * By default DS18S20 uses 9-bits temperature measurement resolution.
+ * Enabling this parameter turns on extended resolution calculation for this
+ * type of sensors.
+ */
+//#define CONFIG_DS18S20_EXT_RES
 
 #endif /* !OWNG_DISABLE_DEFAULT_CONFIG */
 #endif /* __OWNG_CONFIG__ */

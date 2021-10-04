@@ -304,8 +304,16 @@ public:
         }
 
         void searchStep() {
-            _ec = _ow->search(_id, _ow->_italm);
+# if (CONFIG_ITERATION_RETRIES > 0)
+            int retry = CONFIG_ITERATION_RETRIES;
 
+            do {
+                _ec = _ow->search(_id, _ow->_italm);
+            } while ((_ec == EC_CRC_ERROR || _ec == EC_BUS_ERROR) &&
+                retry-- > 0);
+# else
+            _ec = _ow->search(_id, _ow->_italm);
+# endif
             if (!(_ec == EC_MORE || _ec == EC_DONE))
                 /* error occurred; mark the iterator as final */
                 _ow = nullptr;

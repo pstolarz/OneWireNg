@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2019-2021 Piotr Stolarz
- * OneWireNg: Ardiono 1-wire service library
+ * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
  * see accompanying file LICENSE for details.
@@ -22,12 +22,12 @@
  * The parameter controls the way the 1-wire bus is powered for parasitically
  * connected devices.
  *
- * If not configured the bus is powered by setting the 1-wire data GPIO into
+ * If not configured, the bus is powered by setting the 1-wire data GPIO into
  * the high state and therefore connecting GPIO's voltage source directly to
  * the bus. The mode is feasible for non open-drain type of platforms where
  * a GPIO may provide sufficient power to connected slaves.
  *
- * If configured the library provides an additional mode with a power-control-GPIO
+ * If configured, the library provides an additional mode with a power-control-GPIO
  * (working in the output mode) controlling a power switching transistor
  * providing an external voltage source to the bus. The GPIO is set to the low
  * state in case the power is enabled on the bus via @ref OneWireNg::powerBus()
@@ -132,9 +132,9 @@
 //#define CONFIG_EXT_VIRTUAL_INTF
 
 /**
- * For C++11 range-loop used while search-scan process to detect slave devices
+ * For C++11 range-loop used during search-scan process to detect slave devices
  * connected to the bus, the parameter specifies number or the search command
- * retries in case of CRC or bus error. The parameter may be usefull for error
+ * resends in case of CRC or bus error. The parameter may be useful for error
  * prone setups.
  *
  * If not defined or 0 - no retires.

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2019,2020 Piotr Stolarz
- * OneWireNg: Ardiono 1-wire service library
+ * Copyright (c) 2019-2021 Piotr Stolarz
+ * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
  * see accompanying file LICENSE for details.

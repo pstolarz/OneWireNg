@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2021 Piotr Stolarz
- * OneWireNg: Ardiono 1-wire service library
+ * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
  * see accompanying file LICENSE for details.
@@ -315,7 +315,7 @@ public:
      * @endcode
      *
      * @return Error codes:
-     *     - @c EC_SUCCESS Scratchpad succesfully read and available under
+     *     - @c EC_SUCCESS Scratchpad successfully read and available under
      *         @c scratchpad address.
      *     - @c EC_NO_DEVS: No devices on the bus.
      *     - @c EC_CRC_ERROR: Scratchpad read with CRC error.
@@ -373,7 +373,7 @@ public:
      *   returns immediately after sending copy command to the sensor
      *   (optionally powering the bus if @c parasitic argument is @c true).
      *   It's up to a caller to wait for operation completion (note, a sensor
-     *   doesn't provide copy copmpletion signals on the bus for this command).
+     *   doesn't provide copy completion signals on the bus for this command).
      *   For parasitic powering, a caller doesn't need to de-power the bus
      *   explicitly by @ref OneWireNg::powerBus(), since 1-wire service will
      *   do it automatically on the next bus activity.

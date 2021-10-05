@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2019-2021 Piotr Stolarz
- * OneWireNg: Ardiono 1-wire service library
+ * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
  * see accompanying file LICENSE for details.
@@ -95,17 +95,17 @@ protected:
     }
 
     /**
-     * Read 1-wire data gpio and return its state (0: low, 1: high).
+     * Read 1-wire data GPIO and return its state (0: low, 1: high).
      */
     virtual int readDtaGpioIn() = 0;
 
     /**
-     * Set 1-wire data gpio in the input-mode.
+     * Set 1-wire data GPIO in the input-mode.
      */
     virtual void setDtaGpioAsInput() = 0;
 
     /**
-     * Write output-mode @c gpio with a given @c state (0: low, 1: high).
+     * Write output-mode @c GPIO with a given @c state (0: low, 1: high).
      *
      * @note If the library is configured with @c CONFIG_PWR_CTRL_ENABLED then
      *     the routine's second argument is present and specifies a GPIO the
@@ -120,7 +120,7 @@ protected:
 #endif
 
     /**
-     * Set @c gpio in the output-mode with an initial @c state (0: low, 1: high).
+     * Set @c GPIO in the output-mode with an initial @c state (0: low, 1: high).
      *
      * @note The function should guarantee no intermediate "blink" state between
      *     switching the GPIO into the output mode and setting the initial
@@ -181,7 +181,9 @@ protected:
     }
 
     bool pwre;  /** bus is powered indicator */
+#ifdef CONFIG_PWR_CTRL_ENABLED
     bool pwrp;  /** power-control-GPIO pin is valid */
+#endif
 
 private:
 #ifdef CONFIG_PWR_CTRL_ENABLED

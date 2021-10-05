@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2019-2021 Piotr Stolarz
- * OneWireNg: Ardiono 1-wire service library
+ * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
  * see accompanying file LICENSE for details.
@@ -464,7 +464,7 @@ public:
     /**
      * Resume communication with a slave device which was previously addressed
      * by @ref addressSingle(), @ref overdriveSingle() or @ref search().
-     * Activities perfomed by the routine:
+     * Activities performed by the routine:
      * - Send the reset pulse.
      * - If presence pulse indicates some slave(s) present on the bus, send
      *   "Resume" command (0xA5).

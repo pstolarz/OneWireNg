@@ -52,7 +52,7 @@ static bool printId(const OneWireNg::Id& id)
     return (name != NULL);
 }
 
-static void printScratchpad(DSTherm::Scratchpad *scrpd)
+static void printScratchpad(const DSTherm::Scratchpad *scrpd)
 {
     const uint8_t *scrpd_raw = scrpd->getRaw();
 

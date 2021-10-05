@@ -47,7 +47,7 @@ public:
          * @return Temperature in Celsius degrees returned as fixed-point integer
          *     with multiplier 1000 , e.g. 20.125 C is returned as 20125.
          */
-        long getTemp();
+        long getTemp() const;
 
         /**
          * Get Th.
@@ -56,7 +56,7 @@ public:
          *
          * @note This parameter is a part of thermometer configuration.
          */
-        int8_t getTh() {
+        int8_t getTh() const {
             return (int8_t)_scrpd[2];
         }
 
@@ -67,7 +67,7 @@ public:
          *
          * @note This parameter is a part of thermometer configuration.
          */
-        int8_t getTl() {
+        int8_t getTl() const {
             return (int8_t)_scrpd[3];
         }
 
@@ -98,7 +98,7 @@ public:
          *
          * @note This parameter is a part of thermometer configuration.
          */
-        Resolution getResolution() {
+        Resolution getResolution() const {
             if (_id[0] != DS18S20)
                 return (Resolution)(RES_9_BIT + ((_scrpd[4] >> 5) & 3));
             else
@@ -130,7 +130,7 @@ public:
          * @note This parameter is a part of thermometer configuration.
          * @note DS1825 only, for other sensors 15 is returned.
          */
-        uint8_t getAddr() {
+        uint8_t getAddr() const {
             return (_scrpd[4] & 0x0f);
         }
 
@@ -154,7 +154,7 @@ public:
         /**
          * Get sensor id the scratchpad belongs to.
          */
-        const OneWireNg::Id& getId() {
+        const OneWireNg::Id& getId() const {
             return _id;
         }
 
@@ -163,7 +163,7 @@ public:
          * Table's length is always 9 bytes long (denoted by @ref LENGTH
          * constant).
          */
-        const uint8_t *getRaw() {
+        const uint8_t *getRaw() const {
             return _scrpd;
         }
 
@@ -181,7 +181,7 @@ public:
          *     - @c EC_SUCCESS: Operation finished with success.
          *     - @c EC_NO_DEVS: No devices on the bus.
          */
-        OneWireNg::ErrorCode writeScratchpad();
+        OneWireNg::ErrorCode writeScratchpad() const;
 
         /**
          * Intentionally empty - the same Scratchpad placeholder may be used
@@ -561,14 +561,14 @@ private:
         return status;
     }
 
+    OneWireNg& _ow;
+
     typedef struct {
         uint8_t code;
         const char *name;
     } FamilyCodeName;
 
-    static FamilyCodeName FAMILY_NAMES[];
-
-    OneWireNg& _ow;
+    static const FamilyCodeName FAMILY_NAMES[];
 };
 
 #endif /* __OWNG_DSTHERM__ */

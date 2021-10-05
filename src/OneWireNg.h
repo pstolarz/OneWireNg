@@ -387,7 +387,7 @@ public:
      * filtered out (not number of calls to @ref searchFilterAdd()) and is
      * always less or equal than @CONFIG_MAX_SRCH_FILTERS.
      */
-    int searchFilterSize() {
+    int searchFilterSize() const {
         return _n_fltrs;
     }
 #endif /* CONFIG_MAX_SRCH_FILTERS */

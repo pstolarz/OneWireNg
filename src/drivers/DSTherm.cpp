@@ -15,7 +15,7 @@
 
 #define TAB_SZ(t) (sizeof(t)/sizeof((t)[0]))
 
-DSTherm::FamilyCodeName
+const DSTherm::FamilyCodeName
     DSTherm::FAMILY_NAMES[] =
 {
     { DS18S20, "DS18S20" },
@@ -142,7 +142,7 @@ OneWireNg::ErrorCode DSTherm::_writeScratchpad(
     return ec;
 }
 
-OneWireNg::ErrorCode DSTherm::Scratchpad::writeScratchpad()
+OneWireNg::ErrorCode DSTherm::Scratchpad::writeScratchpad() const
 {
     OneWireNg::ErrorCode ec = _ow.addressSingle(_id);
     if (ec == OneWireNg::EC_SUCCESS)
@@ -162,7 +162,7 @@ inline long rsh(long v, int sh) {
     return (v < 0 ? -((-v) >> sh) : (v >> sh));
 }
 
-long DSTherm::Scratchpad::getTemp()
+long DSTherm::Scratchpad::getTemp() const
 {
     long temp = ((long)(int8_t)_scrpd[1] << 8) | _scrpd[0];
 

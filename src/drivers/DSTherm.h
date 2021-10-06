@@ -272,10 +272,6 @@ public:
         return _convertTemp(NULL, convTime, parasitic);
     }
 
-#define MAKE_SCRATCHPAD(__scrpd) \
-    ALLOC_ALIGNED uint8_t __scrpd##_buf[sizeof(DSTherm::Scratchpad)]; \
-    DSTherm::Scratchpad *__scrpd = reinterpret_cast<DSTherm::Scratchpad*>(__scrpd##_buf)
-
     /**
      * Read sensor scratchpad.
      *
@@ -284,7 +280,9 @@ public:
      *    object representing read scratchpad will be created in-place:
      *
      * @code
-     * alignas(void*) uint8_t scrpd_buf[sizeof(DSTherm::Scratchpad)];
+     * #include "platform/Platform_New.h"
+     *
+     * ALLOC_ALIGNED uint8_t scrpd_buf[sizeof(DSTherm::Scratchpad)];
      * DSTherm::Scratchpad *scrpd =
      *     reinterpret_cast<DSTherm::Scratchpad*>(&scrpd_buf[0]);
      *
@@ -293,24 +291,28 @@ public:
      * dsth.readScratchpad(id, scrpd);
      * @endcode
      *
-     * or use @c MAKE_SCRATCHPAD() macro simplifying @c Scratchpad placeholder
-     * creation:
+     * or use @ref Placeholder template to store Scratchpad object:
      *
      * @code
-     * MAKE_SCRATCHPAD(scrpd);
-     * dsth.readScratchpad(id, scrpd);
+     * // create placeholder
+     * Placeholder<DSTherm::Scratchpad> _scrpd;
+     *
+     * // fill the placeholder with the read scratchpad
+     * dsth.readScratchpad(id, &_scrpd);
+     *
+     * // access scratchpad via pointer
+     * DSTherm::Scratchpad *scrpd = &_scrpd;
      * @endcode
      *
-     * The same Scratchpad placeholder may be used by subsequent sensor reads
-     * without explicit calls to Scratchpad destructor:
+     * The same Scratchpad placeholder may be used by subsequent sensor reads:
      *
      * @code
-     * MAKE_SCRATCHPAD(scrpd);
-     * dsth.readScratchpad(id1, scrpd);
+     * Placeholder<DSTherm::Scratchpad> _scrpd;
+     * dsth.readScratchpad(id1, &_scrpd);
      * // ...
-     * dsth.readScratchpad(id2, scrpd);
+     * dsth.readScratchpad(id2, &_scrpd);
      * // ...
-     * dsth.readScratchpad(id3, scrpd);
+     * dsth.readScratchpad(id3, &_scrpd);
      * // ...
      * @endcode
      *

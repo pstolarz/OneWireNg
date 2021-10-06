@@ -250,6 +250,22 @@ void setup()
 }
 ```
 
+or use `Placeholder` template to store `OneWireNg` specialized object:
+
+```cpp
+#include "OneWireNg_CurrentPlatform.h"
+#include "utils/Placeholder.h"
+
+static Placeholder<OneWireNg_CurrentPlatform> _ow;
+static OneWireNg *ow = NULL;
+
+void setup()
+{
+    ow = new (&_ow) OneWireNg_CurrentPlatform(10);
+    // ...
+}
+```
+
 ### `OneWireNg_BitBang`
 
 The class is derived from `OneWireNg` and implements the 1-wire interface basing

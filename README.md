@@ -61,19 +61,19 @@ devices.
     * Tested on Arduino UNO (ATmega328P).
 * Arduino megaAVR (recent Microchip AVR architecture).
     * Platform class: `OneWireNg_ArduinoMegaAVR`.
-    * **Not tested**.
+    * Reported to be working.
+* Arduino ESP8266.
+    * Platform class: `OneWireNg_ArduinoESP8266`.
+    * Tested on WemOS D1
+* Arduino ESP32 (legacy, S, C families).
+    * Platform class: `OneWireNg_ArduinoESP32`.
+    * Tested on ESP32-DevKitC (ESP32-WROOM-32)
 * Arduino SAM.
     * Platform class: `OneWireNg_ArduinoSAM`.
     * **Not tested**.
 * Arduino SAMD/SAMD-Beta.
     * Platform class: `OneWireNg_ArduinoSAMD`.
     * **Not tested**.
-* Arduino ESP8266.
-    * Platform class: `OneWireNg_ArduinoESP8266`.
-    * Tested on WemOS D1
-* Arduino ESP32.
-    * Platform class: `OneWireNg_ArduinoESP32`.
-    * Tested on ESP32-DevKitC (ESP32-WROOM-32)
 * Arduino STM32.
     * Platform class: `OneWireNg_ArduinoSTM32`.
     * **Not tested**.
@@ -216,9 +216,8 @@ void setup()
 ```
 
 creates 1-wire service interface for current platform and performs search on
-the bus. The bus is controlled by MCU pin number 10.
-
-Alternatively it is possible to use C++11 range loop here:
+the bus. The bus is controlled by MCU pin number 10. Alternatively it is possible
+to use C++11 range loop to detect slaves connected to the 1-wire bus:
 
 ```cpp
 #include "OneWireNg_CurrentPlatform.h"
@@ -235,7 +234,9 @@ void setup()
 }
 ```
 
-NOTE: If heap allocation is inadvisable use in-place `new` operator:
+#### Memory allocation caveat
+
+If heap allocation is inadvisable use in-place `new` operator:
 
 ```cpp
 #include "OneWireNg_CurrentPlatform.h"
@@ -250,7 +251,7 @@ void setup()
 }
 ```
 
-or use `Placeholder` template to store `OneWireNg` specialized object:
+or use `Placeholder` utility template to store `OneWireNg` specialized object:
 
 ```cpp
 #include "OneWireNg_CurrentPlatform.h"
@@ -261,6 +262,7 @@ static OneWireNg *ow = NULL;
 
 void setup()
 {
+    // initialize the placeholded object by in-place new
     ow = new (&_ow) OneWireNg_CurrentPlatform(10);
     // ...
 }

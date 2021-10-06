@@ -17,7 +17,7 @@
 #include "OneWireNg.h"
 
 /**
- * Dallas thermometers service.
+ * Dallas thermometers driver.
  */
 class DSTherm
 {
@@ -214,7 +214,7 @@ public:
     };
 
     /**
-     * DSTherm service constructor.
+     * DSTherm driver constructor.
      *
      * @param ow 1-wire service.
      */
@@ -286,7 +286,7 @@ public:
      * DSTherm::Scratchpad *scrpd =
      *     reinterpret_cast<DSTherm::Scratchpad*>(&scrpd_buf[0]);
      *
-     * // dsth: DSTherm service object
+     * // dsth: DSTherm driver object
      * // id: sensor id
      * dsth.readScratchpad(id, scrpd);
      * @endcode

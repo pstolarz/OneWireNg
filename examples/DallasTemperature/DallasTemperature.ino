@@ -39,7 +39,7 @@ static bool printId(const OneWireNg::Id& id)
     const char *name = DSTherm::getFamilyName(id);
 
     Serial.print(id[0], HEX);
-    for (size_t i=1; i < sizeof(OneWireNg::Id); i++) {
+    for (size_t i = 1; i < sizeof(OneWireNg::Id); i++) {
         Serial.print(':');
         Serial.print(id[i], HEX);
     }
@@ -124,17 +124,16 @@ void setup()
 
 void loop()
 {
-    OneWireNg *ow = &_ow;
-    DSTherm *dsth = &_dsth;
+    DSTherm& dsth = _dsth;
     Placeholder<DSTherm::Scratchpad> _scrpd;
 
     /* convert temperature on all sensors connected... */
-    dsth->convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER);
+    dsth.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER);
 
     /* ...and read them one-by-one */
-    for (auto id: *ow) {
+    for (auto id: (OneWireNg&)_ow) {
         if (printId(id)) {
-            if (dsth->readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
+            if (dsth.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);
             else
                 Serial.println("  Invalid CRC!");

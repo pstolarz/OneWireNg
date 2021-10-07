@@ -61,7 +61,7 @@ static OneWireNg *ow = nullptr;
 static void printId(const OneWireNg::Id& id)
 {
     Serial.print(id[0], HEX);
-    for (size_t i=1; i < sizeof(OneWireNg::Id); i++) {
+    for (size_t i = 1; i < sizeof(OneWireNg::Id); i++) {
         Serial.print(':');
         Serial.print(id[i], HEX);
     }

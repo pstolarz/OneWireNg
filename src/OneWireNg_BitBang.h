@@ -55,9 +55,9 @@ protected:
      */
     OneWireNg_BitBang()
     {
-        pwre = false;
+        _pwre = false;
 #ifdef CONFIG_PWR_CTRL_ENABLED
-        pwrp = false;
+        _pwrp = false;
 #endif
     }
 
@@ -79,9 +79,9 @@ protected:
 # else
             setGpioAsOutput(1, GPIO_CTRL_PWR);
 # endif
-            pwrp = true;
+            _pwrp = true;
         } else {
-            pwrp = false;
+            _pwrp = false;
         }
     }
 #endif
@@ -180,9 +180,9 @@ protected:
         }
     }
 
-    bool pwre;  /** bus is powered indicator */
+    bool _pwre; /** bus is powered indicator */
 #ifdef CONFIG_PWR_CTRL_ENABLED
-    bool pwrp;  /** power-control-GPIO pin is valid */
+    bool _pwrp; /** power-control-GPIO pin is valid */
 #endif
 
 private:

@@ -12,11 +12,13 @@ LIBOBJS=\
 TESTS=\
 	t01_OneWireNg_Test \
 	t02_OneWireNg_BitBang_Test \
-	t03_DSTherm_Test
+	t03_DSTherm_Test \
+	t04_MAX31850_Test
 
 t01_OneWireNg_Test: TDEFS=-DT01
 t02_OneWireNg_BitBang_Test: TDEFS=-DT02
 t03_DSTherm_Test: TDEFS=-DT03
+t04_MAX31850_Test: TDEFS=-DT04
 
 all: build
 	for t in $(TESTS); do echo "TEST: $$t"; ./$$t; echo; done;

@@ -89,7 +89,7 @@ const char *DSTherm::getFamilyName(const OneWireNg::Id& id)
     return NULL;
 }
 
-void DSTherm::_waitForCompletion(int ms, bool parasitic, int scanTimeoutMs)
+void DSTherm::waitForCompletion(int ms, bool parasitic, int scanTimeoutMs)
 {
     if (ms > 0) {
         /* wait specified amount of time */
@@ -157,11 +157,6 @@ OneWireNg::ErrorCode DSTherm::Scratchpad::writeScratchpad() const
     return ec;
 }
 
-/* right shift (sign aware) */
-inline long rsh(long v, int sh) {
-    return (v < 0 ? -((-v) >> sh) : (v >> sh));
-}
-
 long DSTherm::Scratchpad::getTemp() const
 {
     long temp = ((long)(int8_t)_scrpd[1] << 8) | _scrpd[0];
@@ -169,16 +164,20 @@ long DSTherm::Scratchpad::getTemp() const
     if (_id[0] != DS18S20) {
         unsigned res = (_scrpd[4] >> 5) & 3;
 
-        temp = rsh(temp, 3 - res); /* truncate fractional undefined bits */
-        temp = rsh(temp * 1000, res + 1);
+        if (res < 3) {
+            /* truncate fractional undefined bits */
+            temp = rsh(temp, 3 - res);
+        }
+        temp = div2(temp * 1000, res + 1);
     } else {
 #ifdef CONFIG_DS18S20_EXT_RES
         if (_scrpd[7]) {
-            temp = rsh(temp, 1) * 1000; /* truncate fractional part */
+            /* truncate fractional part */
+            temp = rsh(temp, 1) * 1000;
             temp += (1000L * (int8_t)(_scrpd[7] - _scrpd[6]) / _scrpd[7]) - 250;
         } else
 #endif
-            temp = rsh(temp * 1000, 1);
+            temp = div2(temp * 1000, 1);
     }
     return temp;
 }

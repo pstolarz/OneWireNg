@@ -116,9 +116,9 @@ public:
         scrpd._scrpd[0] = 0xf8; scrpd._scrpd[1] = 0xff;
         assert(scrpd.getTemp() == -500);
         scrpd._scrpd[0] = 0x5e; scrpd._scrpd[1] = 0xff;
-        assert(scrpd.getTemp() == -10000);
+        assert(scrpd.getTemp() == -10500);
         scrpd._scrpd[0] = 0x6f; scrpd._scrpd[1] = 0xfe;
-        assert(scrpd.getTemp() == -25000);
+        assert(scrpd.getTemp() == -25500);
         scrpd._scrpd[0] = 0x90; scrpd._scrpd[1] = 0xfc;
         assert(scrpd.getTemp() == -55000);
 

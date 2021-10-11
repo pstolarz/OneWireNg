@@ -31,7 +31,7 @@
 //#define PWR_CTRL_PIN    9
 
 static Placeholder<OneWireNg_CurrentPlatform> _ow;
-static Placeholder<DSTherm> _dsth;
+static Placeholder<DSTherm> _drv;
 
 /* returns false if not supported */
 static bool printId(const OneWireNg::Id& id)
@@ -95,13 +95,13 @@ void setup()
 #else
     new (&_ow) OneWireNg_CurrentPlatform(OW_PIN, false);
 #endif
-    DSTherm *dsth = new (&_dsth) DSTherm(_ow);
+    DSTherm *drv = new (&_drv) DSTherm(_ow);
 
     delay(500);
     Serial.begin(115200);
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
-    dsth->filterSupportedSlaves();
+    drv->filterSupportedSlaves();
 #endif
 
     /*
@@ -110,7 +110,7 @@ void setup()
      * - Th = 0, Tl = 0 (high/low alarm triggers),
      * - Resolution: 12-bits.
      */
-    //dsth->writeScratchpadAll(0, 0, DSTherm::RES_12_BIT);
+    //drv->writeScratchpadAll(0, 0, DSTherm::RES_12_BIT);
 
     /*
      * The configuration above is stored in volatile sensors scratchpad
@@ -119,21 +119,21 @@ void setup()
      *
      * NOTE: It will affect all sensors connected to the bus!
      */
-    //dsth->copyScratchpadAll(PARASITE_POWER);
+    //drv->copyScratchpadAll(PARASITE_POWER);
 }
 
 void loop()
 {
-    DSTherm& dsth = _dsth;
+    DSTherm& drv = _drv;
     Placeholder<DSTherm::Scratchpad> _scrpd;
 
     /* convert temperature on all sensors connected... */
-    dsth.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER);
+    drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER);
 
     /* ...and read them one-by-one */
     for (auto id: (OneWireNg&)_ow) {
         if (printId(id)) {
-            if (dsth.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
+            if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);
             else
                 Serial.println("  Invalid CRC!");

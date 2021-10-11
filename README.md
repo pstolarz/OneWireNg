@@ -19,8 +19,8 @@ devices.
 * 1-wire touch support.
 
   The 1-wire touch may substantially simplify complex bus activities consisting
-  of write-read pairs by combining them into a single touch activity. See examples
-  for details.
+  of write-read pairs by combining them into a single touch activity. See
+  [examples](examples) for details.
 
 * Parasite powering support.
 
@@ -37,12 +37,11 @@ devices.
   The overdrive mode enables speed up the 1-wire communication by a factor of 10.
   Only limited number of 1-wire devices support this mode (e.g. DS2408, DS2431).
 
-* Dallas thermometers driver.
+* Dallas temperature sensors drivers.
 
-  [`DSTherm`](src/drivers/DSTherm.h) class provides general purpose driver for
-  handling Dallas thermometers.
-  See [`DallasTemperature.ino`](examples/DallasTemperature/DallasTemperature.ino)
-  sketch for an example of usage.
+  [Generic Dallas thermometers](src/drivers/DSTherm.h) and
+  [MAX31850/MAX31851](src/drivers/MAX31850.h) drivers for handling Dallas
+  thermometers and thermocouples. See [examples](examples) for details.
 
 * OneWire compatibility interface.
 

@@ -18,6 +18,9 @@
 
 /**
  * Dallas thermometers driver.
+ *
+ * The following sensors are supported: DS18B20, DS18S20, DS1822, DS1825,
+ * DS28EA00.
  */
 class DSTherm
 {
@@ -190,7 +193,7 @@ public:
          */
         ~Scratchpad() {}
 
-    private:
+    protected:
         /**
          * Scratchpad intended to be created by @ref DSTherm::readScratchpad()
          * only.
@@ -221,9 +224,9 @@ public:
     DSTherm(OneWireNg& ow): _ow(ow) {}
 
     /**
-     * Start temperature conversion on the addressed sensor.
+     * Start temperature conversion for an addressed sensor.
      * Optionally wait appropriate amount of time needed to perform the
-     * conversion on the connected slave. If @c parasitic is @c true the bus
+     * conversion for the connected slave. If @c parasitic is @c true the bus
      * is powered during the conversion time.
      *
      * After calling this routine @ref readScratchpad() may be used to get
@@ -260,16 +263,18 @@ public:
     OneWireNg::ErrorCode convertTemp(const OneWireNg::Id& id,
         int convTime = SCAN_BUS, bool parasitic = false)
     {
-        return _convertTemp(&id, convTime, parasitic);
+        return _convertTemp<MAX_CONV_TIME>(&id, convTime, parasitic);
     }
 
     /**
-     * Similar to @ref convertTemp() but all sensors on the bus are addressed.
+     * Start temperature conversion for all sensors on the bus.
+     *
+     * @see convertTemp()
      */
     OneWireNg::ErrorCode convertTempAll(
         int convTime = SCAN_BUS, bool parasitic = false)
     {
-        return _convertTemp(NULL, convTime, parasitic);
+        return _convertTemp<MAX_CONV_TIME>(NULL, convTime, parasitic);
     }
 
     /**
@@ -362,7 +367,7 @@ public:
     /**
      * Copy sensor scratchpad into EEPROM.
      * Optionally wait appropriate amount of time needed to perform the
-     * copy on the connected slave. If @c parasitic is @c true the bus is
+     * copy for the connected slave. If @c parasitic is @c true the bus is
      * powered during the copy time.
      *
      * @param id Sensor id the operation is performed on.
@@ -426,7 +431,7 @@ public:
     }
 
     /**
-     * Check if specified sensors is parasitically powered.
+     * Check if specified sensor is parasitically powered.
      *
      * @return 0: sensor is parasitically powered, 1: otherwise.
      * @note For no sensors on the bus the routine returns 1.
@@ -490,7 +495,7 @@ public:
      */
     const static int COPY_SCRATCHPAD_TIME = 10;
 
-    /** Dallas thermometers commands */
+    /** Function command set */
     const static uint8_t CMD_CONVERT_T        = 0x44;
     const static uint8_t CMD_COPY_SCRATCHPAD  = 0x48;
     const static uint8_t CMD_WRITE_SCRATCHPAD = 0x4E;
@@ -505,9 +510,10 @@ public:
     const static uint8_t DS1825   = 0x3B;
     const static uint8_t DS28EA00 = 0x42;
 
-private:
-    void _waitForCompletion(int ms, bool parasitic, int scanTimeoutMs);
+protected:
+    void waitForCompletion(int ms, bool parasitic, int scanTimeoutMs);
 
+    template<int MAX_TIME>
     OneWireNg::ErrorCode _convertTemp(
         const OneWireNg::Id *id, int convTime, bool parasitic)
     {
@@ -516,9 +522,9 @@ private:
 
         if (ec == OneWireNg::EC_SUCCESS) {
             _ow.writeByte(CMD_CONVERT_T);
-            _waitForCompletion(
-                (convTime < 0 && parasitic ? MAX_CONV_TIME : convTime),
-                parasitic, MAX_CONV_TIME);
+            waitForCompletion(
+                (convTime < 0 && parasitic ? MAX_TIME : convTime),
+                parasitic, MAX_TIME);
         }
         return ec;
     }
@@ -534,7 +540,7 @@ private:
 
         if (ec == OneWireNg::EC_SUCCESS) {
             _ow.writeByte(CMD_COPY_SCRATCHPAD);
-            _waitForCompletion((copyTime <= 0 ? 0 : copyTime),
+            waitForCompletion((copyTime <= 0 ? 0 : copyTime),
                 parasitic, 0 /* not used */);
         }
         return ec;
@@ -562,6 +568,16 @@ private:
             status = _ow.readBit();
         }
         return status;
+    }
+
+    /* integer right shift (sign aware) */
+    static long rsh(long v, int sh) {
+        return (v < 0 ? ~((~v) >> sh) : (v >> sh));
+    }
+
+    /* integer power 2 division (sign aware) */
+    static long div2(long v, int pow) {
+        return (v < 0 ? -((-v) >> pow) : (v >> pow));
     }
 
     OneWireNg& _ow;

@@ -30,8 +30,13 @@
  */
 //#define PWR_CTRL_PIN    9
 
+/*
+ * Uncomment to set permanent, common resolution for all
+ * sensors on the bus. Resolution may vary from 9 to 12 bits.
+ */
+//#define COMMON_RES      (DSTherm::RES_12_BIT)
+
 static Placeholder<OneWireNg_CurrentPlatform> _ow;
-static Placeholder<DSTherm> _drv;
 
 /* returns false if not supported */
 static bool printId(const OneWireNg::Id& id)
@@ -95,36 +100,34 @@ void setup()
 #else
     new (&_ow) OneWireNg_CurrentPlatform(OW_PIN, false);
 #endif
-    DSTherm *drv = new (&_drv) DSTherm(_ow);
+    DSTherm drv(_ow);
 
     delay(500);
     Serial.begin(115200);
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
-    drv->filterSupportedSlaves();
+    drv.filterSupportedSlaves();
 #endif
 
+#ifdef COMMON_RES
     /*
-     * Uncomment to set common configuration for all sensors connected to
-     * the bus:
-     * - Th = 0, Tl = 0 (high/low alarm triggers),
-     * - Resolution: 12-bits.
+     * Set common resolution for all sensors.
+     * Th, Tl (high/low alarm triggers) are set to 0.
      */
-    //drv->writeScratchpadAll(0, 0, DSTherm::RES_12_BIT);
+    drv.writeScratchpadAll(0, 0, COMMON_RES);
 
     /*
      * The configuration above is stored in volatile sensors scratchpad
-     * memory and will be lost after power unplug. Uncomment this line to
-     * store the configuration permanently in sensors EEPROM.
-     *
-     * NOTE: It will affect all sensors connected to the bus!
+     * memory and will be lost after power unplug. Therefore store the
+     * configuration permanently in sensors EEPROM.
      */
-    //drv->copyScratchpadAll(PARASITE_POWER);
+    drv.copyScratchpadAll(PARASITE_POWER);
+#endif
 }
 
 void loop()
 {
-    DSTherm& drv = _drv;
+    DSTherm drv(_ow);
     Placeholder<DSTherm::Scratchpad> _scrpd;
 
     /* convert temperature on all sensors connected... */

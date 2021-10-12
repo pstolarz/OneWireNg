@@ -38,7 +38,6 @@
 #endif
 
 static OneWireNg *ow = nullptr;
-static MAX31850 *drv = nullptr;
 
 static void printId(const OneWireNg::Id& id)
 {
@@ -100,7 +99,6 @@ void setup()
 #else
     ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
 #endif
-    drv = new MAX31850(*ow);
 
     delay(500);
     Serial.begin(115200);
@@ -111,16 +109,17 @@ void setup()
 
 void loop()
 {
+    MAX31850 drv(*ow);
     Placeholder<MAX31850::Scratchpad> _scrpd;
 
     /* convert temperature on all sensors connected... */
-    drv->convertTempAll(MAX31850::SCAN_BUS, PARASITE_POWER);
+    drv.convertTempAll(MAX31850::SCAN_BUS, PARASITE_POWER);
 
     /* ...and read them one-by-one */
     for (auto id: *ow) {
         printId(id);
 
-        if (drv->readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
+        if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
             printScratchpad(_scrpd);
         else
             Serial.println("  Invalid CRC!");

@@ -130,6 +130,12 @@ public:
      * MAX31850 driver constructor.
      *
      * @param ow 1-wire service.
+     *
+     * @note @c MAX31850 driver is a lightweight object which wraps over
+     *     passed @c OneWireNg service to provide higher level API for
+     *     handling supported devices. @c MAX31850 drivers may be freely
+     *     used as automatic variables created and destroyed on the running
+     *     stack without additional overhead.
      */
     MAX31850(OneWireNg& ow): DSTherm(ow) {}
 

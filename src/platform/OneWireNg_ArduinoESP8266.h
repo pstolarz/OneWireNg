@@ -64,6 +64,9 @@ public:
     OneWireNg_ArduinoESP8266(unsigned pin, bool pullUp)
     {
         initDtaGpio(pin, pullUp);
+#if (CONFIG_ESP8266_INIT_TIME > 0)
+        delay(CONFIG_ESP8266_INIT_TIME);
+#endif
     }
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
@@ -86,6 +89,9 @@ public:
     {
         initDtaGpio(pin, pullUp);
         initPwrCtrlGpio(pwrCtrlPin);
+# if (CONFIG_ESP8266_INIT_TIME > 0)
+        delay(CONFIG_ESP8266_INIT_TIME);
+# endif
     }
 #endif
 

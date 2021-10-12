@@ -50,9 +50,9 @@
 #define OD_WRITE0_END   1
 
 /* write-1 low */
-#define OD_WRITE1_LOW   0   /* <0: no delay, 0: delay(0)==NOP, >1: usec delay */
+#define OD_WRITE1_LOW   0   /* <0: no delay, 0: delayUs(0)==NOP, >1: usec delay */
 /* write-1 high; sampling max 2 us (low + high) */
-#define OD_WRITE1_SMPL (-1) /* <0: no delay, 0: delay(0)==NOP, >1: usec delay */
+#define OD_WRITE1_SMPL (-1) /* <0: no delay, 0: delayUs(0)==NOP, >1: usec delay */
 /* write-1 trailing high */
 #define OD_WRITE1_END   7
 

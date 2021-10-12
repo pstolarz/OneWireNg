@@ -233,6 +233,17 @@ void setup()
 }
 ```
 
+NOTE: During creation of an `OneWireNg` object, the class constructor performs
+various platform specific activities required to setup the 1-wire service. For
+this reason the `OneWireNg` object may be created only when the platform itself
+is fully started-up and initialized, e.g. in `setup()` method but not as a
+global variable initialized during its creation.
+
+Additionally it is strongly recommended to maintain single `OneWireNg` service
+object across all 1-wire activities handled by this service on a specific bus.
+Of course it is perfectly possible to created multiple `OneWireNg` services
+handling different 1-wire buses.
+
 #### Memory allocation caveat
 
 If heap allocation is inadvisable use in-place `new` operator:

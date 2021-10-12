@@ -157,5 +157,15 @@
  */
 //#define CONFIG_DS18S20_EXT_RES
 
+/**
+ * For ESP8266 platform there were reported problems when no extra time
+ * has been given after the 1-wire service creation. This parameter specifies
+ * amount of time (in msecs) the service delays after performing its
+ * initialization but before being ready to use.
+ *
+ * If not defined or 0 - no delay.
+ */
+#define CONFIG_ESP8266_INIT_TIME 500
+
 #endif /* !OWNG_DISABLE_DEFAULT_CONFIG */
 #endif /* __OWNG_CONFIG__ */

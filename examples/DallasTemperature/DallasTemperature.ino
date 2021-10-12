@@ -102,7 +102,6 @@ void setup()
 #endif
     DSTherm drv(_ow);
 
-    delay(500);
     Serial.begin(115200);
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)

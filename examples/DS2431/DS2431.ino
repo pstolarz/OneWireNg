@@ -278,7 +278,6 @@ void setup()
     OneWireNg::Id dev = {};
 
     ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
-    delay(500);
 
     Serial.begin(115200);
 
@@ -319,5 +318,5 @@ void setup()
 
 void loop()
 {
-    delay(1);
+    delay(1000);
 }

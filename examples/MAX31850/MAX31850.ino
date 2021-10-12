@@ -100,7 +100,6 @@ void setup()
     ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
 #endif
 
-    delay(500);
     Serial.begin(115200);
 
     /* filter MAX31850/MAX31851 devices only */

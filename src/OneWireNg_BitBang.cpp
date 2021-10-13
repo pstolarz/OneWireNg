@@ -49,10 +49,10 @@
 /* write-0 trailing high: 1-2 us */
 #define OD_WRITE0_END   1
 
-/* write-1 low */
-#define OD_WRITE1_LOW   0   /* <0: no delay, 0: delayUs(0)==NOP, >1: usec delay */
+/* write-1 low: 0-1 us */
+#define OD_WRITE1_LOW   0   /* <=0: no delay, >0: usec delay */
 /* write-1 high; sampling max 2 us (low + high) */
-#define OD_WRITE1_SMPL (-1) /* <0: no delay, 0: delayUs(0)==NOP, >1: usec delay */
+#define OD_WRITE1_SMPL  0   /* <=0: no delay, >0: usec delay */
 /* write-1 trailing high */
 #define OD_WRITE1_END   7
 
@@ -152,7 +152,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
 int OneWireNg_BitBang::touch1Overdrive()
 {
     setBus(0);
-# if OD_WRITE1_LOW >= 0
+# if OD_WRITE1_LOW > 0
     delayUs(OD_WRITE1_LOW);
 # endif
     /* speed up low-to-high transition */
@@ -160,7 +160,7 @@ int OneWireNg_BitBang::touch1Overdrive()
     writeDtaGpioOut(1);
 # endif
     setBus(1);
-# if OD_WRITE1_SMPL >= 0
+# if OD_WRITE1_SMPL > 0
     delayUs(OD_WRITE1_SMPL);
 # endif
     return readDtaGpioIn();

@@ -237,7 +237,7 @@ static bool writeRow(const OneWireNg::Id *id,
     ow->touchBytes(cmd, 4);
 
     /* wait for completion (10 ms) */
-    delayMicroseconds(10000);
+    delay(10);
 
     return true;
 }
@@ -292,7 +292,7 @@ void setup()
 
     for (auto id: *ow) {
         if (dev[0] != DS2431)
-            memcpy(&dev, &id, sizeof(OneWireNg::Id));
+            memcpy(&dev, &id[0], sizeof(OneWireNg::Id));
 
         printId(id);
         printMem(nullptr);

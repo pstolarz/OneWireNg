@@ -152,13 +152,11 @@ protected:
     {
         __WRITE0_GPIO(_dtaGpio);
         __GPIO_AS_OUTPUT(_dtaGpio);
-        /* 0.5-1.5 usec at nominal freq. */
-        delayMicroseconds(0);
 
         /* speed up low-to-high transition */
         __WRITE1_GPIO(_dtaGpio);
         __GPIO_AS_INPUT(_dtaGpio);
-        /* start sampling at ~2 usec at nominal freq. */
+
         return __READ_GPIO(_dtaGpio);
     }
 #endif

@@ -16,6 +16,7 @@
 #include <assert.h>
 #include "Arduino.h"
 #include "OneWireNg_BitBang.h"
+#include "platform/Platform_Delay.h"
 
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)
@@ -65,7 +66,7 @@ public:
     {
         initDtaGpio(pin, pullUp);
 #if (CONFIG_ESP8266_INIT_TIME > 0)
-        delay(CONFIG_ESP8266_INIT_TIME);
+        delayMs(CONFIG_ESP8266_INIT_TIME);
 #endif
     }
 
@@ -90,7 +91,7 @@ public:
         initDtaGpio(pin, pullUp);
         initPwrCtrlGpio(pwrCtrlPin);
 # if (CONFIG_ESP8266_INIT_TIME > 0)
-        delay(CONFIG_ESP8266_INIT_TIME);
+        delayMs(CONFIG_ESP8266_INIT_TIME);
 # endif
     }
 #endif
@@ -146,8 +147,6 @@ protected:
         {
             __WRITE0_GPIO(_dtaGpio);
             __GPIO_SET_OUTPUT(_dtaGpio);
-            /* 0.5-1 usec at nominal freq. */
-            delayMicroseconds(0);
 
             /* speed up low-to-high transition */
             __WRITE1_GPIO(_dtaGpio);
@@ -156,11 +155,11 @@ protected:
         {
             __WRITE0_GPIO16();
             __GPIO16_SET_OUTPUT();
-            /* 1 usec at nominal freq. */
 
+            /* speed up low-to-high transition */
+            __WRITE1_GPIO16();
             __GPIO16_SET_INPUT();
         }
-        /* start sampling at <=2 usec at nominal freq. */
         return __READ_GPIO(_dtaGpio);
     }
 #endif

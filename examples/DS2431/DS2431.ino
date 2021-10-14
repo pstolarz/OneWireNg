@@ -273,6 +273,8 @@ static bool writePage(const OneWireNg::Id *id,
 
 void setup()
 {
+    OneWireNg::Id id;
+
     /* id of a DS2431 device for write demo;
        if not set 1st available DS2431 device will be chosen */
     OneWireNg::Id dev = {};
@@ -290,7 +292,8 @@ void setup()
     ow->searchFilterAdd(DS2431);
     Serial.println("Connected DS2431 devices:");
 
-    for (auto id: *ow) {
+    ow->searchReset();
+    while (ow->search(id) == OneWireNg::EC_MORE) {
         if (dev[0] != DS2431)
             memcpy(&dev, &id[0], sizeof(OneWireNg::Id));
 

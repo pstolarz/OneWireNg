@@ -35,6 +35,7 @@ static void printId(const OneWireNg::Id& id)
 
 void setup()
 {
+    OneWireNg::Id id;
     ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
 
     Serial.begin(115200);
@@ -46,7 +47,10 @@ void setup()
 
     /* search for OD enabled devices */
     Serial.println("Overdrive enabled devices:");
-    for (auto id: *ow) printId(id);
+
+    ow->searchReset();
+    while (ow->search(id) == OneWireNg::EC_MORE)
+        printId(id);
 
     /* back to the standard mode */
     ow->setOverdrive(false);

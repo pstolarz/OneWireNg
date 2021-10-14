@@ -239,8 +239,8 @@ public:
         ow.searchReset();
         ow.addSlave(TEST1_IDS[0]);
         ec = ow.search(id);
-        assert(ec == EC_DONE);
-        assert(cmpId(id, TEST1_IDS[0]));
+        assert(ec == EC_MORE && cmpId(id, TEST1_IDS[0]));
+        assert(ow.search(id) == EC_NO_DEVS);
 
         /*
          * multiple devices on the bus; discrepancies
@@ -254,8 +254,7 @@ public:
 
         do {
             ec = ow.search(id);
-            if (ec == EC_MORE || ec == EC_DONE)
-            {
+            if (ec == EC_MORE) {
                 // printId(id);
                 for (i=0; i < TAB_SZ(TEST1_IDS); i++) {
                     if (cmpId(id, TEST1_IDS[i])) {
@@ -372,8 +371,8 @@ public:
         ow.searchReset();
         ow.searchFilterDelAll();
         ow.searchFilterAdd(0x04);
-        assert(ow.search(id) == EC_DONE);
-        assert(cmpId(id, TEST2_IDS[0]));
+        assert(ow.search(id) == EC_MORE && cmpId(id, TEST2_IDS[0]));
+        assert(ow.search(id) == EC_NO_DEVS);
 
         /*
          * multiple devices; multiple filters
@@ -392,8 +391,7 @@ public:
 
         do {
             ec = ow.search(id);
-            if (ec == EC_MORE || ec == EC_DONE)
-            {
+            if (ec == EC_MORE) {
                 // printId(id);
                 for (i=0; i < TAB_SZ(TEST2_IDS); i++) {
                     if (cmpId(id, TEST2_IDS[i])) {

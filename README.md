@@ -199,18 +199,12 @@ static OneWireNg *ow = NULL;
 void setup()
 {
     OneWireNg::Id id;
-    OneWireNg::ErrorCode ec;
-
     ow = new OneWireNg_CurrentPlatform(10);
 
     ow->searchReset();
-    do
-    {
-        ec = ow->search(id);
-        if (ec == OneWireNg::EC_MORE || ec == OneWireNg::EC_DONE) {
-            // 'id' contains 1-wire address of a connected slave
-        }
-    } while (ec == OneWireNg::EC_MORE);
+    while (ow->search(id) == OneWireNg::EC_MORE) {
+        // 'id' contains 1-wire address of a connected slave
+    }
 }
 ```
 

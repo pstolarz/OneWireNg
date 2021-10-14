@@ -50,13 +50,9 @@ public:
      * @c begin() call will cause NULL pointer dereference inside @c OneWire
      * logic.
      */
-    OneWire():
-        _ow(NULL), _srch_done(false)
-    {}
+    OneWire(): _ow(NULL) {}
 
-    OneWire(uint8_t pin):
-        _ow(NULL), _srch_done(false)
-    {
+    OneWire(uint8_t pin): _ow(NULL) {
         begin(pin);
     }
 
@@ -125,7 +121,6 @@ public:
     }
 
     void reset_search() {
-        _srch_done = false;
         _ow->searchReset();
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
         _ow->searchFilterDelAll();
@@ -154,14 +149,11 @@ public:
 
     bool search(uint8_t *newAddr, bool search_mode = true)
     {
-        if (!_srch_done) {
-            OneWireNg::Id id;
+        OneWireNg::Id id;
 
-            OneWireNg::ErrorCode ec = _ow->search(id, !search_mode);
+        if (_ow->search(id, !search_mode) == OneWireNg::EC_MORE) {
             memcpy(newAddr, &id[0], sizeof(id));
-
-            _srch_done = (ec == OneWireNg::EC_DONE);
-            return (ec == OneWireNg::EC_MORE || _srch_done);
+            return true;
         } else {
             /* OneWire automatically resets search
                state after each completed scan */
@@ -192,7 +184,6 @@ public:
 private:
     ALLOC_ALIGNED uint8_t _ow_buf[sizeof(OneWireNg_CurrentPlatform)];
     OneWireNg *_ow;
-    bool _srch_done;
 };
 
 #endif  /* __OWNG_ONEWIRE__ */

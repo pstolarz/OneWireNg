@@ -64,11 +64,9 @@ public:
     {
         /** Success */
         EC_SUCCESS = 0,
-        /** Search process finished - no more slave devices available */
-        EC_DONE = EC_SUCCESS,
         /** Search process in progress - more slave devices available */
-        EC_MORE,
-        /** No slave devices */
+        EC_MORE = EC_SUCCESS,
+        /** No slave devices; search process finished */
         EC_NO_DEVS,
         /** 1-wire bus error */
         EC_BUS_ERROR,
@@ -77,13 +75,7 @@ public:
         /** Service is not supported by the platform */
         EC_UNSUPPORED,
         /** No space (e.g. filters table is full) */
-        EC_FULL,
-
-        /*
-         * internally used
-         */
-        /** Search process - detected slave with filtered family code */
-        EC_FILTERED = 100
+        EC_FULL
     } ErrorCode;
 
     /**
@@ -209,17 +201,12 @@ public:
      *
      * @return
      *     Non-failure error codes:
-     *     - @c EC_MORE: More devices available by subsequent calls of this
-     *         routine. @c id is written with slave id.
-     *     - @c EC_DONE (aka @c EC_SUCCESS): No more devices available.
-     *         @c id is written with slave id.
-     *     - @c EC_NO_DEVS: No slave devices (@c id not returned - undefined).
-     *         The code may be returned in 2 cases:
-     *         - No devices detected on the bus,
-     *         - No more devices available. Returned only if search filtering
-     *           is enabled and slave ids detected at the last search step have
-     *           been all filtered out (therefore @c EC_DONE doesn't apply).
-     *     Failure error codes:
+     *     - @c EC_MORE (aka @c EC_SUCCESS): More devices available by
+     *         subsequent calls of this routine. @c id is written with slave id.
+     *     - @c EC_NO_DEVS: No more slave devices (@c id not returned; passed
+     *         variable content may be changed).
+     *     Failure error codes (@c id not returned; passed variable content may
+     *     be changed):
      *     - @c EC_BUS_ERROR: Bus error.
      *     - @c EC_CRC_ERROR: CRC error.
      *
@@ -277,10 +264,8 @@ public:
     {
     public:
         iterator& operator++() {
-            if (_ec != EC_DONE)
-                searchStep();
-            else
-                /* last id read; mark the iterator as final */
+            if (searchStep() != EC_MORE)
+                /* last iteration step; mark the iterator as final */
                 _ow = nullptr;
 
             return *this;
@@ -303,24 +288,27 @@ public:
             searchStep();
         }
 
-        void searchStep() {
+        ErrorCode searchStep()
+        {
+            ErrorCode ec;
 # if (CONFIG_ITERATION_RETRIES > 0)
             int retry = CONFIG_ITERATION_RETRIES;
 
             do {
-                _ec = _ow->search(_id, _ow->_italm);
-            } while ((_ec == EC_CRC_ERROR || _ec == EC_BUS_ERROR) &&
+                ec = _ow->search(_id, _ow->_italm);
+            } while ((ec == EC_CRC_ERROR || ec == EC_BUS_ERROR) &&
                 retry-- > 0);
 # else
-            _ec = _ow->search(_id, _ow->_italm);
+            ec = _ow->search(_id, _ow->_italm);
 # endif
-            if (!(_ec == EC_MORE || _ec == EC_DONE))
-                /* error occurred; mark the iterator as final */
+            if (ec != EC_MORE)
+                /* last iteration step; mark the iterator as final */
                 _ow = nullptr;
+
+            return ec;
         }
 
         Id _id;
-        ErrorCode _ec;
         OneWireNg *_ow;
 
     friend class OneWireNg;
@@ -469,6 +457,8 @@ public:
      * - If presence pulse indicates some slave(s) present on the bus, send
      *   "Resume" command (0xA5).
      *
+     * @return Same as for @ref reset().
+     *
      * @note The command is supported only by limited number of 1-wire devices
      *     (e.g. DS2408, DS2431).
      */
@@ -502,6 +492,8 @@ public:
      * called. After performing 1-wire reset in the standard mode the overdrive
      * mode is disabled on all devices connected to the bus - only standard mode
      * communication is possible.
+     *
+     * @return Same as for @ref reset().
      */
     ErrorCode overdriveSingle(const Id& id)
     {

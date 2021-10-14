@@ -228,19 +228,16 @@ public:
     static void test_search()
     {
         Id id;
-        ErrorCode ec;
         OneWireNg_Test ow;
 
         /* no devices */
-        ec = ow.search(id);
-        assert(ec == EC_NO_DEVS);
+        assert(ow.search(id) == EC_NO_DEVS);
 
         /* single device; no discrepancies */
         ow.searchReset();
         ow.addSlave(TEST1_IDS[0]);
-        ec = ow.search(id);
-        assert(ec == EC_DONE);
-        assert(cmpId(id, TEST1_IDS[0]));
+        assert(ow.search(id) == EC_MORE && cmpId(id, TEST1_IDS[0]));
+        assert(ow.search(id) == EC_NO_DEVS);
 
         /*
          * multiple devices on the bus; discrepancies
@@ -252,19 +249,15 @@ public:
         for (i=1; i < TAB_SZ(TEST1_IDS); i++)
             ow.addSlave(TEST1_IDS[i]);
 
-        do {
-            ec = ow.search(id);
-            if (ec == EC_MORE || ec == EC_DONE)
-            {
-                // printId(id);
-                for (i=0; i < TAB_SZ(TEST1_IDS); i++) {
-                    if (cmpId(id, TEST1_IDS[i])) {
-                        fnd[i]++;
-                        break;
-                    }
+        while (ow.search(id) == EC_MORE) {
+            // printId(id);
+            for (i=0; i < TAB_SZ(TEST1_IDS); i++) {
+                if (cmpId(id, TEST1_IDS[i])) {
+                    fnd[i]++;
+                    break;
                 }
             }
-        } while (ec == EC_MORE);
+        }
 
         for (i=0; i < TAB_SZ(TEST1_IDS); i++) {
             /* each id returned only once */
@@ -279,8 +272,7 @@ public:
         ow.searchReset();
         ow.delAllslaves();
         ow.addSlave(idCorrupt);
-        ec = ow.search(id);
-        assert(ec == EC_CRC_ERROR);
+        assert(ow.search(id) == EC_CRC_ERROR);
 
         TEST_SUCCESS();
     }
@@ -359,7 +351,6 @@ public:
     static void test_filteredSearch()
     {
         Id id;
-        ErrorCode ec;
         OneWireNg_Test ow;
 
         /* no matching devices */
@@ -372,8 +363,8 @@ public:
         ow.searchReset();
         ow.searchFilterDelAll();
         ow.searchFilterAdd(0x04);
-        assert(ow.search(id) == EC_DONE);
-        assert(cmpId(id, TEST2_IDS[0]));
+        assert(ow.search(id) == EC_MORE && cmpId(id, TEST2_IDS[0]));
+        assert(ow.search(id) == EC_NO_DEVS);
 
         /*
          * multiple devices; multiple filters
@@ -390,19 +381,15 @@ public:
         for (i=0; i < TAB_SZ(TEST2_FILTERS); i++)
             ow.searchFilterAdd(TEST2_FILTERS[i]);
 
-        do {
-            ec = ow.search(id);
-            if (ec == EC_MORE || ec == EC_DONE)
-            {
-                // printId(id);
-                for (i=0; i < TAB_SZ(TEST2_IDS); i++) {
-                    if (cmpId(id, TEST2_IDS[i])) {
-                        fnd[i]++;
-                        break;
-                    }
+        while (ow.search(id) == EC_MORE) {
+            // printId(id);
+            for (i=0; i < TAB_SZ(TEST2_IDS); i++) {
+                if (cmpId(id, TEST2_IDS[i])) {
+                    fnd[i]++;
+                    break;
                 }
             }
-        } while (ec == EC_MORE);
+        }
 
         for (i=0; i < TAB_SZ(TEST2_FILTERS); i++) {
             for (j=0; j < TAB_SZ(TEST2_IDS); j++) {

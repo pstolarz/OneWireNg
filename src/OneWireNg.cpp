@@ -58,7 +58,11 @@ OneWireNg::ErrorCode OneWireNg::search(Id& id, bool alarm)
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
 restart:
 #endif
-    int lzero = -1;
+    if (_lzero < -1)
+        /* search process finished; no more slave devices available */
+        return EC_NO_DEVS;
+
+    int lzero = -2;
     memset(&id, 0, sizeof(Id));
 
     /* initialize search process on slave devices */
@@ -76,7 +80,7 @@ restart:
         ErrorCode ec = transmitSearchTriplet(n, id, lzero);
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
-        if (ec == EC_FILTERED) {
+        if (ec == EC_NO_DEVS) {
             if (__UPDATE_DISCREPANCY())
                 return EC_NO_DEVS;
             else
@@ -91,7 +95,8 @@ restart:
     if (err != EC_SUCCESS)
         return err;
 
-    return (__UPDATE_DISCREPANCY() ? EC_DONE : EC_MORE);
+    __UPDATE_DISCREPANCY();
+    return EC_MORE;
 }
 
 #undef __UPDATE_DISCREPANCY
@@ -178,7 +183,12 @@ void OneWireNg::searchFilterSelect(int n, int bit)
  * @c lzero is set to @c n if discrepancy occurred at the processed bit and
  * the bit value is 0. @c lzero is not updated in other case.
  *
- * @return Error codes: @c EC_SUCCESS, @c EC_BUS_ERROR, @c EC_FILTERED.
+ * @return Error codes:
+ *     - @c EC_SUCCESS
+ *     - @c EC_BUS_ERROR
+ *     - @c EC_NO_DEVS: Returned if search filtering is enabled and the current
+ *         search process can't be continued since no more slave devices meet
+ *         the filtering criteria.
  */
 OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
 {
@@ -233,7 +243,7 @@ OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
             /* check if code matches filtering criteria */
             int fltBit = searchFilterApply(n);
             if (fltBit != 2 && fltBit != selBit)
-                return EC_FILTERED;
+                return EC_NO_DEVS;
         }
 #endif
     }

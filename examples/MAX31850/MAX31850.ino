@@ -115,7 +115,7 @@ void loop()
     drv.convertTempAll(MAX31850::SCAN_BUS, PARASITE_POWER);
 
     /* ...and read them one-by-one */
-    for (auto id: *ow) {
+    for (const auto& id: *ow) {
         printId(id);
 
         if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)

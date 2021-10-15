@@ -221,7 +221,7 @@ void setup()
 {
     ow = new OneWireNg_CurrentPlatform(10);
 
-    for (auto id: *ow) {
+    for (const auto& id: *ow) {
         // 'id' contains 1-wire address of a connected slave
     }
 }

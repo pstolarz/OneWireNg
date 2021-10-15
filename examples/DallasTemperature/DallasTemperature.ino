@@ -133,7 +133,7 @@ void loop()
     drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER);
 
     /* ...and read them one-by-one */
-    for (auto id: (OneWireNg&)_ow) {
+    for (const auto& id: (OneWireNg&)_ow) {
         if (printId(id)) {
             if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);

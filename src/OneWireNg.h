@@ -218,7 +218,7 @@ public:
      * @code
      * OneWireNg *ow;
      *
-     * for (auto id: *ow) {
+     * for (const auto& id: *ow) {
      *     // 'id' contains 1-wire address of a connected slave
      * }
      * @endcode
@@ -244,21 +244,6 @@ public:
     typedef iterator& end_iterator_ref;
 # endif
 
-    /**
-     * @c Id class reference wrapper.
-     * Used to return slave ids by a search range-loop iterator.
-     */
-    struct Id_wrapper
-    {
-        Id_wrapper(Id& id): ref(id) {}
-
-        operator Id&() {
-            return ref;
-        }
-
-        Id& ref;
-    };
-
     /** Range-loop iterator. */
     class iterator
     {
@@ -271,8 +256,8 @@ public:
             return *this;
         }
 
-        Id_wrapper operator*() {
-            return Id_wrapper(_id);
+        Id& operator*() {
+            return _id;
         }
 
         /* called only to detect the final iteration */

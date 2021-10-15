@@ -56,15 +56,16 @@ uint8_t OneWireNg::touchByte(uint8_t byte)
 OneWireNg::ErrorCode OneWireNg::search(Id& id, bool alarm)
 {
     ErrorCode ec;
+    int lzero;
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
-restart:
-#endif
     if (_lzero < -1)
         /* search process finished; no more slave devices available */
         return EC_NO_DEVS;
 
-    int lzero = -2;
+#if (CONFIG_MAX_SRCH_FILTERS > 0)
+restart:
+#endif
+    lzero = -2;
     memset(&id, 0, sizeof(Id));
 
     /* initialize search process on slave devices */
@@ -180,7 +181,7 @@ void OneWireNg::searchFilterSelect(int n, int bit)
  *     devices on the bus or bus error).
  *
  * If selected bit value is 1 then the corresponding n-th bit in @c id is set
- * (the @id shall be initialized with 0).
+ * (the @id must be initialized with 0).
  *
  * @c lzero is set to @c n if discrepancy occurred at the processed bit and
  * the bit value is 0. @c lzero is not updated in other case.

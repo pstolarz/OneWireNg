@@ -55,6 +55,8 @@ uint8_t OneWireNg::touchByte(uint8_t byte)
 
 OneWireNg::ErrorCode OneWireNg::search(Id& id, bool alarm)
 {
+    ErrorCode ec;
+
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
 restart:
 #endif
@@ -66,9 +68,9 @@ restart:
     memset(&id, 0, sizeof(Id));
 
     /* initialize search process on slave devices */
-    ErrorCode err = reset();
-    if (err != EC_SUCCESS)
-        return err;
+    ec = reset();
+    if (ec != EC_SUCCESS)
+        return ec;
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     searchFilterSelectAll();
@@ -77,7 +79,7 @@ restart:
 
     for (int n = 0; n < (int)(8 * sizeof(Id)); n++)
     {
-        ErrorCode ec = transmitSearchTriplet(n, id, lzero);
+        ec = transmitSearchTriplet(n, id, lzero);
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
         if (ec == EC_NO_DEVS) {
@@ -91,9 +93,9 @@ restart:
             return ec;
     }
 
-    err = checkCrcId(id);
-    if (err != EC_SUCCESS)
-        return err;
+    ec = checkCrcId(id);
+    if (ec != EC_SUCCESS)
+        return ec;
 
     __UPDATE_DISCREPANCY();
     return EC_MORE;
@@ -184,11 +186,14 @@ void OneWireNg::searchFilterSelect(int n, int bit)
  * the bit value is 0. @c lzero is not updated in other case.
  *
  * @return Error codes:
- *     - @c EC_SUCCESS
- *     - @c EC_BUS_ERROR
- *     - @c EC_NO_DEVS: Returned if search filtering is enabled and the current
- *         search process can't be continued since no more slave devices meet
- *         the filtering criteria.
+ *     - @c EC_SUCCESS: Searching step successfully finished; device @c id
+ *         returned.
+ *     - @c EC_BUS_ERROR: Unexpected response received - bus error.
+ *     - @c EC_NO_DEVS: Returned if search filtering is enabled and there are
+ *         no devices matching the filtering criteria in the current searching
+ *         step. Search-scan process needs to be continued with a subsequent
+ *         searching step or finished (depending on the binary tree processing
+ *         condition).
  */
 OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
 {

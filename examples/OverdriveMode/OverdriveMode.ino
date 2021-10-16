@@ -21,7 +21,7 @@
 # error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured"
 #endif
 
-static OneWireNg *ow = nullptr;
+static OneWireNg *ow = NULL;
 
 static void printId(const OneWireNg::Id& id)
 {

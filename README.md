@@ -215,7 +215,7 @@ to use C++11 range loop to detect slaves connected to the 1-wire bus:
 ```cpp
 #include "OneWireNg_CurrentPlatform.h"
 
-static OneWireNg *ow = nullptr;
+static OneWireNg *ow = NULL;
 
 void setup()
 {

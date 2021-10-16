@@ -37,7 +37,7 @@
 # error "Example requires CONFIG_MAX_SRCH_FILTERS >= 1 to be configured"
 #endif
 
-static OneWireNg *ow = nullptr;
+static OneWireNg *ow = NULL;
 
 static void printId(const OneWireNg::Id& id)
 {

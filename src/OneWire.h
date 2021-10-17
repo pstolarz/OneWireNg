@@ -13,7 +13,6 @@
 #ifndef __OWNG_ONEWIRE__
 #define __OWNG_ONEWIRE__
 
-#include <stdint.h>
 #include <string.h>  /* memcpy */
 #include "OneWireNg_CurrentPlatform.h"
 

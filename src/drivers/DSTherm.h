@@ -13,7 +13,7 @@
 #ifndef __OWNG_DSTHERM__
 #define __OWNG_DSTHERM__
 
-#include <string.h>     /* memcpy() */
+#include <string.h>  /* memcpy */
 #include "OneWireNg.h"
 
 /**

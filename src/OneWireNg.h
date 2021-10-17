@@ -15,9 +15,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 #include "OneWireNg_Config.h"
-#include "platform/Platform_New.h"
+#include "platform/Platform_New.h"  /* operator delete (~OneWireNg) */
 
 #ifndef UNUSED
 # define UNUSED(x) ((void)(x))

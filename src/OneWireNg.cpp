@@ -10,6 +10,7 @@
  * See the License for more information.
  */
 
+#include <string.h>  /* memcpy, memset */
 #include "OneWireNg.h"
 
 #define CRC8_BASIC      1

@@ -66,7 +66,7 @@ devices.
     * Tested on WemOS D1
 * Arduino ESP32 (legacy, S, C families).
     * Platform class: `OneWireNg_ArduinoESP32`.
-    * Tested on ESP32-DevKitC (ESP32-WROOM-32)
+    * Tested on ESP32-WROOM-32, ESP32-S2-WROVER
 * Arduino SAM.
     * Platform class: `OneWireNg_ArduinoSAM`.
     * **Not tested**.
@@ -106,7 +106,8 @@ The mode is confirmed to work on the following platforms and CPU frequencies:
 * Arduino ESP8266.
     * WemOS D1; 160MHz,80MHz.
 * Arduino ESP32.
-    * ESP32-DevKitC (ESP32-WROOM-32); 240MHz-26MHz.
+    * ESP32-WROOM-32; 240MHz-26MHz.
+    * ESP32-S2-WROVER; 240MHz-80MHz
 
 ## Parasite powering
 

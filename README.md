@@ -60,11 +60,11 @@ devices.
     * Tested on Arduino UNO (ATmega328P).
 * Arduino megaAVR (recent Microchip AVR architecture).
     * Platform class: `OneWireNg_ArduinoMegaAVR`.
-    * Reported to be working.
+    * [Reported to be working](https://github.com/SpenceKonde/megaTinyCore/blob/master/megaavr/extras/LibraryCompatibility.md).
 * Arduino ESP8266.
     * Platform class: `OneWireNg_ArduinoESP8266`.
     * Tested on WemOS D1
-* Arduino ESP32 (legacy, S, C families).
+* Arduino ESP32 (legacy, S and C families).
     * Platform class: `OneWireNg_ArduinoESP32`.
     * Tested on ESP32-WROOM-32, ESP32-S2-WROVER
 * Arduino SAM.

@@ -516,6 +516,9 @@ public:
     const static uint8_t DS1825   = 0x3B;
     const static uint8_t DS28EA00 = 0x42;
 
+    /** Number of thermometers types supported by this driver */
+    const static int SUPPORTED_SLAVES_NUM = 5;
+
 protected:
     void waitForCompletion(int ms, bool parasitic, int scanTimeoutMs);
 
@@ -593,7 +596,7 @@ protected:
         const char *name;
     } FamilyCodeName;
 
-    static const FamilyCodeName FAMILY_NAMES[];
+    static const FamilyCodeName FAMILY_NAMES[SUPPORTED_SLAVES_NUM];
 };
 
 #endif /* __OWNG_DSTHERM__ */

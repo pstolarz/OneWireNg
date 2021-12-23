@@ -13,16 +13,16 @@
 #include "platform/Platform_Delay.h"
 #include "drivers/DSTherm.h"
 
-#define TAB_SZ(t) (sizeof(t)/sizeof((t)[0]))
+#define STR(m) #m
 
 const DSTherm::FamilyCodeName
-    DSTherm::FAMILY_NAMES[] =
+    DSTherm::FAMILY_NAMES[SUPPORTED_SLAVES_NUM] =
 {
-    { DS18S20, "DS18S20" },
-    { DS1822, "DS1822" },
-    { DS18B20, "DS18B20" },
-    { DS1825, "DS1825" },
-    { DS28EA00,"DS28EA00" }
+    { DS18S20, STR(DS18S20) },
+    { DS1822, STR(DS1822) },
+    { DS18B20, STR(DS18B20) },
+    { DS1825, STR(DS1825) },
+    { DS28EA00, STR(DS28EA00) }
 };
 
 OneWireNg::ErrorCode DSTherm::readScratchpad(
@@ -57,7 +57,7 @@ OneWireNg::ErrorCode DSTherm::filterSupportedSlaves()
     /* if n-th bit is set corresponding code from FAMILY_NAMES was added */
     uint8_t bm = 0;
 
-    for (i = 0; i < TAB_SZ(FAMILY_NAMES); bm <<= 1, i++) {
+    for (i = 0; i < SUPPORTED_SLAVES_NUM; bm <<= 1, i++) {
         int sz = _ow.searchFilterSize();
 
         if (_ow.searchFilterAdd(FAMILY_NAMES[i].code) != OneWireNg::EC_SUCCESS)
@@ -68,7 +68,7 @@ OneWireNg::ErrorCode DSTherm::filterSupportedSlaves()
     }
     bm >>= 1;
 
-    if (i >= TAB_SZ(FAMILY_NAMES))
+    if (i >= SUPPORTED_SLAVES_NUM)
         return OneWireNg::EC_SUCCESS;
 
     /* not enough space to add the codes, revert partially added codes */
@@ -82,7 +82,7 @@ OneWireNg::ErrorCode DSTherm::filterSupportedSlaves()
 
 const char *DSTherm::getFamilyName(const OneWireNg::Id& id)
 {
-    for (size_t i = 0; i < TAB_SZ(FAMILY_NAMES); i++) {
+    for (size_t i = 0; i < SUPPORTED_SLAVES_NUM; i++) {
         if (id[0] == FAMILY_NAMES[i].code)
             return FAMILY_NAMES[i].name;
     }

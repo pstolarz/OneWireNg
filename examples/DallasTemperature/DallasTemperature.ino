@@ -105,6 +105,9 @@ void setup()
     Serial.begin(115200);
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
+    static_assert(CONFIG_MAX_SRCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
+        "CONFIG_MAX_SRCH_FILTERS too small");
+
     drv.filterSupportedSlaves();
 #endif
 

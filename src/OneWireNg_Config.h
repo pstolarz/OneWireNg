@@ -34,25 +34,33 @@
  * and to the high state otherwise (the logic may be reversed by
  * @c CONFIG_PWR_CTRL_REV_POLARITY parameter).
  */
-//#define CONFIG_PWR_CTRL_ENABLED
+#ifndef CONFIG_PWR_CTRL_ENABLED
+//# define CONFIG_PWR_CTRL_ENABLED
+#endif
 
 /**
  * Reverse power-control-GPIO logic controlling the power switching transistor.
  *
  * @see CONFIG_PWR_CTRL_ENABLED.
  */
-//#define CONFIG_PWR_CTRL_REV_POLARITY
+#ifndef CONFIG_PWR_CTRL_REV_POLARITY
+//# define CONFIG_PWR_CTRL_REV_POLARITY
+#endif
 
 /**
  * Maximum number of family codes used for search filtering.
  * If not defined or 0 - filtering disabled.
  */
-#define CONFIG_MAX_SRCH_FILTERS 10
+#ifndef CONFIG_MAX_SRCH_FILTERS
+# define CONFIG_MAX_SRCH_FILTERS 10
+#endif
 
 /**
  * Overdrive (high-speed) mode enabled.
  */
-//#define CONFIG_OVERDRIVE_ENABLED
+#ifndef CONFIG_OVERDRIVE_ENABLED
+//# define CONFIG_OVERDRIVE_ENABLED
+#endif
 
 /**
  * Type of algorithm used for CRC-8/MAXIM calculation.
@@ -62,12 +70,16 @@
  *     times slower than the tabled method but no extra memory is used.
  * @c CRC8_TAB_16LH: 2x16 elements table, 1 byte each.
  */
-#define CONFIG_CRC8_ALGO CRC8_TAB_16LH
+#ifndef CONFIG_CRC8_ALGO
+# define CONFIG_CRC8_ALGO CRC8_TAB_16LH
+#endif
 
 /**
  * Enable CRC-16/ARC.
  */
-//#define CONFIG_CRC16_ENABLED
+#ifndef CONFIG_CRC16_ENABLED
+//# define CONFIG_CRC16_ENABLED
+#endif
 
 /**
  * Type of algorithm used for CRC-16/ARC calculation.
@@ -78,7 +90,9 @@
  *     times slower than the tabled method but no extra memory is used.
  * @c CRC16_TAB_16LH: 2x16 elements table, 2 bytes each.
  */
-#define CONFIG_CRC16_ALGO CRC16_TAB_16LH
+#ifndef CONFIG_CRC16_ALGO
+# define CONFIG_CRC16_ALGO CRC16_TAB_16LH
+#endif
 
 /**
  * Store CRC tables in flash memory instead of RAM.
@@ -89,7 +103,9 @@
  *     time needed for CRC calculation, since the flash access is much slower
  *     than RAM.
  */
-//#define CONFIG_FLASH_CRC_TAB
+#ifndef CONFIG_FLASH_CRC_TAB
+//# define CONFIG_FLASH_CRC_TAB
+#endif
 
 /**
  * GPIO blink reveals as a short, unexpected low-high (or vice versa) state
@@ -118,7 +134,9 @@
  * @note @c CONFIG_BUS_BLINK_PROTECTION may be useful to improve 1-wire
  *     communication on long cables by speeding-up low-to-high transition.
  */
-//#define CONFIG_BUS_BLINK_PROTECTION
+#ifndef CONFIG_BUS_BLINK_PROTECTION
+//# define CONFIG_BUS_BLINK_PROTECTION
+#endif
 
 /**
  * Enable extended virtual interface.
@@ -129,7 +147,9 @@
  * implementation doesn't leverage the interface it's recommended to disable
  * this parameter for slower platforms.
  */
-//#define CONFIG_EXT_VIRTUAL_INTF
+#ifndef CONFIG_EXT_VIRTUAL_INTF
+//# define CONFIG_EXT_VIRTUAL_INTF
+#endif
 
 /**
  * For C++11 range-loop used during search-scan process to detect slave devices
@@ -139,14 +159,18 @@
  *
  * If not defined or 0 - no retires.
  */
-#define CONFIG_ITERATION_RETRIES 0
+#ifndef CONFIG_ITERATION_RETRIES
+# define CONFIG_ITERATION_RETRIES 0
+#endif
 
 /**
  * In case a toolchain doesn't support C++ <new> header or the support is
  * insufficient, use this parameter to enable alternative implementation
  * of basic C++ allocation functionality as C's malloc(), free() counterparts.
  */
-//#define CONFIG_CPP_NEW_ALT
+#ifndef CONFIG_CPP_NEW_ALT
+//# define CONFIG_CPP_NEW_ALT
+#endif
 
 /**
  * Dallas thermometers specific.
@@ -155,7 +179,9 @@
  * Enabling this parameter turns on extended resolution calculation for this
  * type of sensors.
  */
-//#define CONFIG_DS18S20_EXT_RES
+#ifndef CONFIG_DS18S20_EXT_RES
+//# define CONFIG_DS18S20_EXT_RES
+#endif
 
 /**
  * For ESP8266 platform there were reported problems when no extra time
@@ -165,7 +191,9 @@
  *
  * If not defined or 0 - no delay.
  */
-#define CONFIG_ESP8266_INIT_TIME 500
+#ifndef CONFIG_ESP8266_INIT_TIME
+# define CONFIG_ESP8266_INIT_TIME 500
+#endif
 
 #endif /* !OWNG_DISABLE_DEFAULT_CONFIG */
 #endif /* __OWNG_CONFIG__ */

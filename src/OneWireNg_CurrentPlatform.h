@@ -38,6 +38,9 @@
 #elif defined(ARDUINO_ARCH_STM32)
 # include "platform/OneWireNg_ArduinoSTM32.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoSTM32
+#elif defined(ARDUINO_ARCH_MBED)
+# include "platform/OneWireNg_ArduinoMbedHal.h"
+# define OneWireNg_CurrentPlatform OneWireNg_ArduinoMbedHal
 #else
 # define OneWireNg_CurrentPlatform
 # warning "Can't detect platform. Use proper class for the platform you are compiling for!"

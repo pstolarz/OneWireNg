@@ -77,7 +77,7 @@ devices.
     * Platform class: `OneWireNg_ArduinoSTM32`.
     * **Not tested**.
 * Arduino MbedOS based platforms (RP2040, Nano, Edge, Nicla, Portena).
-    * Platform class: `OneWireNg_ArduinoMbedHal`.
+    * Platform class: `OneWireNg_ArduinoMbedHAL`.
     * **Not tested**.
 
 NOTE: Expect more platforms support in the future. **I'm inviting all developers**

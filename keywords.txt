@@ -15,6 +15,7 @@ OneWireNg_ArduinoSAMD	KEYWORD1
 OneWireNg_ArduinoESP8266	KEYWORD1
 OneWireNg_ArduinoESP32	KEYWORD1
 OneWireNg_ArduinoSTM32	KEYWORD1
+OneWireNg_ArduinoMbedHAL	KEYWORD1
 OneWireNg_CurrentPlatform	KEYWORD1
 DSTherm	KEYWORD1
 Scratchpad	KEYWORD1

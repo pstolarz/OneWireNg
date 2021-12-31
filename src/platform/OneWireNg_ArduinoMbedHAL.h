@@ -19,13 +19,13 @@
 #include "OneWireNg_BitBang.h"
 
 /**
- * Arduino MbedOS HAL complied platform GPIO specific implementation.
+ * Arduino MbedOS based platform GPIO specific implementation via HAL API.
  */
-class OneWireNg_ArduinoMbedHal: public OneWireNg_BitBang
+class OneWireNg_ArduinoMbedHAL: public OneWireNg_BitBang
 {
 public:
     /**
-     * OneWireNg 1-wire service for Arduino Mbed HAL complied platform.
+     * OneWireNg 1-wire service for Arduino MbedOS based platform.
      *
      * Bus powering is supported via switching its GPIO to the high state.
      * In this case the GPIO servers as a voltage source for connected slaves
@@ -34,14 +34,14 @@ public:
      * @param pin Arduino GPIO pin number used for bit-banging 1-wire bus.
      * @param pullUp If @c true configure internal pull-up resistor for the bus.
      */
-    OneWireNg_ArduinoMbedHal(unsigned pin, bool pullUp)
+    OneWireNg_ArduinoMbedHAL(unsigned pin, bool pullUp)
     {
         initDtaGpio(pin, pullUp);
     }
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
     /**
-     * OneWireNg 1-wire service for Arduino Mbed HAL complied platform.
+     * OneWireNg 1-wire service for Arduino MbedOS based platform.
      *
      * Bus powering is supported via a switching transistor providing
      * the power to the bus and controlled by a dedicated GPIO (@see
@@ -55,7 +55,7 @@ public:
      *     transistor.
      * @param pullUp If @c true configure internal pull-up resistor for the bus.
      */
-    OneWireNg_ArduinoMbedHal(unsigned pin, unsigned pwrCtrlPin, bool pullUp)
+    OneWireNg_ArduinoMbedHAL(unsigned pin, unsigned pwrCtrlPin, bool pullUp)
     {
         initDtaGpio(pin, pullUp);
         initPwrCtrlGpio(pwrCtrlPin);
@@ -108,17 +108,17 @@ protected:
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {
-        assert(pin >= PINS_COUNT);
+        assert(pin < PINS_COUNT);
         PinName pinName = digitalPinToPinName(pin);
 
-        gpio_init_in_ex(& _dtaGpio, pinName, (pullUp ? INPUT_PULLUP : INPUT));
+        gpio_init_in_ex(&_dtaGpio, pinName, (pullUp ? INPUT_PULLUP : INPUT));
         setupDtaGpio();
     }
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
-        assert(pin >= PINS_COUNT);
+        assert(pin < PINS_COUNT);
         PinName pinName = digitalPinToPinName(pin);
 
         gpio_init_out(&_pwrCtrlGpio, pinName);

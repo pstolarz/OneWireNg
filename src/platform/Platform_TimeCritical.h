@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -33,9 +33,9 @@
 static unsigned _int_level[portNUM_PROCESSORS];
 
 #  define timeCriticalEnter() \
-    _int_level[xPortGetCoreID()] = portENTER_CRITICAL_NESTED()
+    _int_level[xPortGetCoreID()] = portSET_INTERRUPT_MASK_FROM_ISR()
 #  define timeCriticalExit() \
-    portEXIT_CRITICAL_NESTED(_int_level[xPortGetCoreID()])
+    portCLEAR_INTERRUPT_MASK_FROM_ISR(_int_level[xPortGetCoreID()])
 #  define TIME_CRITICAL IRAM_ATTR
 # else
 #  define timeCriticalEnter() noInterrupts()

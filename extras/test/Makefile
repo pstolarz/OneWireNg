@@ -21,7 +21,7 @@ t03_DSTherm_Test: TDEFS=-DT03
 t04_MAX31850_Test: TDEFS=-DT04
 
 all: build
-	for t in $(TESTS); do echo "TEST: $$t"; ./$$t; echo; done;
+	for t in $(TESTS); do echo "TEST: $$t"; ./$$t || exit; echo; done;
 
 build: $(TESTS)
 

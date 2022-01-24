@@ -1,0 +1,19 @@
+name: Unit tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+defaults:
+  run:
+    shell: bash
+jobs:
+  ut:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Unit tests
+        run: make -C extras/test

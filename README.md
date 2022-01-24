@@ -1,5 +1,9 @@
 # OneWireNg
 
+![Tests status](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml/badge.svg?branch=master)
+![Builds status](https://github.com/pstolarz/OneWireNg/actions/workflows/build.yml/badge.svg?branch=master)
+<br><br>
+
 This is an Arduino 1-wire service library, intended as an alternative for the
 classic [OneWire](https://github.com/PaulStoffregen/OneWire) library. The library
 provides basic 1-wire services (reset, search, touch, read, write, parasite

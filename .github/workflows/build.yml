@@ -1,0 +1,55 @@
+name: Platform builds
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+defaults:
+  run:
+    shell: bash
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/arduino-ci
+    strategy:
+      matrix:
+        plat:
+          - arduino:avr:uno
+          - arduino:megaavr:uno2018
+          - arduino:sam:arduino_due_x
+          - arduino:samd:tian
+          - arduino:mbed_edge:edge_control
+          - arduino:mbed_nano:nano33ble
+          - arduino:mbed_nicla:nicla_sense
+          - arduino:mbed_portenta:envie_m4
+          - arduino:mbed_rp2040:pico
+          - esp32:esp32:esp32
+          - esp32:esp32:esp32s2
+          - esp32:esp32:esp32c3
+          - esp8266:esp8266:generic
+          - STMicroelectronics:stm32:GenF7
+          - megaTinyCore:megaavr:atxy4
+        example:
+          - DallasTemperature
+    env:
+      BUILD_FLAGS: "\
+        -DCONFIG_PWR_CTRL_ENABLED \
+        -DCONFIG_OVERDRIVE_ENABLED \
+        -DCONFIG_CRC16_ENABLED \
+        -DCONFIG_ITERATION_RETRIES=1"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          dir=$(basename `pwd`)
+          arch=/tmp/${dir}_${{ github.sha }}.zip
+          if [[ ! -e $arch ]]; then
+            cd .. && zip -qr $arch $dir && cd -
+            sudo arduino-cli lib install --zip-path $arch
+          fi >/dev/null
+          sudo arduino-cli compile -b ${{ matrix.plat }} \
+            --build-property "compiler.cpp.extra_flags=$BUILD_FLAGS" \
+            examples/${{ matrix.example }}/${{ matrix.example }}.ino

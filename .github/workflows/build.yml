@@ -11,6 +11,14 @@ defaults:
   run:
     shell: bash
 jobs:
+  cores_info:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/arduino-ci
+    steps:
+      - name: Arduino cores info
+        run: |
+          sudo arduino-cli update
+          sudo arduino-cli core list
   build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/arduino-ci

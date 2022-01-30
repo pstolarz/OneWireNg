@@ -39,7 +39,8 @@ public:
          */
         long getTemp() const
         {
-            long temp = ((long)(int8_t)_scrpd[1] << 8) | _scrpd[0];
+            long temp =
+                (long)((unsigned long)(long)(int8_t)_scrpd[1] << 8) | _scrpd[0];
             temp = rsh(temp, 2); /* truncate unused bits */
             temp = div2(temp * 1000, 2);
             return temp;
@@ -67,7 +68,8 @@ public:
          */
         long getTempInternal() const
         {
-            long temp = ((long)(int8_t)_scrpd[3] << 8) | _scrpd[2];
+            long temp =
+                (long)((unsigned long)(long)(int8_t)_scrpd[3] << 8) | _scrpd[2];
             temp = rsh(temp, 4); /* truncate unused bits */
             temp = div2(temp * 1000, 4);
             return temp;

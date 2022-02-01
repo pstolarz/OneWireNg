@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -108,10 +108,12 @@ public:
          */
         using DSTherm::Scratchpad::getRaw;
 
-        /**
-         * @see DSTherm::Scratchpad::~Scratchpad()
+        /*
+         * Intentionally empty destructor - the same Scratchpad placeholder
+         * may be used by subsequent sensor reads without explicit calls to
+         * Scratchpad destructor.
          */
-        ~Scratchpad() {}
+        // ~Scratchpad() {}
 
     protected:
         /**

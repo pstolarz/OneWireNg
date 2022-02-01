@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -18,7 +18,7 @@ class MAX31850_Test: OneWireNg
 public:
     static void test_scratchpadTemp()
     {
-        MAX31850_Test ow = MAX31850_Test();
+        MAX31850_Test ow;
         OneWireNg::Id id = {};
         uint8_t scrpd_raw[MAX31850::Scratchpad::LENGTH] = {};
         MAX31850::Scratchpad scrpd = MAX31850::Scratchpad(ow, id, scrpd_raw);
@@ -51,7 +51,7 @@ public:
 
     static void test_scratchpadTempInternal()
     {
-        MAX31850_Test ow = MAX31850_Test();
+        MAX31850_Test ow;
         OneWireNg::Id id = {};
         uint8_t scrpd_raw[MAX31850::Scratchpad::LENGTH] = {};
         MAX31850::Scratchpad scrpd = MAX31850::Scratchpad(ow, id, scrpd_raw);

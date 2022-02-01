@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -18,8 +18,8 @@ class DSTherm_Test: OneWireNg
 public:
     static void test_filterSupportedSlaves()
     {
-        DSTherm_Test ow = DSTherm_Test();
-        DSTherm dsth = DSTherm(ow);
+        DSTherm_Test ow;
+        DSTherm dsth(ow);
 
         /* fill the whole set with supported therms */
         assert(dsth.filterSupportedSlaves() == OneWireNg::EC_SUCCESS &&
@@ -66,7 +66,7 @@ public:
 
     static void test_scratchpadTemp()
     {
-        DSTherm_Test ow = DSTherm_Test();
+        DSTherm_Test ow;
         OneWireNg::Id id = {};
         uint8_t scrpd_raw[DSTherm::Scratchpad::LENGTH] = {};
         DSTherm::Scratchpad scrpd = DSTherm::Scratchpad(ow, id, scrpd_raw);
@@ -147,7 +147,7 @@ public:
 
     static void test_scratchpadConfig()
     {
-        DSTherm_Test ow = DSTherm_Test();
+        DSTherm_Test ow;
         OneWireNg::Id id = {};
         uint8_t scrpd_raw[DSTherm::Scratchpad::LENGTH] = {};
         DSTherm::Scratchpad scrpd = DSTherm::Scratchpad(ow, id, scrpd_raw);

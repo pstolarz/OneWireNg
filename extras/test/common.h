@@ -5,7 +5,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include "OneWireNg.h"
 #include "OneWireNg_BitBang.h"
 
 #define TAB_SZ(t) (sizeof(t)/sizeof(t[0]))

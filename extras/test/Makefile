@@ -1,5 +1,5 @@
 .SILENT:
-.PHONY: all build clean lib libclean
+.PHONY: all build clean lib libclean analyze
 
 LIBDIR=../../src
 CXXFLAGS+=-D__TEST__ -std=c++98 -Wall -DOWNG_CONFIG_FILE="\"test_config.h\"" -I$(LIBDIR) -I.
@@ -28,10 +28,15 @@ build: $(TESTS)
 lib: libclean $(LIBOBJS)
 
 clean: libclean
-	$(RM) $(TESTS)
+	$(RM) -r $(TESTS) compile_commands.json report report-html
 
 libclean:
 	$(RM) $(LIBOBJS)
+
+analyze: clean
+	CodeChecker log -b "$(MAKE) build" -o compile_commands.json
+	CodeChecker analyze -o report --analyzers=clangsa --analyzers=clang-tidy compile_commands.json
+	-CodeChecker parse -e html -o report-html report
 
 %: %.cpp
 	CXXFLAGS="$(TDEFS)" $(MAKE) lib

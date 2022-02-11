@@ -19,6 +19,7 @@ jobs:
         run: |
           sudo arduino-cli update
           sudo arduino-cli core list
+          sudo arduino-cli core list --updatable
   build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/arduino-ci

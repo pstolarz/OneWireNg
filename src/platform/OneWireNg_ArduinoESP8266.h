@@ -164,7 +164,7 @@ protected:
     }
 #endif
 
-    void IRAM_ATTR initDtaGpio(unsigned pin, bool pullUp)
+    void initDtaGpio(unsigned pin, bool pullUp)
     {
         /* only pins < 16 can be configured with internal pull-up */
         assert(pullUp ? pin < 16 : pin <= 16);
@@ -178,7 +178,7 @@ protected:
     }
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
-    void IRAM_ATTR initPwrCtrlGpio(unsigned pin)
+    void initPwrCtrlGpio(unsigned pin)
     {
         assert(pin <= 16);
 

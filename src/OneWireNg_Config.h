@@ -152,6 +152,9 @@
  *   - reset sampling period (standard mode),
  *   - write-0 low pulse (standard mode),
  *   - reset low pulse (overdrive mode).
+ *   Note, the configuration may cause issues when used along with extensive
+ *   amount of interrupts coming from other peripherals (e.g. ESP32 with WiFi
+ *   communication).
  * - @c TIMING_NULL: All 1-wire signals are bit-banged in time-non-critical
  *   (interrupts enabled) state. Use with care, especially in the overdrive
  *   mode.

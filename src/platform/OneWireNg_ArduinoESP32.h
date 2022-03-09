@@ -161,7 +161,7 @@ protected:
     }
 #endif
 
-    void IRAM_ATTR initDtaGpio(unsigned pin, bool pullUp)
+    void initDtaGpio(unsigned pin, bool pullUp)
     {
         assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
 
@@ -188,7 +188,7 @@ protected:
     }
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
-    void IRAM_ATTR initPwrCtrlGpio(unsigned pin)
+    void initPwrCtrlGpio(unsigned pin)
     {
         assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
 

@@ -104,18 +104,18 @@ public:
 #endif
 
 protected:
-    int readDtaGpioIn()
+    int  IRAM_ATTR readDtaGpioIn()
     {
         return __READ_GPIO(_dtaGpio);
     }
 
-    void setDtaGpioAsInput()
+    void IRAM_ATTR setDtaGpioAsInput()
     {
         __GPIO_AS_INPUT(_dtaGpio);
     }
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
-    void writeGpioOut(int state, GpioType gpio)
+    void IRAM_ATTR writeGpioOut(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
             __WRITE_GPIO(_dtaGpio, state);
@@ -124,7 +124,7 @@ protected:
         }
     }
 
-    void setGpioAsOutput(int state, GpioType gpio)
+    void IRAM_ATTR setGpioAsOutput(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
             __WRITE_GPIO(_dtaGpio, state);
@@ -135,12 +135,12 @@ protected:
         }
     }
 #else
-    void writeGpioOut(int state)
+    void IRAM_ATTR writeGpioOut(int state)
     {
         __WRITE_GPIO(_dtaGpio, state);
     }
 
-    void setGpioAsOutput(int state)
+    void IRAM_ATTR setGpioAsOutput(int state)
     {
         __WRITE_GPIO(_dtaGpio, state);
         __GPIO_AS_OUTPUT(_dtaGpio);
@@ -148,7 +148,7 @@ protected:
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
 #ifdef CONFIG_OVERDRIVE_ENABLED
-    int touch1Overdrive()
+    int IRAM_ATTR touch1Overdrive()
     {
         __WRITE0_GPIO(_dtaGpio);
         __GPIO_AS_OUTPUT(_dtaGpio);
@@ -161,7 +161,7 @@ protected:
     }
 #endif
 
-    void initDtaGpio(unsigned pin, bool pullUp)
+    void IRAM_ATTR initDtaGpio(unsigned pin, bool pullUp)
     {
         assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
 
@@ -188,7 +188,7 @@ protected:
     }
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
-    void initPwrCtrlGpio(unsigned pin)
+    void IRAM_ATTR initPwrCtrlGpio(unsigned pin)
     {
         assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
 

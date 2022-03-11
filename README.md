@@ -1,6 +1,7 @@
 # OneWireNg
 [![Tests status](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml)
-[![Builds status](https://github.com/pstolarz/OneWireNg/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/build.yml) [![Join the chat at https://gitter.im/pstolarz/OneWireNg](https://badges.gitter.im/pstolarz/OneWireNg.svg)](https://gitter.im/pstolarz/OneWireNg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Builds status](https://github.com/pstolarz/OneWireNg/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/build.yml)
+[![Join the chat at https://gitter.im/pstolarz/OneWireNg](https://badges.gitter.im/pstolarz/OneWireNg.svg)](https://gitter.im/pstolarz/OneWireNg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 <br>
 
 This is an Arduino 1-wire service library, intended as an alternative for the

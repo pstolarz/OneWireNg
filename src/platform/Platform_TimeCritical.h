@@ -17,6 +17,22 @@
 # include "Arduino.h"
 # ifdef ARDUINO_ARCH_ESP32
 #  include "freertos/task.h"
+#  ifdef CONFIG_IDF_TARGET_ESP32C3
+#   include "hal/cpu_hal.h"
+#   define get_cpu_cycle_count() cpu_hal_get_cycle_count()
+#  else
+#   include "xtensa/hal.h"
+#   define get_cpu_cycle_count() xthal_get_ccount()
+#  endif
+
+typedef struct {
+    unsigned int_lev;   /* saved interrupt level */
+    unsigned ccnt;      /* cycle counter (at delay start) */
+    bool actv;          /* is time critical section active? */
+} esp_tc_t;
+
+extern esp_tc_t esp_tc[portNUM_PROCESSORS];
+
 /*
  * NOTE: Arduino ESP32 has interrupts() and noInterrupts() implemented as NOPs,
  * therefore they don't provide proper timing guards in time critical parts of
@@ -25,13 +41,19 @@
  * This implementation of time critical enter/exit routines bases on Xtensa
  * FreeRTOS API for disabling/enabling interrupts locally (exclusively for
  * a CPU core the routine is called on).
+ *
+ * Additionally cycle counter state is saved at the entry point for a purpose
+ * of accurate timings calculation.
  */
-extern unsigned esp_int_level[portNUM_PROCESSORS];
-
 #  define timeCriticalEnter() \
-    esp_int_level[xPortGetCoreID()] = portSET_INTERRUPT_MASK_FROM_ISR()
+    esp_tc[xPortGetCoreID()].actv = true; \
+    esp_tc[xPortGetCoreID()].int_lev = portSET_INTERRUPT_MASK_FROM_ISR(); \
+    esp_tc[xPortGetCoreID()].ccnt = get_cpu_cycle_count()
+
 #  define timeCriticalExit() \
-    portCLEAR_INTERRUPT_MASK_FROM_ISR(esp_int_level[xPortGetCoreID()])
+    portCLEAR_INTERRUPT_MASK_FROM_ISR(esp_tc[xPortGetCoreID()].int_lev); \
+    esp_tc[xPortGetCoreID()].actv = false
+
 # else
 #  define timeCriticalEnter() noInterrupts()
 #  define timeCriticalExit() interrupts()

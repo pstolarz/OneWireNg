@@ -139,6 +139,19 @@
 #endif
 
 /**
+ * For platforms which support CPU cycles counter, the parameter enables
+ * accurate bit-banging timings by crafted microseconds delay implementation
+ * using the counter. The accuracy is especially important for CPUs working
+ * with frequencies lower than 40 MHz.
+ *
+ * @note Currently only ESP32 and ESP8266 support this configuration.
+ * For other platforms the parameter is ignored.
+ */
+#ifndef CONFIG_BITBANG_DELAY_CCOUNT
+# define CONFIG_BITBANG_DELAY_CCOUNT
+#endif
+
+/**
  * The parameter controls timing regime while bit-banging 1-wire signals
  * on the data bus. The parameter may be useful while running the library
  * on interrupts intense platforms, where control over the timings may be

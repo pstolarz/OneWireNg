@@ -15,9 +15,11 @@
 
 #ifdef ARDUINO
 # include "Arduino.h"
+# include "platform/Platform_TimeCritical.h"
 
-# if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)
-#  include "platform/Platform_TimeCritical.h"
+# ifndef CONFIG_BITBANG_DELAY_CCOUNT
+#  define delayUs(__us) delayMicroseconds(__us)
+# elif defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)
 #  define F_CPU_MHZ (F_CPU / 1000000)
 
 /*
@@ -29,8 +31,8 @@
 #   else
 #    define TC_CCNT_ADJST 0
 #   endif
-#  ifdef ARDUINO_ARCH_ESP32
 
+#  ifdef ARDUINO_ARCH_ESP32
 /*
  * Delay may be performed in two modes:
  * - Relaxed (aside critical section) with interrupt re-entrancy enabled.
@@ -58,7 +60,7 @@
 #  endif
 # else /* ESP32 || ESP8266 */
 #  define delayUs(__us) delayMicroseconds(__us)
-#endif
+# endif
 # define delayMs(__ms) delay(__ms)
 #else /* ARDUINO */
 # ifdef __TEST__

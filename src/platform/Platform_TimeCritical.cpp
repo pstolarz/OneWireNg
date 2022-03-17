@@ -10,8 +10,11 @@
  * See the License for more information.
  */
 
-#ifdef ARDUINO_ARCH_ESP32
-# include "platform/Platform_TimeCritical.h"
+#include "platform/Platform_TimeCritical.h"
 
-esp_tc_t esp_tc[portNUM_PROCESSORS];
+#ifdef ARDUINO_ARCH_ESP32
+tc_t _tc[portNUM_PROCESSORS];
+#elif ARDUINO_ARCH_ESP8266
+unsigned _tc_ccnt;
+bool _tc_actv;
 #endif

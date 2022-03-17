@@ -15,6 +15,7 @@
 
 #ifdef ARDUINO
 # include "Arduino.h"
+
 # ifdef ARDUINO_ARCH_ESP32
 #  include "freertos/task.h"
 #  ifdef CONFIG_IDF_TARGET_ESP32C3
@@ -29,9 +30,9 @@ typedef struct {
     unsigned int_lev;   /* saved interrupt level */
     unsigned ccnt;      /* cycle counter (at delay start) */
     bool actv;          /* is time critical section active? */
-} esp_tc_t;
+} tc_t;
 
-extern esp_tc_t esp_tc[portNUM_PROCESSORS];
+extern tc_t _tc[portNUM_PROCESSORS];
 
 /*
  * NOTE: Arduino ESP32 has interrupts() and noInterrupts() implemented as NOPs,
@@ -46,19 +47,35 @@ extern esp_tc_t esp_tc[portNUM_PROCESSORS];
  * of accurate timings calculation.
  */
 #  define timeCriticalEnter() \
-    esp_tc[xPortGetCoreID()].actv = true; \
-    esp_tc[xPortGetCoreID()].int_lev = portSET_INTERRUPT_MASK_FROM_ISR(); \
-    esp_tc[xPortGetCoreID()].ccnt = get_cpu_cycle_count()
+    _tc[xPortGetCoreID()].actv = true; \
+    _tc[xPortGetCoreID()].int_lev = portSET_INTERRUPT_MASK_FROM_ISR(); \
+    _tc[xPortGetCoreID()].ccnt = get_cpu_cycle_count()
 
 #  define timeCriticalExit() \
-    portCLEAR_INTERRUPT_MASK_FROM_ISR(esp_tc[xPortGetCoreID()].int_lev); \
-    esp_tc[xPortGetCoreID()].actv = false
+    portCLEAR_INTERRUPT_MASK_FROM_ISR(_tc[xPortGetCoreID()].int_lev); \
+    _tc[xPortGetCoreID()].actv = false
+
+# elif ARDUINO_ARCH_ESP8266
+#  define get_cpu_cycle_count() xthal_get_ccount()
+
+extern "C" uint32_t xthal_get_ccount();
+extern unsigned _tc_ccnt;    /* cycle counter (at delay start) */
+extern bool _tc_actv;        /* is time critical section active? */
+
+#  define timeCriticalEnter() \
+    _tc_actv = true; \
+    noInterrupts(); \
+    _tc_ccnt = get_cpu_cycle_count()
+
+#  define timeCriticalExit() \
+    interrupts(); \
+    _tc_actv = false
 
 # else
 #  define timeCriticalEnter() noInterrupts()
 #  define timeCriticalExit() interrupts()
 # endif
-#else
+#else /* ARDUINO */
 # ifndef __TEST__
 #  warning "Time critical API unsupported for the target platform. Disabled."
 # endif

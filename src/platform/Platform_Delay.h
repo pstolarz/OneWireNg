@@ -15,19 +15,21 @@
 
 #ifdef ARDUINO
 # include "Arduino.h"
-# ifdef ARDUINO_ARCH_ESP32
+
+# if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)
 #  include "platform/Platform_TimeCritical.h"
 #  define F_CPU_MHZ (F_CPU / 1000000)
 
 /*
- * Cycles counter adjustment.
- * It's important for accurate timings on lower frequencies.
+ * TC_CCNT_ADJST: cycles counter adjustment
+ * (important for accurate timings on lower frequencies).
  */
-#  if F_CPU_MHZ >= 20
-#   define TC_CCNT_ADJST 15
-#  else
-#   define TC_CCNT_ADJST 0
-#  endif
+#   if F_CPU_MHZ >= 20
+#    define TC_CCNT_ADJST 15
+#   else
+#    define TC_CCNT_ADJST 0
+#   endif
+#  ifdef ARDUINO_ARCH_ESP32
 
 /*
  * Delay may be performed in two modes:
@@ -36,19 +38,29 @@
  * - Strict (inside critical section) with interrupt disabled. Timing
  *   accuracy reached by CPU clock cycles tracking.
  */
-#  define delayUs(__us) \
-    if (esp_tc[xPortGetCoreID()].actv) { \
-        register unsigned stop = (esp_tc[xPortGetCoreID()].ccnt += \
+#   define delayUs(__us) \
+    if (_tc[xPortGetCoreID()].actv) { \
+        unsigned stop = (_tc[xPortGetCoreID()].ccnt += \
             ((__us) * F_CPU_MHZ) + TC_CCNT_ADJST); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
         delayMicroseconds(__us); \
     }
-# else
+#  else
+#   define delayUs(__us) \
+    if (_tc_actv) { \
+        unsigned stop = (_tc_ccnt += \
+            ((__us) * F_CPU_MHZ + TC_CCNT_ADJST)); \
+        while ((int)(stop - get_cpu_cycle_count()) > 0); \
+    } else { \
+        delayMicroseconds(__us); \
+    }
+#  endif
+# else /* ESP32 || ESP8266 */
 #  define delayUs(__us) delayMicroseconds(__us)
 #endif
 # define delayMs(__ms) delay(__ms)
-#else
+#else /* ARDUINO */
 # ifdef __TEST__
 #  include <unistd.h>
 #  define delayUs(__us) usleep(__us)

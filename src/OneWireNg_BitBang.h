@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Piotr Stolarz
+ * Copyright (c) 2019-2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -33,11 +33,11 @@ class OneWireNg_BitBang: public OneWireNg
 {
 public:
     ErrorCode reset();
-    int touchBit(int bit);
+    int touchBit(int bit, bool power);
 
     /**
-     * Enable/disable direct voltage source provisioning on the 1-wire data bus
-     * parasitically powering connected slave devices. Function always successes.
+     * Enable/disable direct voltage source provisioning on the 1-wire data bus.
+     * Function always successes.
      */
     ErrorCode powerBus(bool on);
 
@@ -68,8 +68,8 @@ protected:
      * disables power-control-GPIO (working in the output mode) controlling
      * power switching transistor providing the voltage source to the bus.
      * The GPIO is set to the low state in case the power is enabled on the
-     * bus via @ref powerBus() routine and to the high state otherwise. The
-     * logic may be inverted by @ref CONFIG_PWR_CTRL_REV_POLARITY configuration.
+     * bus and to the high state otherwise. The logic may be inverted by
+     * @ref CONFIG_PWR_CTRL_REV_POLARITY configuration.
      */
     void setupPwrCtrlGpio(bool on)
     {

@@ -106,59 +106,91 @@ public:
      * 1: Writes 1 on the bus and samples for response (returned by the
      *    function). The write-1 cycle is equivalent for reading cycle, except
      *    the writing cycle doesn't sample the bus for a response.
+     *
+     * @param bit Bit to be touched on the bus.
+     * @param power If parasite powering is supported, setting the argument
+     *     to @c true powers the bus after the operation finishes. See @ref
+     *     powerBus() for details.
+     *
+     * @return Touching result.
      */
-    virtual int touchBit(int bit) = 0;
+    virtual int touchBit(int bit, bool power = false) = 0;
 
     /**
      * Byte touch with least significant bit transmitted first.
+     *
+     * @param bit Byte to be touched on the bus.
+     * @param power Same as for @ref touchBit().
      *
      * @return Touching result.
      *
      * @note This method is part of the extended virtual interface.
      */
-    EXT_VIRTUAL_INTF uint8_t touchByte(uint8_t byte);
+    EXT_VIRTUAL_INTF uint8_t touchByte(uint8_t byte, bool power = false);
 
     /**
      * Array of bytes touch.
-     * Result is passed back in the same buffer.
+     *
+     * @param bytes Array of bytes to be touched on the bus.
+     *     Result is passed back in the same buffer.
+     * @param len Length of the array.
+     * @param power Same as for @ref touchBit().
      *
      * @note This method is part of the extended virtual interface.
      */
-    EXT_VIRTUAL_INTF void touchBytes(uint8_t *bytes, size_t len) {
+    EXT_VIRTUAL_INTF void touchBytes(
+        uint8_t *bytes, size_t len, bool power = false)
+    {
         for (size_t i = 0; i < len; i++)
-            bytes[i] = touchByte(bytes[i]);
+            bytes[i] = touchByte(bytes[i], power && (i + 1 >= len));
     }
 
     /**
      * Bit write.
      *
+     * @param bit Bit to be written on the bus.
+     * @param power If parasite powering is supported, setting the argument
+     *     to @c true powers the bus after the operation finishes. See @ref
+     *     powerBus() for details.
+     *
      * @note This method is part of the extended virtual interface.
      */
-    EXT_VIRTUAL_INTF void writeBit(int bit) {
-        touchBit(bit);
+    EXT_VIRTUAL_INTF void writeBit(int bit, bool power = false) {
+        touchBit(bit, power);
     }
 
     /**
      * Byte write with least significant bit transmitted first.
      *
+     * @param bit Byte to be written on the bus.
+     * @param power Same as for @ref writeBit().
+     *
      * @note This method is part of the extended virtual interface.
      */
-    EXT_VIRTUAL_INTF void writeByte(uint8_t byte) {
-        touchByte(byte);
+    EXT_VIRTUAL_INTF void writeByte(uint8_t byte, bool power = false) {
+        touchByte(byte, power);
     }
 
     /**
      * Array of bytes write.
      *
+     * @param bytes Array of bytes to be written on the bus.
+     * @param len Length of the array.
+     * @param power Same as for @ref writeBit().
+     *
      * @note This method is part of the extended virtual interface.
      */
-    EXT_VIRTUAL_INTF void writeBytes(const uint8_t *bytes, size_t len) {
+    EXT_VIRTUAL_INTF void writeBytes(
+        const uint8_t *bytes, size_t len, bool power = false)
+    {
         for (size_t i = 0; i < len; i++)
-            touchByte(bytes[i]);
+            touchByte(bytes[i], power && (i + 1 >= len));
     }
 
     /**
      * Bit read.
+     *
+     * @return Reading result.
      *
      * @note This method is part of the extended virtual interface.
      */
@@ -179,6 +211,9 @@ public:
 
     /**
      * Array of bytes read.
+     *
+     * @param bytes Array of bytes to store the reading result.
+     * @param len Number of bytes to read (length of the array).
      *
      * @note This method is part of the extended virtual interface.
      */
@@ -558,6 +593,11 @@ public:
      * @return Error codes:
      *     - @c EC_UNSUPPORED: Service is unsupported by the platform.
      *     - @c EC_SUCCESS: Otherwise.
+     *
+     * @note This is low level function. Its direct usage is not recommended.
+     *     Use appropriate version of touch or write method to power the bus
+     *     and relay on automatic depowering on a subsequent activity on the
+     *     bus.
      */
     virtual ErrorCode powerBus(bool on) {
         UNUSED(on);

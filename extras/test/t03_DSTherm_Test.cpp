@@ -205,7 +205,7 @@ private:
         return OneWireNg::EC_SUCCESS;
     }
 
-    int touchBit(int bit) {
+    int touchBit(int bit, bool power) {
         return bit;
     }
 };

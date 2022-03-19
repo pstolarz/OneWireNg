@@ -121,7 +121,7 @@ TIME_CRITICAL OneWireNg::ErrorCode OneWireNg_BitBang::reset()
     return (presPulse ? EC_NO_DEVS : EC_SUCCESS);
 }
 
-TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
+TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit, bool power)
 {
     int smpl = 0;
 
@@ -137,6 +137,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
             /* write-1 with sampling (alias read) */
             TC_STRICT_ENTER();
             smpl = touch1Overdrive();
+            if (power) powerBus(true);
             TC_STRICT_EXIT();
             delayUs(OD_WRITE1_END);
         } else
@@ -146,6 +147,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
             setBus(0);
             delayUs(OD_WRITE0_LOW);
             setBus(1);
+            if (power) powerBus(true);
             TC_STRICT_EXIT();
             delayUs(OD_WRITE0_END);
         }
@@ -163,6 +165,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
             setBus(1);
             delayUs(STD_WRITE1_SMPL);
             smpl = readDtaGpioIn();
+            if (power) powerBus(true);
             TC_STRICT_EXIT();
             delayUs(STD_WRITE1_END);
         } else
@@ -172,6 +175,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit)
             setBus(0);
             delayUs(STD_WRITE0_LOW);
             setBus(1);
+            if (power) powerBus(true);
             TC_RELAXED_EXIT();
             delayUs(STD_WRITE0_END);
         }

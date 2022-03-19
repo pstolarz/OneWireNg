@@ -166,13 +166,14 @@ void setup()
 
     // ...
 
-    // power the bus until explicit unpowering or next 1-wire bus activity
-    ow->powerBus(true);
+    // write array of bytes and power the bus subsequently;
+    // the bus is powered until explicit unpowering or next 1-wire bus activity
+    ow->writeBytes(bytes, bytes_len, true);
 
     // wait for connected slaves to fulfill their task requiring extra powering
     delay(750);
 
-    // unpower the bus
+    // unpower the bus explicitly
     ow->powerBus(false);
 }
 ```
@@ -183,9 +184,9 @@ configures 1-wire service to work in one of the above modes.
 
 Parasite powered slaves are less stable (more error prone) than regularly
 powered devices. If possible, try to avoid parasitically powered setups.
-However, if parasitic powering is unavoidable prefer to use the second mode
-(with switching transistor) in favor of the first one - it seems to be more
-stable for some platforms (e.g. AVR).
+
+For legacy AVR platforms the library need to be configured with
+`CONFIG_BUS_BLINK_PROTECTION` to make the parasitic mode working.
 
 ## Architecture details
 

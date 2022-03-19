@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -94,16 +94,11 @@ void DSTherm::waitForCompletion(int ms, bool parasitic, int scanTimeoutMs)
     if (ms > 0) {
         /* wait specified amount of time */
         if (parasitic) {
-            _ow.powerBus(true);
             delayMs(ms);
             _ow.powerBus(false);
         } else
             delayMs(ms);
-    } else if (!ms) {
-        /* return immediately; power the bus for parasitic mode */
-        if (parasitic)
-            _ow.powerBus(true);
-    } else {
+    } else if (ms < 0) {
         /* scan the bus for completion */
         for (int i = 0; i < scanTimeoutMs; i++) {
             if (_ow.readBit())

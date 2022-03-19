@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -88,15 +88,11 @@ public:
     }
 
     void write(uint8_t v, uint8_t power = 0) {
-        _ow->writeByte(v);
-        if (power)
-            _ow->powerBus(true);
+        _ow->writeByte(v, power != 0);
     }
 
     void write_bytes(const uint8_t *buf, uint16_t count, bool power = 0) {
-        _ow->writeBytes(buf, count);
-        if (power)
-            _ow->powerBus(true);
+        _ow->writeBytes(buf, count, power != 0);
     }
 
     uint8_t read(void) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Piotr Stolarz
+ * Copyright (c) 2019-2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -41,11 +41,13 @@
 # define tabRead_u32(addr) (*(const uint32_t*)(addr))
 #endif
 
-uint8_t OneWireNg::touchByte(uint8_t byte)
+uint8_t OneWireNg::touchByte(uint8_t byte, bool power)
 {
     uint8_t ret = 0;
     for (int i = 0; i < 8; i++) {
-        if (touchBit(byte & 1)) ret |= 1 << i;
+        if (touchBit(byte & 1, power && (i >= 7)))
+            ret |= 1 << i;
+
         byte >>= 1;
     }
     return ret;

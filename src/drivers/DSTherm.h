@@ -530,7 +530,7 @@ protected:
             (id ? _ow.addressSingle(*id) : _ow.addressAll());
 
         if (ec == OneWireNg::EC_SUCCESS) {
-            _ow.writeByte(CMD_CONVERT_T);
+            _ow.writeByte(CMD_CONVERT_T, parasitic);
             waitForCompletion(
                 (convTime < 0 && parasitic ? MAX_TIME : convTime),
                 parasitic, MAX_TIME);
@@ -548,7 +548,7 @@ protected:
             (id ? _ow.addressSingle(*id) : _ow.addressAll());
 
         if (ec == OneWireNg::EC_SUCCESS) {
-            _ow.writeByte(CMD_COPY_SCRATCHPAD);
+            _ow.writeByte(CMD_COPY_SCRATCHPAD, parasitic);
             waitForCompletion((copyTime <= 0 ? 0 : copyTime),
                 parasitic, 0 /* not used */);
         }

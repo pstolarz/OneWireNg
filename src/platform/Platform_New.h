@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -27,19 +27,21 @@
 # define NOEXCEPT throw()
 #endif
 
+
 #if !defined(CONFIG_CPP_NEW_ALT) && \
     (defined(__has_include) && __has_include(<new>))
 # include <new>
-#else
-# if defined(CONFIG_CPP_NEW_ALT) && defined(_NEW)
+#elif defined(_NEW)
+# ifdef CONFIG_CPP_NEW_ALT
 #  warning "CONFIG_CPP_NEW_ALT ignored to avoid conflict with already included <new> header"
-# else
-#  include <stdlib.h>
+# endif
+#else
+# include <stdlib.h>
 
-#  if __cpp_aligned_new
+# if __cpp_aligned_new
 static_assert(alignof(max_align_t) >= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
     "Alt. allocation implementation can't guarantee proper C++17 alignment");
-#  endif
+# endif
 
 inline void *operator new(size_t sz) {
     return malloc(sz);
@@ -62,7 +64,7 @@ inline void operator delete[](void *ptr) NOEXCEPT {
     free(ptr);
 }
 
-#  if __cpp_sized_deallocation
+# if __cpp_sized_deallocation
 inline void operator delete(void* ptr, size_t sz) NOEXCEPT {
     (void)sz;
     free(ptr);
@@ -72,7 +74,6 @@ inline void operator delete[](void* ptr, size_t sz) NOEXCEPT {
     (void)sz;
     free(ptr);
 }
-#  endif
 # endif
 #endif
 

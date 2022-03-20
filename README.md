@@ -57,6 +57,19 @@ devices.
   The code architecture allows fast and easy porting for new Arduino platforms
   or even usage of core part of the library outside the Arduino environment.
 
+## Usage
+
+Refer to [`examples`](examples) directory for usage details.
+
+For API specification refer to sources inline documentation (mainly
+[`OneWireNg`](src/OneWireNg.h) class). For your convenience it's possible to
+generate HTML/LaTeX [Doxygen](https://www.doxygen.nl/index.html) documentation
+by issuing `doxygen` from the main library directory. The documentation will
+be placed in `extras/doc`.
+
+File [`src/OneWireNg_Config.h`](src/OneWireNg_Config.h) contains parameters
+configuring the library functionality. See the file for more details.
+
 ## Supported platforms
 
 * Arduino AVR.
@@ -86,19 +99,6 @@ devices.
 
 NOTE: Expect more platforms support in the future. **I'm inviting all developers**
 eager to help me with porting and testing the library for new platforms.
-
-## Usage
-
-Refer to [`examples`](examples) directory for usage details.
-
-For API specification refer to sources inline documentation (mainly
-[`OneWireNg`](src/OneWireNg.h) class). For your convenience it's possible to
-generate HTML/LaTeX [Doxygen](https://www.doxygen.nl/index.html) documentation
-by issuing `doxygen` from the main library directory. The documentation will
-be placed in `extras/doc`.
-
-File [`src/OneWireNg_Config.h`](src/OneWireNg_Config.h) contains parameters
-configuring the library functionality. See the file for more details.
 
 ## Overdrive mode
 

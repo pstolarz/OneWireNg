@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -27,11 +27,15 @@
 # define NOEXCEPT throw()
 #endif
 
-#if !defined(CONFIG_CPP_NEW_ALT) && \
-    (defined(__has_include) && __has_include(<new>))
-# include <new>
+
+#ifndef CONFIG_CPP_NEW_ALT
+# if defined(__has_include) && __has_include(<new>)
+#  include <new>
+# elif !defined(_NEW)
+#  warning "<new> header not detected; try to use CONFIG_CPP_NEW_ALT in case of problems"
+# endif
 #else
-# if defined(CONFIG_CPP_NEW_ALT) && defined(_NEW)
+# ifdef _NEW
 #  warning "CONFIG_CPP_NEW_ALT ignored to avoid conflict with already included <new> header"
 # else
 #  include <stdlib.h>

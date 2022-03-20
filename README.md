@@ -106,15 +106,16 @@ When configured with `CONFIG_OVERDRIVE_ENABLED` the library supports 1-wire
 overdrive mode. The mode requires very strict and short timings while bit-banging
 data on the 1-wire bus, therefore is vulnerable for any inaccuracies.
 
-The mode is confirmed to work on the following platforms and CPU frequencies:
+While configured with `CONFIG_BITBANG_DELAY_CCOUNT` the mode is confirmed to
+work on the following platforms and CPU frequencies:
 
 * Arduino AVR.
     * Arduino UNO (ATmega328P); 16MHz.
 * Arduino ESP8266.
-    * WemOS D1; 160MHz,80MHz.
+    * WemOS D1; 160,80MHz.
 * Arduino ESP32.
-    * ESP32-WROOM-32; 240MHz-26MHz.
-    * ESP32-S2-WROVER; 240MHz-80MHz
+    * ESP32-WROOM-32; 240,160,80,40,20,10MHz
+    * ESP32-S2-WROVER; 240,160,80,40,20,10MHz
 
 ## Parasite powering
 

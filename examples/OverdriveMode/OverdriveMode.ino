@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Piotr Stolarz
+ * Copyright (c) 2020,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -15,7 +15,7 @@
  */
 #include "OneWireNg_CurrentPlatform.h"
 
-#define OW_PIN          10
+#define OW_PIN          13
 
 #ifndef CONFIG_OVERDRIVE_ENABLED
 # error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured"

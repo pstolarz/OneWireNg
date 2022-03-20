@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020,2021 Piotr Stolarz
+ * Copyright (c) 2020-2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -20,7 +20,7 @@
  */
 #include "OneWireNg_CurrentPlatform.h"
 
-#define OW_PIN      10
+#define OW_PIN      13
 
 /* if defined use overdrive mode */
 //#define USE_OD_MODE

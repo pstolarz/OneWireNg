@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Piotr Stolarz
+ * Copyright (c) 2019-2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -17,7 +17,7 @@
 #include "drivers/DSTherm.h"
 #include "utils/Placeholder.h"
 
-#define OW_PIN          10
+#define OW_PIN          13
 
 /*
  * Set to true for parasitically powered sensors.

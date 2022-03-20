@@ -27,7 +27,12 @@
 # define NOEXCEPT throw()
 #endif
 
-#if !defined(CONFIG_CPP_NEW_ALT) && \
+#if defined(CONFIG_CPP_NEW_INCLUDE)
+# if defined(CONFIG_CPP_NEW_ALT)
+#  warning "CONFIG_CPP_NEW_ALT ignored as CONFIG_CPP_NEW_INCLUDE takes precedence"
+# endif
+# include <new>
+#elif !defined(CONFIG_CPP_NEW_ALT) && \
     (defined(__has_include) && __has_include(<new>))
 # include <new>
 #else

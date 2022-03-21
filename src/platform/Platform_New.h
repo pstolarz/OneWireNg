@@ -32,10 +32,14 @@
     (defined(__has_include) && __has_include(<new>))
 # include <new>
 #elif defined(_NEW)
+/* compiler's <new> header already included */
 # ifdef CONFIG_CPP_NEW_ALT
 #  warning "CONFIG_CPP_NEW_ALT ignored to avoid conflict with already included <new> header"
 # endif
 #else
+# ifndef CONFIG_CPP_NEW_ALT
+#  warning "<new> header not detected; CONFIG_CPP_NEW_ALT used implicitly"
+# endif
 # include <stdlib.h>
 
 # if __cpp_aligned_new

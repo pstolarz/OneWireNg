@@ -13,7 +13,7 @@
 #ifndef __OWNG_PLATFORM_NEW__
 #define __OWNG_PLATFORM_NEW__
 /*
- * The header defines inline new/delete operators. The main purpose of this
+ * The header defines inline new/delete operators. The main purpose for this
  * is to provide basic C++ allocation functionality as C's malloc(), free()
  * counterparts for toolchains that don't support C++ <new> header or the
  * support is insufficient.
@@ -27,25 +27,24 @@
 # define NOEXCEPT throw()
 #endif
 
-
-#if !defined(CONFIG_CPP_NEW_ALT) && \
-    (defined(__has_include) && __has_include(<new>))
+#ifdef CONFIG_USE_NATIVE_CPP_NEW
 # include <new>
-#elif defined(_NEW)
-/* compiler's <new> header already included */
-# ifdef CONFIG_CPP_NEW_ALT
-#  warning "CONFIG_CPP_NEW_ALT ignored to avoid conflict with already included <new> header"
-# endif
 #else
-# ifndef CONFIG_CPP_NEW_ALT
-#  warning "<new> header not detected; CONFIG_CPP_NEW_ALT used implicitly"
+# ifdef __has_include
+#  if __has_include(<new>)
+#   include <new>
+#   ifndef _NEW
+#    define _NEW
+#   endif
+#  endif
 # endif
-# include <stdlib.h>
+# ifndef _NEW
+#  include <stdlib.h>
 
-# if __cpp_aligned_new
+#  if __cpp_aligned_new
 static_assert(alignof(max_align_t) >= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
     "Alt. allocation implementation can't guarantee proper C++17 alignment");
-# endif
+#  endif
 
 inline void *operator new(size_t sz) {
     return malloc(sz);
@@ -68,7 +67,7 @@ inline void operator delete[](void *ptr) NOEXCEPT {
     free(ptr);
 }
 
-# if __cpp_sized_deallocation
+#  if __cpp_sized_deallocation
 inline void operator delete(void* ptr, size_t sz) NOEXCEPT {
     (void)sz;
     free(ptr);
@@ -78,7 +77,8 @@ inline void operator delete[](void* ptr, size_t sz) NOEXCEPT {
     (void)sz;
     free(ptr);
 }
-# endif
+#  endif
+# endif /* _NEW */
 #endif
 
 #endif /* __OWNG_PLATFORM_NEW__ */

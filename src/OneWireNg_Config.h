@@ -204,12 +204,14 @@
 #endif
 
 /**
- * In case a toolchain doesn't support C++ <new> header or the support is
- * insufficient, use this parameter to enable alternative implementation
+ * The library tries to detect if a toolchain supports C++ <new> header, and if
+ * so, use it. If the detection fails the library provides custom implementation
  * of basic C++ allocation functionality as C's malloc(), free() counterparts.
+ * The parameter forces to always use toolchain's native <new> header even
+ * though the detection doesn't indicate existence of such header.
  */
-#ifndef CONFIG_CPP_NEW_ALT
-//# define CONFIG_CPP_NEW_ALT
+#ifndef CONFIG_USE_NATIVE_CPP_NEW
+//# define CONFIG_USE_NATIVE_CPP_NEW
 #endif
 
 /**

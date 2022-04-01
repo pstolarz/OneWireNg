@@ -10,9 +10,8 @@
  * See the License for more information.
  */
 
-#include "platform/Platform_Delay.h"
-#include "platform/Platform_TimeCritical.h"
 #include "OneWireNg_BitBang.h"
+#include "platform/Platform_Delay.h"
 
 #define TIMING_STRICT   1
 #define TIMING_RELAXED  2

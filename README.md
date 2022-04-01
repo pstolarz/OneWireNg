@@ -5,8 +5,8 @@
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/pstolarz/library/OneWireNg.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)
 <br>
 
-This is an Arduino 1-wire service library, intended as an alternative for the
-classic [OneWire](https://github.com/PaulStoffregen/OneWire) library. The library
+This is an 1-wire service library, intended as an alternative for the classic
+[OneWire](https://github.com/PaulStoffregen/OneWire) library. The library
 provides basic 1-wire services (reset, search, touch, read, write, parasite
 powering) and may serve for further work while interfacing with various 1-wire
 devices.
@@ -63,13 +63,34 @@ devices.
 Refer to [`examples`](examples) directory for usage details.
 
 For API specification refer to sources inline documentation (mainly
-[`OneWireNg`](src/OneWireNg.h) class). For your convenience it's possible to
-generate HTML/LaTeX [Doxygen](https://www.doxygen.nl/index.html) documentation
-by issuing `doxygen` from the main library directory. The documentation will
-be placed in `extras/doc`.
+[`OneWireNg`](src/OneWireNg.h) class). For convenience it's possible to generate
+HTML/LaTeX [Doxygen](https://www.doxygen.nl/index.html) documentation by issuing
+`doxygen` from the main library directory. The documentation will be placed in
+`extras/doc`.
 
 File [`src/OneWireNg_Config.h`](src/OneWireNg_Config.h) contains parameters
 configuring the library functionality. See the file for more details.
+
+### ESP-IDF (incl. ESP8266 RTOS SDK)
+
+OneWireNg may be used as an external library for Espressif [ESP-IDF](https://github.com/espressif/esp-idf)
+projects. To install, copy content of [`components`](components) directory
+to project's directory with sym-link dereference:
+
+```
+cp -rL ONEWIRENG_DIR/components ESP_PROJECT_DIR
+```
+
+Alternatively, if it's preferred to have single copy of sources for each external
+component (e.g. by using git submodules), create a sym-link for OneWireNg as
+ESP-IDF component inside project's directory structure:
+
+```
+ln -s ONEWIRENG_DIR/components/OneWireNg ESP_PROJECT_DIR/components/OneWireNg
+```
+
+While added the library may be configured via ESP-IDF menu based configuration
+(no need to directly change `src/OneWireNg_Config.h` configuration file).
 
 ## Supported platforms
 
@@ -79,12 +100,12 @@ configuring the library functionality. See the file for more details.
 * Arduino megaAVR (recent Microchip AVR architecture).
     * Platform class: `OneWireNg_ArduinoMegaAVR`.
     * [Reported to be working.](https://github.com/SpenceKonde/megaTinyCore/blob/master/megaavr/extras/LibraryCompatibility.md)
-* Arduino ESP8266.
-    * Platform class: `OneWireNg_ArduinoESP8266`.
+* Arduino ESP8266/ESP-IDF.
+    * Platform class: `OneWireNg_ArduinoIdfESP8266`.
     * Tested on WemOS D1
-* Arduino ESP32 (legacy, S and C families).
-    * Platform class: `OneWireNg_ArduinoESP32`.
-    * Tested on ESP32-WROOM-32, ESP32-S2-WROVER
+* Arduino/ESP-IDF ESP32 (classic, S and C families).
+    * Platform class: `OneWireNg_ArduinoIdfESP32`.
+    * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-C3-32S-Kit
 * Arduino SAM.
     * Platform class: `OneWireNg_ArduinoSAM`.
     * [Reported to be working.](https://github.com/pstolarz/OneWireNg/issues/33)
@@ -110,13 +131,14 @@ data on the 1-wire bus, therefore is vulnerable for any inaccuracies.
 While configured with `CONFIG_BITBANG_DELAY_CCOUNT` the mode is confirmed to
 work on the following platforms and CPU frequencies:
 
-* Arduino AVR.
+* AVR
     * Arduino UNO (ATmega328P); 16MHz.
-* Arduino ESP8266.
+* ESP8266
     * WemOS D1; 160,80MHz.
-* Arduino ESP32.
-    * ESP32-WROOM-32; 240,160,80,40,20,10MHz
+* ESP32
+    * ESP32-WROOM-32; 240,160,80,40,20MHz
     * ESP32-S2-WROVER; 240,160,80,40,20,10MHz
+    * ESP32-C3-32S-Kit; 240,160MHz (other freqs not tested)
 
 ## Parasite powering
 

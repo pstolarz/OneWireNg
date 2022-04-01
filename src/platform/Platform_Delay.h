@@ -13,63 +13,83 @@
 #ifndef __OWNG_PLATFORM_DELAY__
 #define __OWNG_PLATFORM_DELAY__
 
-#ifdef ARDUINO
-# include "Arduino.h"
-# include "platform/Platform_TimeCritical.h"
+#include "platform/Platform_TimeCritical.h"
 
-# ifndef CONFIG_BITBANG_DELAY_CCOUNT
-#  define delayUs(__us) delayMicroseconds(__us)
-# elif defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)
-#  define F_CPU_MHZ (F_CPU / 1000000)
+#ifdef IDF_VER
+# include "freertos/task.h"
+void idf_delayUs(uint32_t us);
+# define delayMs(ms) vTaskDelay((ms) / portTICK_PERIOD_MS)
+# define _delayUs(us) idf_delayUs(us)
+#elif defined(ARDUINO)
+# define delayMs(ms) delay(ms)
+# define _delayUs(us) delayMicroseconds(us)
+#elif __TEST__
+# include <unistd.h>
+# define delayMs(ms) usleep(1000L * (ms))
+# define delayUs(us) usleep(us)
+#else
+# error "Delay API unsupported for the target platform."
+#endif
+
+#ifdef CONFIG_BITBANG_DELAY_CCOUNT
+# if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)
+#  ifdef F_CPU
+#   define F_CPU_MHZ (F_CPU / 1000000)
+#  elif CONFIG_IDF_TARGET_ESP32
+#   define F_CPU_MHZ CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ
+#  elif CONFIG_IDF_TARGET_ESP32S2
+#   define F_CPU_MHZ CONFIG_ESP32S2_DEFAULT_CPU_FREQ_MHZ
+#  elif CONFIG_IDF_TARGET_ESP32S3
+#   define F_CPU_MHZ CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ
+#  elif CONFIG_IDF_TARGET_ESP32C3
+#   define F_CPU_MHZ CONFIG_ESP32C3_DEFAULT_CPU_FREQ_MHZ
+#  elif CONFIG_IDF_TARGET_ESP8266
+#   define F_CPU_MHZ CONFIG_ESP8266_DEFAULT_CPU_FREQ_MHZ
+#  else
+#   error "Can't detect CPU frequency while configured with CONFIG_BITBANG_DELAY_CCOUNT"
+#  endif
 
 /*
  * TC_CCNT_ADJST: cycles counter adjustment
  * (important for accurate timings on lower frequencies).
  */
-#   if F_CPU_MHZ >= 20
-#    define TC_CCNT_ADJST 15
-#   else
-#    define TC_CCNT_ADJST 0
-#   endif
+#  if F_CPU_MHZ >= 20
+#   define TC_CCNT_ADJST 15
+#  else
+#   define TC_CCNT_ADJST 0
+#  endif
 
-#  ifdef ARDUINO_ARCH_ESP32
 /*
  * Delay may be performed in two modes:
  * - Relaxed (aside critical section) with interrupt re-entrancy enabled.
- *   Accuracy is not required; delayMicroseconds() used.
+ *   Accuracy is not required.
  * - Strict (inside critical section) with interrupt disabled. Timing
  *   accuracy reached by CPU clock cycles tracking.
  */
-#   define delayUs(__us) \
-    if (_tc[xPortGetCoreID()].actv) { \
-        unsigned stop = (_tc[xPortGetCoreID()].ccnt += \
-            ((__us) * F_CPU_MHZ) + TC_CCNT_ADJST); \
-        while ((int)(stop - get_cpu_cycle_count()) > 0); \
-    } else { \
-        delayMicroseconds(__us); \
-    }
-#  else
-#   define delayUs(__us) \
+#  if defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266)
+#   define delayUs(us) \
     if (_tc_actv) { \
         unsigned stop = (_tc_ccnt += \
-            ((__us) * F_CPU_MHZ + TC_CCNT_ADJST)); \
+            ((unsigned)(us) * F_CPU_MHZ + TC_CCNT_ADJST)); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
-        delayMicroseconds(__us); \
+        _delayUs(us); \
+    }
+#  else
+#   define delayUs(us) \
+    if (_tc[xPortGetCoreID()].actv) { \
+        unsigned stop = (_tc[xPortGetCoreID()].ccnt += \
+            ((unsigned)(us) * F_CPU_MHZ) + TC_CCNT_ADJST); \
+        while ((int)(stop - get_cpu_cycle_count()) > 0); \
+    } else { \
+        _delayUs(us); \
     }
 #  endif
-# else /* ESP32 || ESP8266 */
-#  define delayUs(__us) delayMicroseconds(__us)
-# endif
-# define delayMs(__ms) delay(__ms)
-#else /* ARDUINO */
-# ifdef __TEST__
-#  include <unistd.h>
-#  define delayUs(__us) usleep(__us)
-#  define delayMs(__ms) usleep(1000L * (__ms))
-# else
-#  error "Delay API unsupported for the target platform."
-# endif
+# endif /* ESP */
+#endif /* CONFIG_BITBANG_DELAY_CCOUNT */
+
+#ifndef delayUs
+# define delayUs(us) _delayUs(us)
 #endif
 
 #endif /* __OWNG_PLATFORM_DELAY__ */

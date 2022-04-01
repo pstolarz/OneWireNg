@@ -10,8 +10,8 @@
  * See the License for more information.
  */
 
-#include "platform/Platform_Delay.h"
 #include "drivers/DSTherm.h"
+#include "platform/Platform_Delay.h"
 
 #define STR(m) #m
 

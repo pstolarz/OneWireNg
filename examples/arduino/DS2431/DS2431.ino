@@ -11,7 +11,7 @@
  */
 
 /**
- * DS2431 EEPROM usage example.
+ * DS2431 EEPROM usage example (Arduino).
  *
  * Required configuration:
  * - @c CONFIG_CRC16_ENABLED,
@@ -38,11 +38,11 @@
 #define CMD_READ_MEMORY         0xF0
 
 /* EEPROM row size */
-#define ROW_SIZE    8
+#define DS2431_ROW_SIZE    8
 /* EEPROM page size */
-#define PAGE_SIZE   (4 * ROW_SIZE)
+#define DS2431_PAGE_SIZE   (4 * DS2431_ROW_SIZE)
 /* DS2431 memory size */
-#define MEM_SIZE    (18 * ROW_SIZE)
+#define DS2431_MEM_SIZE    (18 * DS2431_ROW_SIZE)
 
 #ifndef CONFIG_CRC16_ENABLED
 # error "Example requires CONFIG_CRC16_ENABLED to be configured"
@@ -80,7 +80,7 @@ static void printId(const OneWireNg::Id& id)
 static void printMem(const OneWireNg::Id *id)
 {
     static const char HEX_DIGS[] = "0123456789ABCDEF";
-    uint8_t cmd[MEM_SIZE + 3];
+    uint8_t cmd[DS2431_MEM_SIZE + 3];
 
     cmd[0] = CMD_READ_MEMORY;
     /* start reading from 0x0000 */
@@ -89,20 +89,20 @@ static void printMem(const OneWireNg::Id *id)
 
     /* read memory will be placed here */
     uint8_t *mem = &cmd[3];
-    memset(mem, 0xff, MEM_SIZE);
+    memset(mem, 0xff, DS2431_MEM_SIZE);
 
     if (id) {
         ow->addressSingle(*id);
     } else {
         ow->resume();
     }
-    ow->touchBytes(cmd, MEM_SIZE + 3);
+    ow->touchBytes(cmd, DS2431_MEM_SIZE + 3);
 
-    for (int i = 0; i < MEM_SIZE; i++)
+    for (int i = 0; i < DS2431_MEM_SIZE; i++)
     {
         char hex[3] = {};
 
-        if (!(i % ROW_SIZE))
+        if (!(i % DS2431_ROW_SIZE))
         {
             hex[0] = HEX_DIGS[(i >> 4)];
             hex[1] = HEX_DIGS[(i & 0x0f)];
@@ -115,10 +115,10 @@ static void printMem(const OneWireNg::Id *id)
         hex[1] = HEX_DIGS[(mem[i] & 0x0f)];
 
         Serial.print(hex);
-        if (((i+1) % ROW_SIZE) != 0) {
+        if (((i+1) % DS2431_ROW_SIZE) != 0) {
             Serial.print(':');
         } else {
-            switch (i/ROW_SIZE)
+            switch (i/DS2431_ROW_SIZE)
             {
             case 0:
                 Serial.println(" Data Memory Page 0");
@@ -161,13 +161,14 @@ static void printMem(const OneWireNg::Id *id)
  * On success the routine returns @c true.
  */
 static bool writeRow(const OneWireNg::Id *id,
-    unsigned rowAddr, const uint8_t rowData[ROW_SIZE], bool checkDataIntegr)
+    unsigned rowAddr, const uint8_t rowData[DS2431_ROW_SIZE],
+    bool checkDataIntegr)
 {
     if (rowAddr > 17) return false;
 
-    uint8_t cmd[ROW_SIZE + 6];
+    uint8_t cmd[DS2431_ROW_SIZE + 6];
 
-    uint8_t ta1 = (rowAddr * ROW_SIZE); /* TA1 (LSB) */
+    uint8_t ta1 = (rowAddr * DS2431_ROW_SIZE); /* TA1 (LSB) */
     uint8_t ta2 = 0x00;                 /* TA2 (MSB) */
 
     /* STEP 1: write row data into scratchpad
@@ -175,10 +176,10 @@ static bool writeRow(const OneWireNg::Id *id,
     cmd[0] = CMD_WRITE_SCRATCHPAD;
     cmd[1] = ta1;
     cmd[2] = ta2;
-    memcpy(&cmd[3], rowData, ROW_SIZE);
+    memcpy(&cmd[3], rowData, DS2431_ROW_SIZE);
 
     /* inverted CRC-16 will be placed here */
-    uint8_t *crc16 = &cmd[ROW_SIZE + 3];
+    uint8_t *crc16 = &cmd[DS2431_ROW_SIZE + 3];
     crc16[0] = 0xff;
     crc16[1] = 0xff;
 
@@ -187,9 +188,9 @@ static bool writeRow(const OneWireNg::Id *id,
     } else {
         ow->resume();
     }
-    ow->touchBytes(cmd, ROW_SIZE + 5);
+    ow->touchBytes(cmd, DS2431_ROW_SIZE + 5);
 
-    if (ow->checkInvCrc16(cmd, ROW_SIZE + 3, ow->getLSB_u16(crc16)) !=
+    if (ow->checkInvCrc16(cmd, DS2431_ROW_SIZE + 3, ow->getLSB_u16(crc16)) !=
         OneWireNg::EC_SUCCESS)
     {
         Serial.println("WRITE SCRATCHPAD: CRC error");
@@ -200,13 +201,13 @@ static bool writeRow(const OneWireNg::Id *id,
      */
     cmd[0] = CMD_READ_SCRATCHPAD;
     /* TA1, TA2, E/S, row data, CRC16 will be placed here */
-    memset(&cmd[1], 0xff, ROW_SIZE + 5);
+    memset(&cmd[1], 0xff, DS2431_ROW_SIZE + 5);
 
     ow->resume();
-    ow->touchBytes(cmd, ROW_SIZE + 6);
+    ow->touchBytes(cmd, DS2431_ROW_SIZE + 6);
 
-    crc16 = &cmd[ROW_SIZE + 4];
-    if (ow->checkInvCrc16(cmd, ROW_SIZE + 4, ow->getLSB_u16(crc16)) !=
+    crc16 = &cmd[DS2431_ROW_SIZE + 4];
+    if (ow->checkInvCrc16(cmd, DS2431_ROW_SIZE + 4, ow->getLSB_u16(crc16)) !=
         OneWireNg::EC_SUCCESS)
     {
         Serial.println("READ SCRATCHPAD: CRC error");
@@ -222,7 +223,7 @@ static bool writeRow(const OneWireNg::Id *id,
     }
 
     /* check if data was set in scratchpad */
-    if (checkDataIntegr && memcmp(&cmd[4], rowData, ROW_SIZE))
+    if (checkDataIntegr && memcmp(&cmd[4], rowData, DS2431_ROW_SIZE))
     {
         Serial.println("READ SCRATCHPAD: row is write protected");
         return false;
@@ -247,19 +248,20 @@ static bool writeRow(const OneWireNg::Id *id,
  * @c pageAddr (0-3).
  */
 static bool writePage(const OneWireNg::Id *id,
-    unsigned pageAddr, const uint8_t pageData[PAGE_SIZE], bool checkDataIntegr)
+    unsigned pageAddr, const uint8_t pageData[DS2431_PAGE_SIZE],
+    bool checkDataIntegr)
 {
     if (pageAddr > 3) return false;
 
     int i;
-    uint8_t row = pageAddr * (PAGE_SIZE / ROW_SIZE);
+    uint8_t row = pageAddr * (DS2431_PAGE_SIZE / DS2431_ROW_SIZE);
 
-    for (i = 0; i < (PAGE_SIZE / ROW_SIZE); i++, row++) {
+    for (i = 0; i < (DS2431_PAGE_SIZE / DS2431_ROW_SIZE); i++, row++) {
         if (!writeRow((!i ? id : NULL),
-            row, &pageData[i * ROW_SIZE], checkDataIntegr)) break;
+            row, &pageData[i * DS2431_ROW_SIZE], checkDataIntegr)) break;
     }
 
-    if (i < (PAGE_SIZE / ROW_SIZE))
+    if (i < (DS2431_PAGE_SIZE / DS2431_ROW_SIZE))
     {
         Serial.print("Error writing row ");
         Serial.print(row);
@@ -307,7 +309,7 @@ void setup()
     /* if no DS2431 found finish the demo */
     if (dev[0] != DS2431) return;
 
-    uint8_t pageData[PAGE_SIZE] = {
+    uint8_t pageData[DS2431_PAGE_SIZE] = {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
         0x0f, 0x0e, 0x0d, 0x0c, 0x0b, 0x0a, 0x09, 0x08,

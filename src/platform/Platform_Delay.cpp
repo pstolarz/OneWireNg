@@ -10,11 +10,16 @@
  * See the License for more information.
  */
 
-#include "platform/Platform_TimeCritical.h"
+#include "platform/Platform_Delay.h"
 
-#if defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266)
-unsigned _tc_ccnt;
-bool _tc_actv;
-#elif defined(IDF_VER)
-tc_t _tc[portNUM_PROCESSORS];
+#ifdef IDF_VER
+# include "esp_timer.h"
+
+TIME_CRITICAL void idf_delayUs(uint32_t us)
+{
+    if (us > 0) {
+        uint64_t stop = ((uint64_t)esp_timer_get_time() + us);
+        while((int64_t)(stop - (uint64_t)esp_timer_get_time()) > 0);
+    }
+}
 #endif

@@ -23,7 +23,7 @@
 #endif
 
 #ifdef CONFIG_BITBANG_DELAY_CCOUNT
-# ifdef CONFIG_IDF_TARGET_ESP32C3
+# if defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32H2)
 #  include "hal/cpu_hal.h"
 #  define get_cpu_cycle_count() cpu_hal_get_cycle_count()
 # elif defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)

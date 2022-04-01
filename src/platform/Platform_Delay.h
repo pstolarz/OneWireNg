@@ -18,15 +18,15 @@
 #ifdef IDF_VER
 # include "freertos/task.h"
 void idf_delayUs(uint32_t us);
-# define delayMs(__ms) vTaskDelay((__ms) / portTICK_PERIOD_MS)
-# define _delayUs(__us) idf_delayUs(__us)
+# define delayMs(ms) vTaskDelay((ms) / portTICK_PERIOD_MS)
+# define _delayUs(us) idf_delayUs(us)
 #elif defined(ARDUINO)
-# define delayMs(__ms) delay(__ms)
-# define _delayUs(__us) delayMicroseconds(__us)
+# define delayMs(ms) delay(ms)
+# define _delayUs(us) delayMicroseconds(us)
 #elif __TEST__
 # include <unistd.h>
-# define delayMs(__ms) usleep(1000L * (__ms))
-# define delayUs(__us) usleep(__us)
+# define delayMs(ms) usleep(1000L * (ms))
+# define delayUs(us) usleep(us)
 #else
 # error "Delay API unsupported for the target platform."
 #endif
@@ -67,29 +67,29 @@ void idf_delayUs(uint32_t us);
  *   accuracy reached by CPU clock cycles tracking.
  */
 #  if defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266)
-#   define delayUs(__us) \
+#   define delayUs(us) \
     if (_tc_actv) { \
         unsigned stop = (_tc_ccnt += \
-            ((unsigned)(__us) * F_CPU_MHZ + TC_CCNT_ADJST)); \
+            ((unsigned)(us) * F_CPU_MHZ + TC_CCNT_ADJST)); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
-        _delayUs(__us); \
+        _delayUs(us); \
     }
 #  else
-#   define delayUs(__us) \
+#   define delayUs(us) \
     if (_tc[xPortGetCoreID()].actv) { \
         unsigned stop = (_tc[xPortGetCoreID()].ccnt += \
-            ((unsigned)(__us) * F_CPU_MHZ) + TC_CCNT_ADJST); \
+            ((unsigned)(us) * F_CPU_MHZ) + TC_CCNT_ADJST); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
-        _delayUs(__us); \
+        _delayUs(us); \
     }
 #  endif
 # endif /* ESP */
 #endif /* CONFIG_BITBANG_DELAY_CCOUNT */
 
 #ifndef delayUs
-# define delayUs(__us) _delayUs(__us)
+# define delayUs(us) _delayUs(us)
 #endif
 
 #endif /* __OWNG_PLATFORM_DELAY__ */

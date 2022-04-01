@@ -27,7 +27,7 @@
 #elif defined(IDF_VER)
 # include <stdint.h>
 
-# define ESP8266_REG(__addr) *((volatile uint32_t*)(0x60000000 + (__addr)))
+# define ESP8266_REG(addr) *((volatile uint32_t*)(0x60000000 + (addr)))
 
 /* GPIO (0-15) Control Registers */
 # define GPO    ESP8266_REG(0x300) /* GPIO_OUT R/W (Output Level) */
@@ -48,7 +48,7 @@
 # define GPCS   0  /* SOURCE 0:GPIO_DATA,1:SigmaDelta */
 
 /* GPIO (0-15) PIN Control Register */
-# define GPC(__p) ESP8266_REG(0x328 + ((__p & 0xF) * 4))
+# define GPC(p) ESP8266_REG(0x328 + ((p & 0xF) * 4))
 
 /* GPIO (0-15) Function Bits */
 # define GPFSOE 0 /* Sleep OE */
@@ -83,16 +83,16 @@ static volatile uint32_t *esp8266_gpioToFn[16] = {
     &GPF0, &GPF1, &GPF2,  &GPF3,  &GPF4,  &GPF5,  &GPF6,  &GPF7,
     &GPF8, &GPF9, &GPF10, &GPF11, &GPF12, &GPF13, &GPF14, &GPF15
 };
-# define GPF(__p) (*esp8266_gpioToFn[(__p & 0xF)])
+# define GPF(p) (*esp8266_gpioToFn[(p & 0xF)])
 
-# define GPFFS(__f) \
-    (((((__f) & 4) != 0) << GPFFS2) | \
-     ((((__f) & 2) != 0) << GPFFS1) | \
-     ((((__f) & 1) != 0) << GPFFS0))
+# define GPFFS(f) \
+    (((((f) & 4) != 0) << GPFFS2) | \
+     ((((f) & 2) != 0) << GPFFS1) | \
+     ((((f) & 1) != 0) << GPFFS0))
 
-# define GPFFS_GPIO(__p) \
-    (((__p) == 0 || (__p) ==2 || (__p) == 4 || (__p) == 5) ? \
-     0 : ((__p) == 16) ? 1 : 3)
+# define GPFFS_GPIO(p) \
+    (((p) == 0 || (p) == 2 || (p) == 4 || (p) == 5) ? \
+     0 : ((p) == 16) ? 1 : 3)
 
 /* GPIO 16 Control Registers */
 # define GP16O  ESP8266_REG(0x768)

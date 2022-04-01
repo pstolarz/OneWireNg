@@ -81,7 +81,7 @@ to project's directory with sym-link dereference:
 cp -rL ONEWIRENG_DIR/components ESP_PROJECT_DIR
 ```
 
-Alternatively, if you prefer to have single copy of sources for each external
+Alternatively, if it's preferred to have single copy of sources for each external
 component (e.g. by using git submodules), create a sym-link for OneWireNg as
 ESP-IDF component inside project's directory structure:
 

@@ -1,0 +1,94 @@
+menu "OneWireNg"
+
+config PWR_CTRL_ENABLED
+    bool "Strong pull-up via dedicated power switching transistor"
+    default n
+
+if PWR_CTRL_ENABLED
+config PWR_CTRL_REV_POLARITY
+    bool "Reverse polarity for GPIO controlling power switching transistor"
+    default n
+endif
+
+config MAX_SRCH_FILTERS
+    int "Max number of family codes for search filtering"
+    default 10
+    range 0 100
+
+config OVERDRIVE_ENABLED
+    bool "Overdrive (high-speed) mode enabled"
+    default n
+
+choice CRC8_ALGO
+    prompt "CRC-8/MAXIM calculation algorithm"
+    default CRC8_ALGO_TAB_16LH
+
+    config CRC8_ALGO_BASIC
+        bool "Basic; no memory tables"
+    config CRC8_ALGO_TAB_16LH
+        bool "2x16 elements table"
+endchoice
+
+config CRC16_ENABLED
+    bool "Enable CRC-16/ARC"
+    default n
+
+if CRC16_ENABLED
+choice CRC16_ALGO
+    prompt "CRC-16/ALGO calculation algorithm"
+    default CRC16_ALGO_TAB_16LH
+
+    config CRC16_ALGO_BASIC
+        bool "Basic; no memory tables"
+    config CRC16_ALGO_TAB_16LH
+        bool "2x16 elements table"
+endchoice
+endif
+
+config FLASH_CRC_TAB
+    bool "Store CRC tables in flash memory"
+    default n
+
+config BUS_BLINK_PROTECTION
+    bool "Data bus GPIO blink protection"
+    default n
+
+config BITBANG_DELAY_CCOUNT
+    bool "Bit-banging timings using CPU cycles counter"
+    default y
+
+choice BITBANG_TIMING
+    prompt "Bit-banging timing regime"
+    default BITBANG_TIMING_STRICT
+
+    config BITBANG_TIMING_STRICT
+        bool "Strict"
+    config BITBANG_TIMING_RELAXED
+        bool "Relaxed"
+    config BITBANG_TIMING_NULL
+        bool "None"
+endchoice
+
+config EXT_VIRTUAL_INTF
+    bool "Enable extended virtual interface"
+    default n
+
+config ITERATION_RETRIES
+    int "Search scan iteration retires"
+    default 0
+    range 0 10
+
+config USE_NATIVE_CPP_NEW
+    bool "Use native toolchain <new> header"
+    default n
+
+config DS18S20_EXT_RES
+    bool "Extended temperature resolution for DS18S20"
+    default n
+
+config ESP8266_INIT_TIME
+    int "ESP8266 init time in msecs"
+    default 500
+    range 0 10000
+
+endmenu

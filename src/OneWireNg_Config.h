@@ -18,6 +18,31 @@
 # include OWNG_CONFIG_FILE
 #elif !defined(OWNG_DISABLE_DEFAULT_CONFIG)
 
+/* use ESP-IDF configuration to override default configuration */
+# ifdef IDF_VER
+#  include "sdkconfig.h"
+
+#  if CONFIG_CRC8_ALGO_BASIC
+#   define CONFIG_CRC8_ALGO CRC8_BASIC
+#  elif CONFIG_CRC8_ALGO_TAB_16LH
+#   define CONFIG_CRC8_ALGO CRC8_TAB_16LH
+#  endif
+
+#  if CONFIG_CRC16_ALGO_BASIC
+#   define CONFIG_CRC16_ALGO CRC16_BASIC
+#  elif CONFIG_CRC16_ALGO_TAB_16LH
+#   define CONFIG_CRC16_ALGO CRC16_TAB_16LH
+#  endif
+
+#  if CONFIG_BITBANG_TIMING_STRICT
+#   define CONFIG_BITBANG_TIMING TIMING_STRICT
+#  elif CONFIG_BITBANG_TIMING_RELAXED
+#   define CONFIG_BITBANG_TIMING TIMING_RELAXED
+#  elif CONFIG_BITBANG_TIMING_NULL
+#   define CONFIG_BITBANG_TIMING TIMING_NULL
+#  endif
+# endif
+
 /**
  * The parameter controls the way the 1-wire bus is powered for parasitically
  * connected devices.
@@ -204,12 +229,14 @@
 #endif
 
 /**
- * In case a toolchain doesn't support C++ <new> header or the support is
- * insufficient, use this parameter to enable alternative implementation
+ * The library tries to detect if a toolchain supports C++ <new> header, and if
+ * so, use it. If the detection fails the library provides custom implementation
  * of basic C++ allocation functionality as C's malloc(), free() counterparts.
+ * The parameter forces to always use toolchain's native <new> header even
+ * though the detection doesn't indicate existence of such header.
  */
-#ifndef CONFIG_CPP_NEW_ALT
-//# define CONFIG_CPP_NEW_ALT
+#ifndef CONFIG_USE_NATIVE_CPP_NEW
+//# define CONFIG_USE_NATIVE_CPP_NEW
 #endif
 
 /**

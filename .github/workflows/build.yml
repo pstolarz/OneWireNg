@@ -37,6 +37,7 @@ jobs:
           - arduino:mbed_rp2040:pico
           - esp32:esp32:esp32
           - esp32:esp32:esp32s2
+          - esp32:esp32:esp32s3
           - esp32:esp32:esp32c3
           - esp8266:esp8266:generic
           - STMicroelectronics:stm32:GenF7
@@ -61,4 +62,4 @@ jobs:
           fi >/dev/null
           sudo arduino-cli compile -b ${{ matrix.plat }} \
             --build-property "compiler.cpp.extra_flags=$BUILD_FLAGS" \
-            examples/${{ matrix.example }}/${{ matrix.example }}.ino
+            examples/arduino/${{ matrix.example }}/${{ matrix.example }}.ino

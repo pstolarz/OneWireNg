@@ -11,7 +11,7 @@
  */
 
 /**
- * MAX31850/MAX31851 thermocouple example.
+ * MAX31850/MAX31851 thermocouple example (Arduino).
  *
  * Required configuration:
  * - @c CONFIG_MAX_SRCH_FILTERS >= 1.

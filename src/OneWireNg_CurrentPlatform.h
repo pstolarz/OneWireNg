@@ -12,6 +12,10 @@
 
 #ifndef OneWireNg_CurrentPlatform
 
+#ifdef IDF_VER
+# include "sdkconfig.h"
+#endif
+
 /*
  * Try to detect current platform by inspecting the environment and:
  * - include proper platform class header,
@@ -29,12 +33,12 @@
 #elif defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_SAMD_BETA)
 # include "platform/OneWireNg_ArduinoSAMD.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoSAMD
-#elif defined(ARDUINO_ARCH_ESP8266)
-# include "platform/OneWireNg_ArduinoESP8266.h"
-# define OneWireNg_CurrentPlatform OneWireNg_ArduinoESP8266
-#elif defined(ARDUINO_ARCH_ESP32)
-# include "platform/OneWireNg_ArduinoESP32.h"
-# define OneWireNg_CurrentPlatform OneWireNg_ArduinoESP32
+#elif defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266)
+# include "platform/OneWireNg_ArduinoIdfESP8266.h"
+# define OneWireNg_CurrentPlatform OneWireNg_ArduinoIdfESP8266
+#elif defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)
+# include "platform/OneWireNg_ArduinoIdfESP32.h"
+# define OneWireNg_CurrentPlatform OneWireNg_ArduinoIdfESP32
 #elif defined(ARDUINO_ARCH_STM32)
 # include "platform/OneWireNg_ArduinoSTM32.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoSTM32

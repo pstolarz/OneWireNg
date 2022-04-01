@@ -15,7 +15,7 @@
     },
     "version": "0.10.3",
     "homepage": "https://github.com/pstolarz/OneWireNg",
-    "frameworks": "Arduino",
+    "frameworks": ["arduino", "espidf", "esp8266-rtos-sdk"],
     "examples": [
         "examples/*/*.ino"
     ]

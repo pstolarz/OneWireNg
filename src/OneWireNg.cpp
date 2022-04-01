@@ -34,11 +34,12 @@
 # define tabRead_u8 flashRead_u8
 # define tabRead_u16 flashRead_u16
 # define tabRead_u32 flashRead_u32
+# define CRCTAB_STORAGE FLASH_STORAGE
 #else
-# define CRCTAB_STORAGE
 # define tabRead_u8(addr) (*(const uint8_t*)(addr))
 # define tabRead_u16(addr) (*(const uint16_t*)(addr))
 # define tabRead_u32(addr) (*(const uint32_t*)(addr))
+# define CRCTAB_STORAGE
 #endif
 
 uint8_t OneWireNg::touchByte(uint8_t byte, bool power)
@@ -304,7 +305,7 @@ uint16_t OneWireNg::crc16(const void *in, size_t len, uint16_t crc_in)
 {
     uint16_t crc = crc_in;
 
-# if (CONFIG_CRC8_ALGO == CRC16_TAB_16LH)
+# if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
     const uint8_t *in_bts = (const uint8_t*)in;
 
     static const uint16_t CRCTAB_STORAGE CRC16_16L[] = {

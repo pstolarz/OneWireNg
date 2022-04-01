@@ -11,7 +11,8 @@
  */
 
 /**
- * 1-wire overdrive mode example. Requires @c CONFIG_OVERDRIVE_ENABLED.
+ * 1-wire overdrive mode example (Arduino).
+ * Requires @c CONFIG_OVERDRIVE_ENABLED.
  */
 #include "OneWireNg_CurrentPlatform.h"
 

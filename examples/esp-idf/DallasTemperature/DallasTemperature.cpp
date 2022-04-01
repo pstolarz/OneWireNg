@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Piotr Stolarz
+ * Copyright (c) 2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -11,11 +11,12 @@
  */
 
 /**
- * Dallas family thermometers access example.
+ * Dallas family thermometers access example (ESP-IDF).
  */
 #include "OneWireNg_CurrentPlatform.h"
 #include "drivers/DSTherm.h"
 #include "utils/Placeholder.h"
+#include "platform/Platform_Delay.h"
 
 #define OW_PIN          13
 
@@ -43,16 +44,13 @@ static bool printId(const OneWireNg::Id& id)
 {
     const char *name = DSTherm::getFamilyName(id);
 
-    Serial.print(id[0], HEX);
-    for (size_t i = 1; i < sizeof(OneWireNg::Id); i++) {
-        Serial.print(':');
-        Serial.print(id[i], HEX);
-    }
-    if (name) {
-        Serial.print(" -> ");
-        Serial.print(name);
-    }
-    Serial.println();
+    for (size_t i = 0; i < sizeof(OneWireNg::Id); i++)
+        printf("%s%02x", (!i ? "" : ":"), id[i]);
+
+    if (name)
+        printf(" -> %s", name);
+
+    printf("\n");
 
     return (name != NULL);
 }
@@ -61,33 +59,22 @@ static void printScratchpad(const DSTherm::Scratchpad& scrpd)
 {
     const uint8_t *scrpd_raw = scrpd.getRaw();
 
-    Serial.print("  Scratchpad:");
-    for (size_t i = 0; i < DSTherm::Scratchpad::LENGTH; i++) {
-        Serial.print(!i ? ' ' : ':');
-        Serial.print(scrpd_raw[i], HEX);
-    }
+    printf("  Scratchpad:");
+    for (size_t i = 0; i < DSTherm::Scratchpad::LENGTH; i++)
+        printf("%c%02x", (!i ? ' ' : ':'), scrpd_raw[i]);
 
-    Serial.print("; Th:");
-    Serial.print(scrpd.getTh());
 
-    Serial.print("; Tl:");
-    Serial.print(scrpd.getTl());
-
-    Serial.print("; Resolution:");
-    Serial.print(9 + (int)(scrpd.getResolution() - DSTherm::RES_9_BIT));
+    printf("; Th:%d; Tl:%d; Resolution:%d",
+        scrpd.getTh(), scrpd.getTl(),
+        9 + (int)(scrpd.getResolution() - DSTherm::RES_9_BIT));
 
     long temp = scrpd.getTemp();
-    Serial.print("; Temp:");
+    printf("; Temp:");
     if (temp < 0) {
         temp = -temp;
-        Serial.print('-');
+        printf("-");
     }
-    Serial.print(temp / 1000);
-    Serial.print('.');
-    Serial.print(temp % 1000);
-    Serial.print(" C");
-
-    Serial.println();
+    printf("%d.%d C\n", (int)temp / 1000, (int)temp % 1000);
 }
 
 void setup()
@@ -101,8 +88,6 @@ void setup()
     new (&_ow) OneWireNg_CurrentPlatform(OW_PIN, false);
 #endif
     DSTherm drv(_ow);
-
-    Serial.begin(115200);
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     static_assert(CONFIG_MAX_SRCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
@@ -141,10 +126,17 @@ void loop()
             if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);
             else
-                Serial.println("  Invalid CRC!");
+                printf("  Invalid CRC!\n");
         }
     }
 
-    Serial.println("----------");
-    delay(1000);
+    printf("----------\n");
+    delayMs(1000);
+}
+
+extern "C" void app_main()
+{
+    setup();
+    for (;;)
+        loop();
 }

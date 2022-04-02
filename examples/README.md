@@ -1,7 +1,7 @@
 # OneWireNg examples
 
 ### `DallasTemperature`
-[*Arduino*](arduino/DallasTemperature/DallasTemperature.ino) | [*ESP-IDF*](esp-idf/DallasTemperature/DallasTemperature.cpp)
+[*Arduino*](arduino/DallasTemperature/DallasTemperature.ino) | [*ESP-IDF*](esp-idf/DallasTemperature/main/DallasTemperature.cpp)
 
 Dallas temperature sensors example. Scan the bus for all supported types of
 slaves. Convert temperature for all sensors simultaneously and read them

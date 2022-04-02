@@ -31,23 +31,23 @@
  * https://github.com/PaulStoffregen/OneWire
  *
  * @note Although the OneWire API have been strictly preserved there are some
- * implementation differences between them. The most fundamental one is probably
- * the @c power argument in write family of functions. OneWireNg allows
- * providing power to the 1-wire bus only in specific conditions and the bus
- * is always "de-powered" before next activity on it. On the other hand OneWire
- * requires de-powering each time the power has been provided to the bus and
- * 1-wire activities doesn't turn them off. OneWireNg doesn't emulate this
- * buggy behavior.
+ *     implementation differences between them. The most fundamental one is
+ *     probably the @c power argument in write family of functions. OneWireNg
+ *     allows providing power to the 1-wire bus only in specific conditions and
+ *     the bus is always "de-powered" before next activity on it. On the other
+ *     hand OneWire requires de-powering each time the power has been provided
+ *     to the bus and 1-wire activities doesn't turn them off. OneWireNg doesn't
+ *     emulate this buggy behavior.
  */
 class OneWire
 {
 public:
     /**
      * @note The default (no-args) constructor requires @ref begin() method to
-     * be called subsequently with MCU's GPIO pin number controlling the 1-wire
-     * data bus as an argument. Any attempt to call OneWire API w/o this
-     * @c begin() call will cause NULL pointer dereference inside @c OneWire
-     * logic.
+     *     be called subsequently with MCU's GPIO pin number controlling the
+     *     1-wire data bus as an argument. Any attempt to call OneWire API w/o
+     *     this @c begin() call will cause NULL pointer dereference inside
+     *     @c OneWire logic.
      */
     OneWire(): _ow(NULL) {}
 

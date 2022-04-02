@@ -172,7 +172,7 @@
  * with frequencies lower than 40 MHz.
  *
  * @note Currently only ESP32 and ESP8266 support this configuration.
- * For other platforms the parameter is ignored.
+ *     For other platforms the parameter is ignored.
  */
 #ifndef CONFIG_BITBANG_DELAY_CCOUNT
 # define CONFIG_BITBANG_DELAY_CCOUNT

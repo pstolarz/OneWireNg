@@ -177,7 +177,7 @@ The library supports two modes of providing a direct voltage source on the
    an external power source to the bus and is controlled by a dedicated
    power-control-GPIO as presented on the following figure.
 
-![Switching transistor parasite powering](extras/schema/parasite.svg)
+![Switching transistor parasite powering](extras/img/parasite.svg)
 
 To enable the second mode the library needs to be configured with
 `CONFIG_PWR_CTRL_ENABLED`.
@@ -235,7 +235,7 @@ For legacy AVR platforms the library need to be configured with
 
 ## Architecture details
 
-![OneWirNg class diagram](extras/schema/classOneWireNg__inherit__graph.png)
+![OneWirNg class diagram](extras/img/classOneWireNg__inherit__graph.png)
 
 ### `OneWireNg`
 

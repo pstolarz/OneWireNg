@@ -13,8 +13,15 @@
 #ifndef __OWNG_ARDUINO_MBED_HAL__
 #define __OWNG_ARDUINO_MBED_HAL__
 
+#ifdef ARDUINO
+# include "Arduino.h"
+#else
+# include "PinNames.h"
+# define INPUT          PullNone
+# define INPUT_PULLUP   PullUp
+#endif
+
 #include <assert.h>
-#include "Arduino.h"
 #include "hal/gpio_api.h"
 #include "OneWireNg_BitBang.h"
 #include "platform/Platform_TimeCritical.h"
@@ -109,9 +116,12 @@ protected:
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {
-        assert(pin < PINS_COUNT);
+#ifdef ARDUINO
         PinName pinName = digitalPinToPinName(pin);
-
+        assert((int)pin != NC);
+#else
+        PinName pinName = (PinName)pin;
+#endif
         gpio_init_in_ex(&_dtaGpio, pinName, (pullUp ? INPUT_PULLUP : INPUT));
         setupDtaGpio();
     }
@@ -119,9 +129,12 @@ protected:
 #ifdef CONFIG_PWR_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
-        assert(pin < PINS_COUNT);
+#ifdef ARDUINO
         PinName pinName = digitalPinToPinName(pin);
-
+        assert((int)pin != NC);
+#else
+        PinName pinName = (PinName)pin;
+#endif
         gpio_init_out(&_pwrCtrlGpio, pinName);
         setupPwrCtrlGpio(true);
     }

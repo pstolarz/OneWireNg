@@ -23,6 +23,13 @@ void idf_delayUs(uint32_t us);
 #elif defined(ARDUINO)
 # define delayMs(ms) delay(ms)
 # define _delayUs(us) delayMicroseconds(us)
+#elif defined(__MBED__)
+# ifndef NO_RTOS
+#  define delayMs(ms) rtos::ThisThread::sleep_for(ms * 1ms)
+# else
+#  define delayMs(ms) wait_us(ms * 1000)
+# endif
+# define _delayUs(us) wait_us(us)
 #elif __TEST__
 # include <unistd.h>
 # define delayMs(ms) usleep(1000L * (ms))

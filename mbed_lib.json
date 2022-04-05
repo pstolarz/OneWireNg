@@ -1,0 +1,73 @@
+{
+    "name": "OneWireNg",
+    "config":
+    {
+        "pwr_ctrl_enabled": {
+            "help": "Strong pull-up via dedicated power switching transistor",
+            "macro_name": "CONFIG_PWR_CTRL_ENABLED"
+        },
+        "pwr_ctrl_rev_polarity": {
+            "help": "Reverse polarity for GPIO controlling power switching transistor",
+            "macro_name": "CONFIG_PWR_CTRL_REV_POLARITY"
+        },
+        "max_srch_filters": {
+            "help": "Max number of family codes for search filtering",
+            "macro_name": "CONFIG_MAX_SRCH_FILTERS",
+            "value": 10
+        },
+        "overdrive_enabled": {
+            "help": "Overdrive (high-speed) mode enabled",
+            "macro_name": "CONFIG_OVERDRIVE_ENABLED"
+        },
+        "crc8_algo": {
+            "help": "CRC-8/MAXIM calculation algorithm",
+            "macro_name": "CONFIG_CRC8_ALGO",
+            "value": "CRC8_TAB_16LH"
+        },
+        "crc16_enabled": {
+            "help": "Enable CRC-16/ARC",
+            "macro_name": "CONFIG_CRC16_ENABLED"
+        },
+        "crc16_algo": {
+            "help": "CRC-16/ALGO calculation algorithm",
+            "macro_name": "CONFIG_CRC16_ALGO",
+            "value": "CRC16_TAB_16LH"
+        },
+        "flash_crc_tab": {
+            "help": "Store CRC tables in flash memory",
+            "macro_name": "CONFIG_FLASH_CRC_TAB"
+        },
+        "bus_blink_protection": {
+            "help": "Data bus GPIO blink protection",
+            "macro_name": "CONFIG_BUS_BLINK_PROTECTION"
+        },
+        "bitbang_delay_ccount": {
+            "help": "Bit-banging timings using CPU cycles counter",
+            "macro_name": "CONFIG_BITBANG_DELAY_CCOUNT",
+            "value": "1"
+        },
+        "bitbang_timing": {
+            "help": "Bit-banging timing regime",
+            "macro_name": "CONFIG_BITBANG_TIMING",
+            "value": "TIMING_STRICT"
+        },
+        "iteration_retries": {
+            "help": "Search scan iteration retires",
+            "macro_name": "CONFIG_ITERATION_RETRIES",
+            "value": 0
+        },
+        "use_native_cpp_new": {
+            "help": "Use native toolchain <new> header",
+            "macro_name": "CONFIG_USE_NATIVE_CPP_NEW"
+        },
+        "ds18s20_ext_res": {
+            "help": "Extended temperature resolution for DS18S20",
+            "macro_name": "CONFIG_DS18S20_EXT_RES"
+        },
+        "esp8266_init_time": {
+            "help": "ESP8266 init time in msecs",
+            "macro_name": "CONFIG_ESP8266_INIT_TIME",
+            "value": 500
+        }
+    }
+}

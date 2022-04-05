@@ -69,10 +69,6 @@ choice BITBANG_TIMING
         bool "None"
 endchoice
 
-config EXT_VIRTUAL_INTF
-    bool "Enable extended virtual interface"
-    default n
-
 config ITERATION_RETRIES
     int "Search scan iteration retires"
     default 0

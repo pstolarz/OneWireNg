@@ -73,24 +73,45 @@ configuring the library functionality. See the file for more details.
 
 ### ESP-IDF (incl. ESP8266 RTOS SDK)
 
-OneWireNg may be used as an external library for Espressif [ESP-IDF](https://github.com/espressif/esp-idf)
-projects. To install, copy content of [`components`](components) directory
-to project's directory with sym-link dereference:
+To use OneWireNg as a library for Espressif [ESP-IDF](https://github.com/espressif/esp-idf)
+project, copy content of [`components`](components) directory to project's
+directory with sym-link dereference:
 
 ```
 cp -rL ONEWIRENG_DIR/components ESP_PROJECT_DIR
 ```
 
 Alternatively, if it's preferred to have single copy of sources for each external
-component (e.g. by using git submodules), create a sym-link for OneWireNg as
+component (e.g. by using git sub-modules), create a sym-link for OneWireNg as
 ESP-IDF component inside project's directory structure:
 
 ```
 ln -s ONEWIRENG_DIR/components/OneWireNg ESP_PROJECT_DIR/components/OneWireNg
 ```
 
-While added the library may be configured via ESP-IDF menu based configuration
-(no need to directly change `src/OneWireNg_Config.h` configuration file).
+While added the library shall be configured via ESP-IDF native configuration
+(Kconfig based). There is no need to directly change `src/OneWireNg_Config.h`
+configuration file.
+
+### MbedOS
+
+*NOTE: The library usage for MbedOS framework is experimental and was not tested.*
+
+To add OneWireNg as a library for MbedOS project use (for latest `master` commit):
+
+```
+mbed add https://github.com/pstolarz/OneWireNg
+```
+
+or pick up a specific version (e.g. 0.11.0):
+
+```
+mbed add https://github.com/pstolarz/OneWireNg#0.11.0
+```
+
+While added the library shall be configured via MbedOS native configuration
+(see [`mbed_lib.json`](mbed_lib.json) for details). There is no need to directly
+change `src/OneWireNg_Config.h` configuration file.
 
 ## Supported platforms
 
@@ -103,7 +124,7 @@ While added the library may be configured via ESP-IDF menu based configuration
 * Arduino ESP8266/ESP-IDF.
     * Platform class: `OneWireNg_ArduinoIdfESP8266`.
     * Tested on WemOS D1
-* Arduino/ESP-IDF ESP32 (classic, S and C families).
+* Arduino/ESP-IDF ESP32 (classic, S, C and H families).
     * Platform class: `OneWireNg_ArduinoIdfESP32`.
     * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-C3-32S-Kit
 * Arduino SAM.
@@ -115,7 +136,7 @@ While added the library may be configured via ESP-IDF menu based configuration
 * Arduino STM32.
     * Platform class: `OneWireNg_ArduinoSTM32`.
     * **Not tested**.
-* Arduino MbedOS based platforms (RP2040, Nano, Edge, Nicla, Portena).
+* Arduino/MbedOS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
     * Platform class: `OneWireNg_ArduinoMbedHAL`.
     * **Not tested**.
 

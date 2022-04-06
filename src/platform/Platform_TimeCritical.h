@@ -20,6 +20,8 @@
 # include "esp_attr.h"
 # include "sdkconfig.h"
 # include "freertos/FreeRTOS.h"
+#elif defined(__MBED__)
+# include "mbed.h"
 #endif
 
 #ifdef CONFIG_BITBANG_DELAY_CCOUNT
@@ -95,6 +97,9 @@ extern tc_t _tc[portNUM_PROCESSORS];
 #elif defined(ARDUINO)
 # define timeCriticalEnter() noInterrupts()
 # define timeCriticalExit() interrupts()
+#elif defined(__MBED__)
+# define timeCriticalEnter() __disable_irq()
+# define timeCriticalExit() __enable_irq()
 #else
 # ifndef __TEST__
 #  warning "Time critical API unsupported for the target platform. Disabled."

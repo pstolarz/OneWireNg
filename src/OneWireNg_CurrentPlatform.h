@@ -42,7 +42,7 @@
 #elif defined(ARDUINO_ARCH_STM32)
 # include "platform/OneWireNg_ArduinoSTM32.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoSTM32
-#elif defined(ARDUINO_ARCH_MBED)
+#elif defined(ARDUINO_ARCH_MBED) || defined(__MBED__)
 # include "platform/OneWireNg_ArduinoMbedHAL.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoMbedHAL
 #else

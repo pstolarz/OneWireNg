@@ -1,3 +1,0 @@
-(sym_lib_table
-  (lib (name parasite-rescue)(type Legacy)(uri ${KIPRJMOD}/parasite-rescue.lib)(options "")(descr ""))
-)

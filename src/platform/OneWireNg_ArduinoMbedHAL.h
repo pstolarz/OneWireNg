@@ -27,13 +27,13 @@
 #include "platform/Platform_TimeCritical.h"
 
 /**
- * Arduino MbedOS based platform GPIO specific implementation via HAL API.
+ * Arduino Mbed OS based platform GPIO specific implementation via HAL API.
  */
 class OneWireNg_ArduinoMbedHAL: public OneWireNg_BitBang
 {
 public:
     /**
-     * OneWireNg 1-wire service for Arduino MbedOS based platform.
+     * OneWireNg 1-wire service for Arduino Mbed OS based platform.
      *
      * Bus powering is supported via switching its GPIO to the high state.
      * In this case the GPIO servers as a voltage source for connected slaves
@@ -49,7 +49,7 @@ public:
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
     /**
-     * OneWireNg 1-wire service for Arduino MbedOS based platform.
+     * OneWireNg 1-wire service for Arduino Mbed OS based platform.
      *
      * Bus powering is supported via a switching transistor providing
      * the power to the bus and controlled by a dedicated GPIO (@see

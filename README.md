@@ -73,45 +73,39 @@ configuring the library functionality. See the file for more details.
 
 ### ESP-IDF (incl. ESP8266 RTOS SDK)
 
-To use OneWireNg as a library for Espressif [ESP-IDF](https://github.com/espressif/esp-idf)
-project, copy content of [`components`](components) directory to project's
-directory with sym-link dereference:
+Preferred way to add OneWireNg as a library for Espressif [ESP-IDF](https://github.com/espressif/esp-idf)
+framework is to add it as a git submodule located at project's `components`
+subdirectory:
 
 ```
-cp -rL ONEWIRENG_DIR/components ESP_PROJECT_DIR
+git submodule add -- https://github.com/pstolarz/OneWireNg components/OneWireNg
 ```
 
-Alternatively, if it's preferred to have single copy of sources for each external
-component (e.g. by using git sub-modules), create a sym-link for OneWireNg as
-ESP-IDF component inside project's directory structure:
+Next checkout specific library `VERSION`:
 
 ```
-ln -s ONEWIRENG_DIR/components/OneWireNg ESP_PROJECT_DIR/components/OneWireNg
+cd components/OneWireNg
+git checkout VERSION
 ```
 
 While added the library shall be configured via ESP-IDF native configuration
-(Kconfig based). There is no need to directly change `src/OneWireNg_Config.h`
-configuration file.
+(see [`Kconfig`](Kconfig) for details). There is no need to directly change
+`OneWireNg_Config.h` configuration file.
 
-### MbedOS
+### Mbed OS
 
-*NOTE: The library usage for MbedOS framework is experimental and was not tested.*
+*NOTE: The library usage for [Mbed OS](https://os.mbed.com) framework is
+experimental and was not tested.*
 
-To add OneWireNg as a library for MbedOS project use (for latest `master` commit):
-
-```
-mbed add https://github.com/pstolarz/OneWireNg
-```
-
-or pick up a specific version (e.g. 0.11.0):
+To add OneWireNg as a library for Mbed OS project use (for specific `VERSION`):
 
 ```
-mbed add https://github.com/pstolarz/OneWireNg#0.11.0
+mbed add https://github.com/pstolarz/OneWireNg#VERSION
 ```
 
-While added the library shall be configured via MbedOS native configuration
+While added the library shall be configured via Mbed OS native configuration
 (see [`mbed_lib.json`](mbed_lib.json) for details). There is no need to directly
-change `src/OneWireNg_Config.h` configuration file.
+change `OneWireNg_Config.h` configuration file.
 
 ## Supported platforms
 
@@ -136,7 +130,7 @@ change `src/OneWireNg_Config.h` configuration file.
 * Arduino STM32.
     * Platform class: `OneWireNg_ArduinoSTM32`.
     * **Not tested**.
-* Arduino/MbedOS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
+* Arduino/Mbed OS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
     * Platform class: `OneWireNg_ArduinoMbedHAL`.
     * **Not tested**.
 

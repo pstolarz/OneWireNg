@@ -1,7 +1,13 @@
 {
     "name": "OneWireNg",
+    "version": "0.11.1",
     "description": "Arduino 1-wire service library. OneWire alternative.",
-    "keywords": "onewire, 1-wire, sensor, temperature, dallas, ds18b20",
+    "keywords": ["onewire", "1-wire", "sensor", "temperature", "dallas", "ds18b20"],
+    "homepage": "https://github.com/pstolarz/OneWireNg",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pstolarz/OneWireNg"
+    },
     "authors": [
         {
             "name": "Piotr Stolarz",
@@ -9,14 +15,7 @@
             "maintainer": true
         }
     ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/pstolarz/OneWireNg"
-    },
-    "version": "0.11.0",
-    "homepage": "https://github.com/pstolarz/OneWireNg",
+    "license": "BSD-2-Clause",
     "frameworks": ["arduino", "espidf", "esp8266-rtos-sdk", "mbed"],
-    "examples": [
-        "examples/*/*.ino"
-    ]
+    "headers": ["OneWireNg_CurrentPlatform.h"]
 }

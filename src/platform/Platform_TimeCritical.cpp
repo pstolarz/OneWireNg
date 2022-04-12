@@ -15,6 +15,6 @@
 #if defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266)
 unsigned _tc_ccnt;
 bool _tc_actv;
-#elif defined(IDF_VER)
+#elif defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)
 tc_t _tc[portNUM_PROCESSORS];
 #endif

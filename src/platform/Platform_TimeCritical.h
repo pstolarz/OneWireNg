@@ -60,7 +60,7 @@ extern bool _tc_actv;       /* is time critical section active? */
 #  define timeCriticalEnter() noInterrupts()
 #  define timeCriticalExit() interrupts()
 # endif
-#elif defined(IDF_VER)
+#elif defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)
 typedef struct {
     unsigned int_lev;       /* saved interrupt level */
 # ifdef CONFIG_BITBANG_DELAY_CCOUNT

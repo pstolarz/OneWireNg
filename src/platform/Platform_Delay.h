@@ -15,14 +15,14 @@
 
 #include "platform/Platform_TimeCritical.h"
 
-#ifdef IDF_VER
+#ifdef ARDUINO
+# define delayMs(ms) delay(ms)
+# define _delayUs(us) delayMicroseconds(us)
+#elif defined(IDF_VER)
 # include "freertos/task.h"
 void idf_delayUs(uint32_t us);
 # define delayMs(ms) vTaskDelay((ms) / portTICK_PERIOD_MS)
 # define _delayUs(us) idf_delayUs(us)
-#elif defined(ARDUINO)
-# define delayMs(ms) delay(ms)
-# define _delayUs(us) delayMicroseconds(us)
 #elif defined(__MBED__)
 # ifndef NO_RTOS
 #  define delayMs(ms) rtos::ThisThread::sleep_for(ms * 1ms)

@@ -24,7 +24,8 @@
 
 #ifdef ARDUINO
 # include "Arduino.h"
-#elif defined(IDF_VER)
+#else
+/* ESP-IDF */
 # include <stdint.h>
 
 # define ESP8266_REG(addr) *((volatile uint32_t*)(0x60000000 + (addr)))
@@ -157,7 +158,7 @@ void pinMode(uint8_t pin, uint8_t mode)
         }
     }
 }
-#endif /* IDF_VER */
+#endif /* ESP-IDF */
 
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)

@@ -1,4 +1,4 @@
-name: Platform builds
+name: Arduino builds
 on:
   push:
     branches:
@@ -11,7 +11,7 @@ defaults:
   run:
     shell: bash
 jobs:
-  cores_info:
+  ard_info:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/arduino-ci
     steps:
@@ -20,7 +20,7 @@ jobs:
           sudo arduino-cli update
           sudo arduino-cli core list
           sudo arduino-cli core list --updatable
-  build:
+  ard_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/arduino-ci
     strategy:

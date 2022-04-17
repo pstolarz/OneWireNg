@@ -1,0 +1,50 @@
+name: PlatformIO builds
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+defaults:
+  run:
+    shell: bash
+jobs:
+  pio_info:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/pio-ci
+    steps:
+      - name: PlatformIO update info
+        run: |
+          sudo pio update --dry-run
+  pio_build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/pio-ci
+    strategy:
+      matrix:
+        plat:
+          - uno
+          - uno_wifi_rev2
+          - due
+          - esp32dev
+          - d1
+          - nucleo_f767zi
+        example:
+          - DallasTemperature
+    env:
+      BUILD_FLAGS: "\
+        -DCONFIG_PWR_CTRL_ENABLED \
+        -DCONFIG_OVERDRIVE_ENABLED \
+        -DCONFIG_CRC16_ENABLED \
+        -DCONFIG_ITERATION_RETRIES=1"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          repo_dir=$(pwd)
+          cd /pio-ard-ci
+          cp $repo_dir/examples/arduino/${{ matrix.example }}/${{ matrix.example }}.ino \
+            src/${{ matrix.example }}.ino
+          sudo pio lib install $repo_dir
+          sudo PLATFORMIO_BUILD_FLAGS=${BUILD_FLAGS} pio run -e ${{ matrix.plat }}

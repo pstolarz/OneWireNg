@@ -2,7 +2,8 @@
 
 # OneWireNg
 [![Tests status](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml)
-[![Builds status](https://github.com/pstolarz/OneWireNg/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/build.yml)
+[![Arduino builds](https://github.com/pstolarz/OneWireNg/actions/workflows/ard-builds.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ard-builds.yml)
+[![PlatformIO builds](https://github.com/pstolarz/OneWireNg/actions/workflows/pio-builds.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/pio-builds.yml)
 [![Join the chat at https://gitter.im/pstolarz/OneWireNg](https://badges.gitter.im/pstolarz/OneWireNg.svg)](https://gitter.im/pstolarz/OneWireNg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/pstolarz/library/OneWireNg.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)
 <br>

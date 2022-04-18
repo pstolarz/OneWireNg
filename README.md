@@ -74,7 +74,7 @@ HTML/LaTeX [Doxygen](https://www.doxygen.nl/index.html) documentation by issuing
 File [`src/OneWireNg_Config.h`](src/OneWireNg_Config.h) contains parameters
 configuring the library functionality. See the file for more details.
 
-### ESP-IDF (incl. ESP8266 RTOS SDK)
+### ESP-IDF (incl. ESP8266 RTOS SDK v3)
 
 Preferred way to add OneWireNg as a library for Espressif [ESP-IDF](https://github.com/espressif/esp-idf)
 framework is to add it as a git submodule located at project's `components`

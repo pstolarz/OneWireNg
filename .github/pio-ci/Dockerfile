@@ -32,30 +32,43 @@ RUN pio platform install ststm32
 
 RUN mkdir /pio-ard-ci && cd /pio-ard-ci && \
   pio project init -s && \
-  echo                              >>platformio.ini && \
-  echo "[env]"                      >>platformio.ini && \
-  echo "framework = arduino"        >>platformio.ini && \
-  echo                              >>platformio.ini && \
-  echo "[env:uno]"                  >>platformio.ini && \
-  echo "platform = atmelavr"        >>platformio.ini && \
-  echo "board = uno"                >>platformio.ini && \
-  echo                              >>platformio.ini && \
-  echo "[env:uno_wifi_rev2]"        >>platformio.ini && \
-  echo "platform = atmelmegaavr"    >>platformio.ini && \
-  echo "board = uno_wifi_rev2"      >>platformio.ini && \
-  echo                              >>platformio.ini && \
-  echo "[env:due]"                  >>platformio.ini && \
-  echo "platform = atmelsam"        >>platformio.ini && \
-  echo "board = due"                >>platformio.ini && \
-  echo                              >>platformio.ini && \
-  echo "[env:esp32dev]"             >>platformio.ini && \
-  echo "platform = espressif32"     >>platformio.ini && \
-  echo "board = esp32dev"           >>platformio.ini && \
-  echo                              >>platformio.ini && \
-  echo "[env:d1]"                   >>platformio.ini && \
-  echo "platform = espressif8266"   >>platformio.ini && \
-  echo "board = d1"                 >>platformio.ini && \
-  echo                              >>platformio.ini && \
-  echo "[env:nucleo_f767zi]"        >>platformio.ini && \
-  echo "platform = ststm32"         >>platformio.ini && \
-  echo "board = nucleo_f767zi"      >>platformio.ini
+  echo                                  >>platformio.ini && \
+  echo "[env]"                          >>platformio.ini && \
+  echo "framework = arduino"            >>platformio.ini && \
+  echo                                  >>platformio.ini && \
+  echo "[env:uno]"                      >>platformio.ini && \
+  echo "platform = atmelavr"            >>platformio.ini && \
+  echo "board = uno"                    >>platformio.ini && \
+  echo                                  >>platformio.ini && \
+  echo "[env:uno_wifi_rev2]"            >>platformio.ini && \
+  echo "platform = atmelmegaavr"        >>platformio.ini && \
+  echo "board = uno_wifi_rev2"          >>platformio.ini && \
+  echo                                  >>platformio.ini && \
+  echo "[env:due]"                      >>platformio.ini && \
+  echo "platform = atmelsam"            >>platformio.ini && \
+  echo "board = due"                    >>platformio.ini && \
+  echo                                  >>platformio.ini && \
+  echo "[env:esp32dev]"                 >>platformio.ini && \
+  echo "platform = espressif32"         >>platformio.ini && \
+  echo "board = esp32dev"               >>platformio.ini && \
+  echo                                  >>platformio.ini && \
+  echo "[env:d1]"                       >>platformio.ini && \
+  echo "platform = espressif8266"       >>platformio.ini && \
+  echo "board = d1"                     >>platformio.ini && \
+  echo                                  >>platformio.ini && \
+  echo "[env:nucleo_f767zi]"            >>platformio.ini && \
+  echo "platform = ststm32"             >>platformio.ini && \
+  echo "board = nucleo_f767zi"          >>platformio.ini
+
+RUN mkdir /pio-idf-ci && cd /pio-idf-ci && \
+  pio project init -s && \
+  echo                                  >>platformio.ini && \
+  echo "[env:esp32-s2-saola-1]"         >>platformio.ini && \
+  echo "framework = espidf"             >>platformio.ini && \
+  echo "platform = espressif32"         >>platformio.ini && \
+  echo "board = esp32-s2-saola-1"       >>platformio.ini && \
+  echo                                  >>platformio.ini && \
+  echo "[env:esp32-c3-devkitm-1]"       >>platformio.ini && \
+  echo "framework = espidf"             >>platformio.ini && \
+  echo "platform = espressif32"         >>platformio.ini && \
+  echo "board = esp32-c3-devkitm-1"     >>platformio.ini

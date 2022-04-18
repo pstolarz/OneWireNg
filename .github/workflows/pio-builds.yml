@@ -18,7 +18,7 @@ jobs:
       - name: PlatformIO update info
         run: |
           sudo pio update --dry-run
-  pio_build:
+  pio_ard_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/pio-ci
     strategy:
@@ -46,5 +46,31 @@ jobs:
           cd /pio-ard-ci
           cp $repo_dir/examples/arduino/${{ matrix.example }}/${{ matrix.example }}.ino \
             src/${{ matrix.example }}.ino
+          sudo pio lib install $repo_dir
+          sudo PLATFORMIO_BUILD_FLAGS=${BUILD_FLAGS} pio run -e ${{ matrix.plat }}
+  pio_idf_build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/pio-ci
+    strategy:
+      matrix:
+        plat:
+          - esp32-s2-saola-1
+          - esp32-c3-devkitm-1
+        example:
+          - DallasTemperature
+    env:
+      BUILD_FLAGS: "\
+        -DCONFIG_PWR_CTRL_ENABLED \
+        -DCONFIG_OVERDRIVE_ENABLED \
+        -DCONFIG_CRC16_ENABLED \
+        -DCONFIG_ITERATION_RETRIES=1"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          repo_dir=$(pwd)
+          cd /pio-idf-ci
+          cp $repo_dir/examples/esp-idf/${{ matrix.example }}/main/${{ matrix.example }}.cpp \
+            src/${{ matrix.example }}.cpp
           sudo pio lib install $repo_dir
           sudo PLATFORMIO_BUILD_FLAGS=${BUILD_FLAGS} pio run -e ${{ matrix.plat }}

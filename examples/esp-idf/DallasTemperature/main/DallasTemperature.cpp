@@ -13,6 +13,8 @@
 /**
  * Dallas family thermometers access example (ESP-IDF).
  */
+#include <stdio.h>
+
 #include "OneWireNg_CurrentPlatform.h"
 #include "drivers/DSTherm.h"
 #include "utils/Placeholder.h"

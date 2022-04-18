@@ -1,9 +1,9 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine/)
 
 # OneWireNg
-[![Tests status](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml)
-[![Arduino builds](https://github.com/pstolarz/OneWireNg/actions/workflows/ard-builds.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ard-builds.yml)
-[![PlatformIO builds](https://github.com/pstolarz/OneWireNg/actions/workflows/pio-builds.yml/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/pio-builds.yml)
+[![Unit tests](https://github.com/pstolarz/OneWireNg/workflows/Unit%20tests/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml)
+[![Arduino builds](https://github.com/pstolarz/OneWireNg/workflows/Arduino%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ard-builds.yml)
+[![PlatformIO builds](https://github.com/pstolarz/OneWireNg/workflows/PlatformIO%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/pio-builds.yml)
 [![Join the chat at https://gitter.im/pstolarz/OneWireNg](https://badges.gitter.im/pstolarz/OneWireNg.svg)](https://gitter.im/pstolarz/OneWireNg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/pstolarz/library/OneWireNg.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)
 <br>

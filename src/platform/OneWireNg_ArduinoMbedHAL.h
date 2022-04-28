@@ -114,6 +114,20 @@ protected:
     }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    TIME_CRITICAL int touch1Overdrive()
+    {
+        gpio_write(&_dtaGpio, 0);
+        gpio_dir(&_dtaGpio, PIN_OUTPUT);
+
+        /* speed up low-to-high transition */
+        gpio_write(&_dtaGpio, 1);
+        gpio_dir(&_dtaGpio, PIN_INPUT);
+
+        return (gpio_read(&_dtaGpio) != 0);
+    }
+#endif
+
     void initDtaGpio(unsigned pin, bool pullUp)
     {
 #ifdef ARDUINO

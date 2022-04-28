@@ -124,6 +124,9 @@ change `OneWireNg_Config.h` configuration file.
 * Arduino/ESP-IDF ESP32 (classic, S, C and H families).
     * Platform class: `OneWireNg_ArduinoIdfESP32`.
     * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-C3-32S-Kit
+* Arduino/Mbed OS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
+    * Platform class: `OneWireNg_ArduinoMbedHAL`.
+    * Tested on Raspberry Pi Pico (RP2040)
 * Arduino SAM.
     * Platform class: `OneWireNg_ArduinoSAM`.
     * [Reported to be working.](https://github.com/pstolarz/OneWireNg/issues/33)
@@ -132,9 +135,6 @@ change `OneWireNg_Config.h` configuration file.
     * **Not tested**.
 * Arduino STM32.
     * Platform class: `OneWireNg_ArduinoSTM32`.
-    * **Not tested**.
-* Arduino/Mbed OS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
-    * Platform class: `OneWireNg_ArduinoMbedHAL`.
     * **Not tested**.
 
 NOTE: Expect more platforms support in the future. **I'm inviting all developers**
@@ -157,6 +157,8 @@ work on the following platforms and CPU frequencies:
     * ESP32-WROOM-32; 240,160,80,40,20MHz
     * ESP32-S2-WROVER; 240,160,80,40,20,10MHz
     * ESP32-C3-32S-Kit; 240,160MHz (other freqs not tested)
+* RP2040
+    * Raspberry Pi Pico; 125MHz
 
 ## Parasite powering
 

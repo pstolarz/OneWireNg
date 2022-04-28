@@ -70,8 +70,7 @@ protected:
 
     TIME_CRITICAL void setDtaGpioAsInput()
     {
-        LL_GPIO_SetPinMode(
-            _dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_INPUT);
+        LL_GPIO_SetPinMode(_dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_INPUT);
     }
 
 #ifdef CONFIG_PWR_CTRL_ENABLED
@@ -105,10 +104,23 @@ protected:
     TIME_CRITICAL void setGpioAsOutput(int state)
     {
         digitalWriteFast(_dtaGpio.pinName, state);
-        LL_GPIO_SetPinMode(
-            _dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_OUTPUT);
+        LL_GPIO_SetPinMode(_dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_OUTPUT);
     }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
+
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    TIME_CRITICAL int touch1Overdrive()
+    {
+        digitalWriteFast(_dtaGpio.pinName, 0);
+        LL_GPIO_SetPinMode(_dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_OUTPUT);
+
+        /* speed up low-to-high transition */
+        digitalWriteFast(_dtaGpio.pinName, 1);
+        LL_GPIO_SetPinMode(_dtaGpio.gpio, _dtaGpio.ll_pin, LL_GPIO_MODE_INPUT);
+
+        return (digitalReadFast(_dtaGpio.pinName) == LOW ? 0 : 1);
+    }
+#endif
 
     void initDtaGpio(unsigned pin, bool pullUp)
     {

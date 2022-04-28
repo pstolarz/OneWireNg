@@ -143,6 +143,26 @@ protected:
     }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    TIME_CRITICAL int touch1Overdrive()
+    {
+# ifdef PIN_STATUS_UPDATE
+        *_dtaGpio.status = PIN_STATUS_DIGITAL_OUTPUT;
+# endif
+        __WRITE_GPIO(_dtaGpio, 0);
+        __GPIO_AS_OUTPUT(_dtaGpio);
+
+        /* speed up low-to-high transition */
+# ifdef PIN_STATUS_UPDATE
+        *_dtaGpio.status = (1 << 4) | PIN_STATUS_DIGITAL_OUTPUT;
+# endif
+        __WRITE_GPIO(_dtaGpio, 1);
+        __GPIO_AS_OUTPUT(_dtaGpio);
+
+        return __READ_GPIO(_dtaGpio);
+    }
+#endif
+
     void initDtaGpio(unsigned pin, bool pullUp)
     {
         assert(g_APinDescription[pin].ulPinType != PIO_NOT_A_PIN);

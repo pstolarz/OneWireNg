@@ -120,6 +120,20 @@ protected:
     }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
+#ifdef CONFIG_OVERDRIVE_ENABLED
+    TIME_CRITICAL int touch1Overdrive()
+    {
+        __WRITE_GPIO(_dtaGpio, 0);
+        __GPIO_AS_OUTPUT(_dtaGpio);
+
+        /* speed up low-to-high transition */
+        __WRITE_GPIO(_dtaGpio, 1);
+        __GPIO_AS_INPUT(_dtaGpio);
+
+        return __READ_GPIO(_dtaGpio);
+    }
+#endif
+
     void initDtaGpio(unsigned pin, bool pullUp)
     {
         _dtaGpio.bmsk = digitalPinToBitMask(pin);

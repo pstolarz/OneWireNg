@@ -18,6 +18,10 @@
 
 #define OW_PIN          13
 
+#ifndef CONFIG_SEARCH_ENABLED
+# error "Example requires CONFIG_SEARCH_ENABLED to be configured"
+#endif
+
 #ifndef CONFIG_OVERDRIVE_ENABLED
 # error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured"
 #endif

@@ -73,8 +73,22 @@
 #endif
 
 /**
- * Maximum number of family codes used for search filtering.
- * If not defined or 0 - filtering disabled.
+ * Enable 1-wire search.
+ *
+ * Disabling the 1-wire search may be useful to reduce a footprint of the
+ * library on resource constrained platforms, where there is no need to scan
+ * the 1-wire bus for present devices (e.g. there is only one device connected).
+ */
+#ifndef CONFIG_SEARCH_ENABLED
+# define CONFIG_SEARCH_ENABLED
+#endif
+
+/**
+ * Maximum number of family codes used for search filtering. If not defined
+ * or 0 - filtering disabled.
+ *
+ * @note The parameter is ignored if 1-wire search is disabled.
+ * @see CONFIG_SEARCH_ENABLED
  */
 #ifndef CONFIG_MAX_SRCH_FILTERS
 # define CONFIG_MAX_SRCH_FILTERS 10
@@ -220,9 +234,10 @@
  * For C++11 range-loop used during search-scan process to detect slave devices
  * connected to the bus, the parameter specifies number or the search command
  * resends in case of CRC or bus error. The parameter may be useful for error
- * prone setups.
+ * prone setups. If not defined or 0 - no retires.
  *
- * If not defined or 0 - no retires.
+ * @note The parameter is ignored if 1-wire search is disabled.
+ * @see CONFIG_SEARCH_ENABLED
  */
 #ifndef CONFIG_ITERATION_RETRIES
 # define CONFIG_ITERATION_RETRIES 0

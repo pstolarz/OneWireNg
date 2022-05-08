@@ -33,6 +33,10 @@
  */
 //#define PWR_CTRL_PIN    9
 
+#ifndef CONFIG_SEARCH_ENABLED
+# error "Example requires CONFIG_SEARCH_ENABLED to be configured"
+#endif
+
 #if (CONFIG_MAX_SRCH_FILTERS < 1)
 # error "Example requires CONFIG_MAX_SRCH_FILTERS >= 1 to be configured"
 #endif

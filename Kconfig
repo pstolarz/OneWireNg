@@ -10,10 +10,16 @@ config PWR_CTRL_REV_POLARITY
     default n
 endif
 
+config SEARCH_ENABLED
+    bool "Enable 1-wire search"
+    default y
+
+if SEARCH_ENABLED
 config MAX_SRCH_FILTERS
     int "Max number of family codes for search filtering"
     default 10
     range 0 100
+endif
 
 config OVERDRIVE_ENABLED
     bool "Overdrive (high-speed) mode enabled"
@@ -69,10 +75,12 @@ choice BITBANG_TIMING
         bool "None"
 endchoice
 
+if SEARCH_ENABLED
 config ITERATION_RETRIES
     int "Search scan iteration retires"
     default 0
     range 0 10
+endif
 
 config USE_NATIVE_CPP_NEW
     bool "Use native toolchain <new> header"

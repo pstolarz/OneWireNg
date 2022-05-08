@@ -44,6 +44,10 @@
 /* DS2431 memory size */
 #define DS2431_MEM_SIZE    (18 * DS2431_ROW_SIZE)
 
+#ifndef CONFIG_SEARCH_ENABLED
+# error "Example requires CONFIG_SEARCH_ENABLED to be configured"
+#endif
+
 #ifndef CONFIG_CRC16_ENABLED
 # error "Example requires CONFIG_CRC16_ENABLED to be configured"
 #endif

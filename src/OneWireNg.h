@@ -28,8 +28,18 @@
 # define EXT_VIRTUAL_INTF
 #endif
 
-#if __cplusplus >= 201103L
-# define USE_RANGE_LOOP
+#if (CONFIG_MAX_SRCH_FILTERS > 0)
+# ifndef CONFIG_SEARCH_ENABLED
+/* search filtering is disabled if 1-wire search is disabled */
+#  undef CONFIG_MAX_SRCH_FILTERS
+#  define CONFIG_MAX_SRCH_FILTERS 0
+# elif (CONFIG_MAX_SRCH_FILTERS > 255)
+#  error "Invalid CONFIG_MAX_SRCH_FILTERS"
+# endif
+#endif
+
+#if (__cplusplus >= 201103L) && defined(CONFIG_SEARCH_ENABLED)
+# define USE_SEARCH_RANGE_LOOP
 #endif
 
 /**
@@ -222,6 +232,7 @@ public:
             bytes[i] = touchByte(0xff);
     }
 
+#ifdef CONFIG_SEARCH_ENABLED
     /**
      * Perform single search step in the search-scan process to detect slave
      * devices connected to the bus. Before calling this routine for the first
@@ -267,8 +278,9 @@ public:
     EXT_VIRTUAL_INTF void searchReset() {
         _lzero = -1;
     }
+#endif /* CONFIG_SEARCH_ENABLED */
 
-#ifdef USE_RANGE_LOOP
+#ifdef USE_SEARCH_RANGE_LOOP
 # if __cplusplus >= 201703L
     /* due to std namespace discrepancies between various toolchains
        decltype(nullptr) is used here instead of std::nullptr_t */
@@ -356,13 +368,9 @@ public:
     void setIterationMode(bool alarm) {
         _italm = alarm;
     }
-#endif /* USE_RANGE_LOOP */
+#endif /* USE_SEARCH_RANGE_LOOP */
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
-# if (CONFIG_MAX_SRCH_FILTERS > 255)
-#  error "Invalid CONFIG_MAX_SRCH_FILTERS"
-# endif
-
     /**
      * Add a family @c code to the search filters.
      * During the search process slave devices with given family code
@@ -413,12 +421,14 @@ public:
      *   more than one slave on the bus causing garbage (logical AND) of the
      *   received data.
      *
+     * @param id @c Id object placeholder where the read id will be stored.
+     *
      * @return Error codes:
      *     - @c EC_SUCCESS: Success, the result written to @c id.
      *     - @c EC_NO_DEVS: No slave devices.
      *     - @c EC_CRC_ERROR: Probably more than one slave on the bus.
      */
-    ErrorCode readSingleId(Id &id)
+    ErrorCode readSingleId(Id& id)
     {
         ErrorCode ret = reset();
         if (ret == EC_SUCCESS) {
@@ -437,6 +447,8 @@ public:
      *
      * After calling this routine subsequent data sent over the bus will be
      * received by the selected slave until the next reset pulse.
+     *
+     * @param id Id of the addressed device.
      *
      * @return Same as for @ref reset().
      */
@@ -514,6 +526,8 @@ public:
      * mode is disabled on all devices connected to the bus - only standard mode
      * communication is possible.
      *
+     * @param id Id of the addressed device.
+     *
      * @return Same as for @ref reset().
      */
     ErrorCode overdriveSingle(const Id& id)
@@ -571,8 +585,7 @@ public:
      * on slave devices connected to the bus. See @ref overdriveAll() and @ref
      * overdriveSingle() for more information.
      *
-     * @param true Library works in the overdrive mode.
-     * @param false Library works in the standard mode.
+     * @param on If @c true - overdrive mode, @c false - standard mode.
      */
     void setOverdrive(bool on) {
         _overdrive = on;
@@ -667,6 +680,7 @@ public:
 
     /**
      * Check CRC-8/MAXIM for a given @c id.
+     *
      * @return Error codes:
      *     - @c EC_SUCCESS: Compliant CRC.
      *     - @c EC_CRC_ERROR: CRC mismatch.
@@ -729,14 +743,16 @@ protected:
     * This class is intended to be inherited by specialized classes.
     */
     OneWireNg() {
+#ifdef CONFIG_SEARCH_ENABLED
         searchReset();
+#endif
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
         searchFilterDelAll();
 #endif
 #ifdef CONFIG_OVERDRIVE_ENABLED
         _overdrive = false;
 #endif
-#ifdef USE_RANGE_LOOP
+#ifdef USE_SEARCH_RANGE_LOOP
         _italm = false;
 #endif
     }
@@ -778,21 +794,23 @@ protected:
 #ifdef CONFIG_OVERDRIVE_ENABLED
     bool _overdrive;    /** overdrive turned on */
 #endif
-#ifdef USE_RANGE_LOOP
+#ifdef USE_SEARCH_RANGE_LOOP
     bool _italm;        /** search range-loop in alarm mode */
 #endif
 
 private:
+#ifdef CONFIG_SEARCH_ENABLED
     ErrorCode transmitSearchTriplet(int n, Id& id, int& lzero);
 
     Id _lsrch;  /** last search result */
     int _lzero; /** last 0-value search discrepancy bit number */
+#endif
 
 #ifdef __TEST__
 friend class OneWireNg_Test;
 #endif
 };
 
-#undef USE_RANGE_LOOP
+#undef USE_SEARCH_RANGE_LOOP
 #undef EXT_VIRTUAL_INTF
 #endif /* __OWNG__ */

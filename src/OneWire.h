@@ -114,13 +114,14 @@ public:
     void depower(void) {
         _ow->powerBus(false);
     }
-
+#ifdef CONFIG_SEARCH_ENABLED
     void reset_search() {
         _ow->searchReset();
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SRCH_FILTERS > 0)
         _ow->searchFilterDelAll();
-#endif
+# endif
     }
+#endif
 
 #if (CONFIG_MAX_SRCH_FILTERS > 0)
     /**
@@ -142,6 +143,7 @@ public:
     }
 #endif
 
+#ifdef CONFIG_SEARCH_ENABLED
     bool search(uint8_t *newAddr, bool search_mode = true)
     {
         OneWireNg::Id id;
@@ -156,6 +158,7 @@ public:
             return false;
         }
     }
+#endif
 
     static uint8_t crc8(const uint8_t *addr, uint8_t len) {
         return OneWireNg::crc8(addr, len);

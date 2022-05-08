@@ -28,6 +28,15 @@
 #define PARASITE_POWER  false
 
 /*
+ * Uncomment for single sensor setup.
+ *
+ * With this scenario only one sensor device is allowed to be connected
+ * to the bus. The library may be configured with 1-wire search activity
+ * disabled to reduce its footprint.
+ */
+//#define SINGLE_SENSOR
+
+/*
  * Uncomment for power provided by a switching
  * transistor and controlled by this pin.
  */
@@ -38,6 +47,10 @@
  * sensors on the bus. Resolution may vary from 9 to 12 bits.
  */
 //#define COMMON_RES      (DSTherm::RES_12_BIT)
+
+#if !defined(SINGLE_SENSOR) && !defined(CONFIG_SEARCH_ENABLED)
+# error "CONFIG_SEARCH_ENABLED is required for non SINGLE_SENSOR setup"
+#endif
 
 static Placeholder<OneWireNg_CurrentPlatform> _ow;
 
@@ -116,21 +129,40 @@ void setup()
 
 void loop()
 {
-    DSTherm drv(_ow);
+    OneWireNg& ow = _ow;
+    DSTherm drv(ow);
     Placeholder<DSTherm::Scratchpad> _scrpd;
 
     /* convert temperature on all sensors connected... */
     drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER);
 
-    /* ...and read them one-by-one */
-    for (const auto& id: (OneWireNg&)_ow) {
+#ifdef SINGLE_SENSOR
+    /* single sensor expected */
+    OneWireNg::Id id;
+
+    OneWireNg::ErrorCode ec = ow.readSingleId(id);
+    if (ec == OneWireNg::EC_SUCCESS) {
         if (printId(id)) {
             if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);
             else
-                printf("  Invalid CRC!\n");
+                printf("  Invalid device.\n");
+        }
+    } else if (ec == OneWireNg::EC_CRC_ERROR) {
+        printf("  Invalid CRC. "
+            "Possibly more than one device connected to the bus.\n");
+    }
+#else
+    /* read sensors one-by-one */
+    for (const auto& id: ow) {
+        if (printId(id)) {
+            if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
+                printScratchpad(_scrpd);
+            else
+                printf("  Invalid device\n");
         }
     }
+#endif
 
     printf("----------\n");
     delayMs(1000);

@@ -15,9 +15,9 @@
             "macro_name": "CONFIG_SEARCH_ENABLED",
             "value": 1
         },
-        "max_srch_filters": {
+        "max_search_filters": {
             "help": "Max number of family codes for search filtering",
-            "macro_name": "CONFIG_MAX_SRCH_FILTERS",
+            "macro_name": "CONFIG_MAX_SEARCH_FILTERS",
             "value": 10
         },
         "overdrive_enabled": {

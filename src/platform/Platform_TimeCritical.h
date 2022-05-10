@@ -24,7 +24,7 @@
 # include "mbed.h"
 #endif
 
-#ifdef CONFIG_BITBANG_DELAY_CCOUNT
+#if CONFIG_BITBANG_DELAY_CCOUNT
 # if defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32H2)
 #  include "hal/cpu_hal.h"
 #  define get_cpu_cycle_count() cpu_hal_get_cycle_count()
@@ -47,7 +47,7 @@ extern bool _tc_actv;       /* is time critical section active? */
  * If appropriately configured the cycle counter state is saved at the entry
  * point for a purpose of accurate timings calculation.
  */
-# ifdef CONFIG_BITBANG_DELAY_CCOUNT
+# if CONFIG_BITBANG_DELAY_CCOUNT
 #  define timeCriticalEnter() \
     _tc_actv = true; \
     noInterrupts(); \
@@ -63,7 +63,7 @@ extern bool _tc_actv;       /* is time critical section active? */
 #elif defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)
 typedef struct {
     unsigned int_lev;       /* saved interrupt level */
-# ifdef CONFIG_BITBANG_DELAY_CCOUNT
+# if CONFIG_BITBANG_DELAY_CCOUNT
     unsigned ccnt;          /* cycle counter (at delay start) */
     bool actv;              /* is time critical section active? */
 # endif
@@ -78,7 +78,7 @@ extern tc_t _tc[portNUM_PROCESSORS];
  * If appropriately configured the cycle counter state is saved at the entry
  * point for a purpose of accurate timings calculation.
  */
-# ifdef CONFIG_BITBANG_DELAY_CCOUNT
+# if CONFIG_BITBANG_DELAY_CCOUNT
 #  define timeCriticalEnter() \
     _tc[xPortGetCoreID()].actv = true; \
     _tc[xPortGetCoreID()].int_lev = portSET_INTERRUPT_MASK_FROM_ISR(); \

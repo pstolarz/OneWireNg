@@ -103,7 +103,7 @@ TIME_CRITICAL void OneWireNg_ArduinoIdfESP32::setDtaGpioAsInput()
     __GPIO_AS_INPUT(_dtaGpio);
 }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
 TIME_CRITICAL void OneWireNg_ArduinoIdfESP32::writeGpioOut(
     int state, GpioType gpio)
 {
@@ -138,7 +138,7 @@ TIME_CRITICAL void OneWireNg_ArduinoIdfESP32::setGpioAsOutput(int state)
 }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
 TIME_CRITICAL int OneWireNg_ArduinoIdfESP32::touch1Overdrive()
 {
     __WRITE0_GPIO(_dtaGpio);
@@ -178,7 +178,7 @@ void OneWireNg_ArduinoIdfESP32::initDtaGpio(unsigned pin, bool pullUp)
     setupDtaGpio();
 }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
 void OneWireNg_ArduinoIdfESP32::initPwrCtrlGpio(unsigned pin)
 {
     assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));

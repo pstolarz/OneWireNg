@@ -14,9 +14,10 @@
  * DS2431 EEPROM usage example (Arduino).
  *
  * Required configuration:
+ * - @c CONFIG_SEARCH_ENABLED,
  * - @c CONFIG_CRC16_ENABLED,
- * - @c CONFIG_MAX_SRCH_FILTERS >= 1,
- * - @c CONFIG_OVERDRIVE_ENABLED if @c USE_OD_MODE defined.
+ * - @c CONFIG_MAX_SEARCH_FILTERS >= 1,
+ * - @c CONFIG_OVERDRIVE_ENABLED if @c USE_OD_MODE is defined.
  */
 #include "OneWireNg_CurrentPlatform.h"
 
@@ -44,19 +45,19 @@
 /* DS2431 memory size */
 #define DS2431_MEM_SIZE    (18 * DS2431_ROW_SIZE)
 
-#ifndef CONFIG_SEARCH_ENABLED
+#if !CONFIG_SEARCH_ENABLED
 # error "Example requires CONFIG_SEARCH_ENABLED to be configured"
 #endif
 
-#ifndef CONFIG_CRC16_ENABLED
+#if !CONFIG_CRC16_ENABLED
 # error "Example requires CONFIG_CRC16_ENABLED to be configured"
 #endif
 
-#if (CONFIG_MAX_SRCH_FILTERS < 1)
-# error "Example requires CONFIG_MAX_SRCH_FILTERS >= 1 to be configured"
+#if (CONFIG_MAX_SEARCH_FILTERS < 1)
+# error "Example requires CONFIG_MAX_SEARCH_FILTERS >= 1 to be configured"
 #endif
 
-#if defined(USE_OD_MODE) && !defined(CONFIG_OVERDRIVE_ENABLED)
+#if defined(USE_OD_MODE) && !CONFIG_OVERDRIVE_ENABLED
 # error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured for USE_OD_MODE"
 #endif
 

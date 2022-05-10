@@ -40,7 +40,7 @@ public:
 #endif
     }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     /**
      * OneWireNg 1-wire service for Arduino/ESP-IDF ESP8266 platform.
      *
@@ -70,7 +70,7 @@ protected:
     int readDtaGpioIn();
     void setDtaGpioAsInput();
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     void writeGpioOut(int state, GpioType gpio);
     void setGpioAsOutput(int state, GpioType gpio);
 #else
@@ -78,13 +78,13 @@ protected:
     void setGpioAsOutput(int state);
 #endif
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     int touch1Overdrive();
 #endif
 
     void initDtaGpio(unsigned pin, bool pullUp);
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin);
 
     struct {

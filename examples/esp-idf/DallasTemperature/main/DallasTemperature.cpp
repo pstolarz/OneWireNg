@@ -12,6 +12,9 @@
 
 /**
  * Dallas family thermometers access example (ESP-IDF).
+ *
+ * Required configuration:
+ * - @c CONFIG_SEARCH_ENABLED if @c SINGLE_SENSOR is not defined.
  */
 #include <stdio.h>
 
@@ -48,7 +51,7 @@
  */
 //#define COMMON_RES      (DSTherm::RES_12_BIT)
 
-#if !defined(SINGLE_SENSOR) && !defined(CONFIG_SEARCH_ENABLED)
+#if !defined(SINGLE_SENSOR) && !CONFIG_SEARCH_ENABLED
 # error "CONFIG_SEARCH_ENABLED is required for non SINGLE_SENSOR setup"
 #endif
 
@@ -95,8 +98,8 @@ static void printScratchpad(const DSTherm::Scratchpad& scrpd)
 void setup()
 {
 #ifdef PWR_CTRL_PIN
-# ifndef CONFIG_PWR_CTRL_ENABLED
-#  error "CONFIG_PWR_CTRL_ENABLED needs to be enabled"
+# if !CONFIG_PWR_CTRL_ENABLED
+#  error "CONFIG_PWR_CTRL_ENABLED needs to be configured"
 # endif
     new (&_ow) OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false);
 #else
@@ -104,9 +107,9 @@ void setup()
 #endif
     DSTherm drv(_ow);
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
-    static_assert(CONFIG_MAX_SRCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
-        "CONFIG_MAX_SRCH_FILTERS too small");
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
+    static_assert(CONFIG_MAX_SEARCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
+        "CONFIG_MAX_SEARCH_FILTERS too small");
 
     drv.filterSupportedSlaves();
 #endif

@@ -42,7 +42,7 @@ public:
     ErrorCode powerBus(bool on);
 
 protected:
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     typedef enum
     {
         GPIO_DTA = 0,   /** 1-wire data GPIO */
@@ -56,12 +56,12 @@ protected:
     OneWireNg_BitBang()
     {
         _pwre = false;
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
         _pwrp = false;
 #endif
     }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     /**
      * For open-drain type of platform data bus GPIO can't serve as a voltage
      * source for parasitically power connected slaves. This routine enables /
@@ -74,7 +74,7 @@ protected:
     void setupPwrCtrlGpio(bool on)
     {
         if (on) {
-# ifdef CONFIG_PWR_CTRL_REV_POLARITY
+# if CONFIG_PWR_CTRL_REV_POLARITY
             setGpioAsOutput(0, GPIO_CTRL_PWR);
 # else
             setGpioAsOutput(1, GPIO_CTRL_PWR);
@@ -113,7 +113,7 @@ protected:
      *     (@c GPIO_CTRL_PWR). The latter case happens if and only if
      *     power-control-GPIO has been configured via @ref setupPwrCtrlGpio().
      */
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     virtual void writeGpioOut(int state, GpioType gpio) = 0;
 #else
     virtual void writeGpioOut(int state) = 0;
@@ -136,13 +136,13 @@ protected:
      *     (@c GPIO_CTRL_PWR). The latter case happens if and only if
      *     power-control-GPIO has been configured via @ref setupPwrCtrlGpio().
      */
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     virtual void setGpioAsOutput(int state, GpioType gpio) = 0;
 #else
     virtual void setGpioAsOutput(int state) = 0;
 #endif
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     /**
      * 1-wire touch-1 in overdrive mode is defined by 2-steps procedure:
      * 1. Set data bus low for 1 usec.
@@ -171,7 +171,7 @@ protected:
     void setBus(int state)
     {
         if (state) {
-#ifdef CONFIG_BUS_BLINK_PROTECTION
+#if CONFIG_BUS_BLINK_PROTECTION
             writeDtaGpioOut(1);
 #endif
             setDtaGpioAsInput();
@@ -181,12 +181,12 @@ protected:
     }
 
     bool _pwre; /** bus is powered indicator */
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     bool _pwrp; /** power-control-GPIO pin is valid */
 #endif
 
 private:
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     void writeDtaGpioOut(int state) { writeGpioOut(state, GPIO_DTA); }
     void setDtaGpioAsOutput(int state) { setGpioAsOutput(state, GPIO_DTA); }
 #else

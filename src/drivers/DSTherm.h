@@ -456,7 +456,7 @@ public:
         return _readPowerSupply(NULL);
     }
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
     /**
      * Add supported thermometers family codes into 1-wire service search filter.
      *

@@ -47,7 +47,7 @@ public:
         initDtaGpio(pin, pullUp);
     }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     /**
      * OneWireNg 1-wire service for Arduino Mbed OS based platform.
      *
@@ -81,7 +81,7 @@ protected:
         gpio_dir(&_dtaGpio, PIN_INPUT);
     }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     TIME_CRITICAL void writeGpioOut(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
@@ -114,7 +114,7 @@ protected:
     }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     TIME_CRITICAL int touch1Overdrive()
     {
         gpio_write(&_dtaGpio, 0);
@@ -140,7 +140,7 @@ protected:
         setupDtaGpio();
     }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
 #ifdef ARDUINO

@@ -38,7 +38,7 @@ devices.
 * Search filtering.
 
   Search algorithm allows efficient filtering basing on a selected set of family
-  codes. Maximum size of the set is configurable by `CONFIG_MAX_SRCH_FILTERS`.
+  codes. Maximum size of the set is configurable by `CONFIG_MAX_SEARCH_FILTERS`.
 
 * Overdrive (high-speed) mode support.
 
@@ -198,7 +198,7 @@ void setup()
      * PWR_CTRL_PIN: power-control-GPIO pin number (optional).
      */
 #ifdef PWR_CTRL_PIN
-# ifndef CONFIG_PWR_CTRL_ENABLED
+# if CONFIG_PWR_CTRL_ENABLED
 #  error "CONFIG_PWR_CTRL_ENABLED needs to be enabled"
 # endif
     // switching transistor powering

@@ -18,8 +18,8 @@
 # include OWNG_CONFIG_FILE
 #else
 
-/* use ESP-IDF configuration to override default configuration */
 # ifdef IDF_VER
+/* use ESP-IDF configuration replacing the default one */
 #  include "sdkconfig.h"
 
 #  if CONFIG_CRC8_ALGO_BASIC
@@ -41,7 +41,7 @@
 #  elif CONFIG_BITBANG_TIMING_NULL
 #   define CONFIG_BITBANG_TIMING TIMING_NULL
 #  endif
-# endif
+# else
 
 /**
  * Boolean parameter controlling the way the 1-wire bus is powered for
@@ -59,9 +59,9 @@
  * and to the high state otherwise (the logic may be reversed by
  * @c CONFIG_PWR_CTRL_REV_POLARITY parameter).
  */
-# ifndef CONFIG_PWR_CTRL_ENABLED
-#  define CONFIG_PWR_CTRL_ENABLED 0
-# endif
+#  ifndef CONFIG_PWR_CTRL_ENABLED
+#   define CONFIG_PWR_CTRL_ENABLED 0
+#  endif
 
 /**
  * Boolean parameter to reverse power-control-GPIO logic controlling the power
@@ -69,9 +69,9 @@
  *
  * @see CONFIG_PWR_CTRL_ENABLED.
  */
-# ifndef CONFIG_PWR_CTRL_REV_POLARITY
-#  define CONFIG_PWR_CTRL_REV_POLARITY 0
-# endif
+#  ifndef CONFIG_PWR_CTRL_REV_POLARITY
+#   define CONFIG_PWR_CTRL_REV_POLARITY 0
+#  endif
 
 /**
  * Boolean parameter to enable 1-wire search.
@@ -80,9 +80,9 @@
  * library on resource constrained platforms, where there is no need to scan
  * the 1-wire bus for present devices (e.g. there is only one device connected).
  */
-# ifndef CONFIG_SEARCH_ENABLED
-#  define CONFIG_SEARCH_ENABLED 1
-# endif
+#  ifndef CONFIG_SEARCH_ENABLED
+#   define CONFIG_SEARCH_ENABLED 1
+#  endif
 
 /**
  * Maximum number of family codes used for search filtering.
@@ -91,16 +91,16 @@
  * @note The parameter is ignored if 1-wire search is disabled.
  * @see CONFIG_SEARCH_ENABLED
  */
-# ifndef CONFIG_MAX_SEARCH_FILTERS
-#  define CONFIG_MAX_SEARCH_FILTERS 10
-# endif
+#  ifndef CONFIG_MAX_SEARCH_FILTERS
+#   define CONFIG_MAX_SEARCH_FILTERS 10
+#  endif
 
 /**
  * Boolean parameter to enable overdrive (high-speed) mode.
  */
-# ifndef CONFIG_OVERDRIVE_ENABLED
-#  define CONFIG_OVERDRIVE_ENABLED 0
-# endif
+#  ifndef CONFIG_OVERDRIVE_ENABLED
+#   define CONFIG_OVERDRIVE_ENABLED 0
+#  endif
 
 /**
  * Type of algorithm used for CRC-8/MAXIM calculation.
@@ -110,16 +110,16 @@
  *   about 8 times slower than the tabled method but no extra memory is used.
  * - @c CRC8_TAB_16LH: 2x16 elements table, 1 byte each.
  */
-# ifndef CONFIG_CRC8_ALGO
-#  define CONFIG_CRC8_ALGO CRC8_TAB_16LH
-# endif
+#  ifndef CONFIG_CRC8_ALGO
+#   define CONFIG_CRC8_ALGO CRC8_TAB_16LH
+#  endif
 
 /**
  * Boolean parameter to enable CRC-16/ARC.
  */
-# ifndef CONFIG_CRC16_ENABLED
-#  define CONFIG_CRC16_ENABLED 0
-# endif
+#  ifndef CONFIG_CRC16_ENABLED
+#   define CONFIG_CRC16_ENABLED 0
+#  endif
 
 /**
  * Type of algorithm used for CRC-16/ARC calculation.
@@ -130,9 +130,9 @@
  *     8 times slower than the tabled method but no extra memory is used.
  * - @c CRC16_TAB_16LH: 2x16 elements table, 2 bytes each.
  */
-# ifndef CONFIG_CRC16_ALGO
-#  define CONFIG_CRC16_ALGO CRC16_TAB_16LH
-# endif
+#  ifndef CONFIG_CRC16_ALGO
+#   define CONFIG_CRC16_ALGO CRC16_TAB_16LH
+#  endif
 
 /**
  * Boolean parameter to control storage of CRC tables in flash memory instead
@@ -143,9 +143,9 @@
  *     time needed for CRC calculation, since the flash access is much slower
  *     than RAM.
  */
-# ifndef CONFIG_FLASH_CRC_TAB
-#  define CONFIG_FLASH_CRC_TAB 0
-# endif
+#  ifndef CONFIG_FLASH_CRC_TAB
+#   define CONFIG_FLASH_CRC_TAB 0
+#  endif
 
 /**
  * GPIO blink reveals as a short, unexpected low-high (or vice versa) state
@@ -177,9 +177,9 @@
  * @note @c CONFIG_BUS_BLINK_PROTECTION may be useful to improve 1-wire
  *     communication on long cables by speeding-up low-to-high transition.
  */
-# ifndef CONFIG_BUS_BLINK_PROTECTION
-#  define CONFIG_BUS_BLINK_PROTECTION 0
-# endif
+#  ifndef CONFIG_BUS_BLINK_PROTECTION
+#   define CONFIG_BUS_BLINK_PROTECTION 0
+#  endif
 
 /**
  * For platforms which support CPU cycles counter, the boolean parameter enables
@@ -190,9 +190,9 @@
  * @note Currently only ESP32 and ESP8266 support this configuration.
  *     For other platforms the parameter is ignored.
  */
-# ifndef CONFIG_BITBANG_DELAY_CCOUNT
-#  define CONFIG_BITBANG_DELAY_CCOUNT 1
-# endif
+#  ifndef CONFIG_BITBANG_DELAY_CCOUNT
+#   define CONFIG_BITBANG_DELAY_CCOUNT 1
+#  endif
 
 /**
  * The parameter controls timing regime while bit-banging 1-wire signals
@@ -215,9 +215,9 @@
  *   (interrupts enabled) state. Use with care, especially in the overdrive
  *   mode.
  */
-# ifndef CONFIG_BITBANG_TIMING
-#  define CONFIG_BITBANG_TIMING TIMING_STRICT
-# endif
+#  ifndef CONFIG_BITBANG_TIMING
+#   define CONFIG_BITBANG_TIMING TIMING_STRICT
+#  endif
 
 /**
  * Boolean parameter to enable extended virtual interface.
@@ -228,9 +228,9 @@
  * implementation doesn't leverage the interface it's recommended to disable
  * this parameter for slower platforms.
  */
-# ifndef CONFIG_EXT_VIRTUAL_INTF
-#  define CONFIG_EXT_VIRTUAL_INTF 0
-# endif
+#  ifndef CONFIG_EXT_VIRTUAL_INTF
+#   define CONFIG_EXT_VIRTUAL_INTF 0
+#  endif
 
 /**
  * For C++11 range-loop used during search-scan process to detect slave devices
@@ -241,9 +241,9 @@
  * @note The parameter is ignored if 1-wire search is disabled.
  * @see CONFIG_SEARCH_ENABLED
  */
-# ifndef CONFIG_ITERATION_RETRIES
-#  define CONFIG_ITERATION_RETRIES 0
-# endif
+#  ifndef CONFIG_ITERATION_RETRIES
+#   define CONFIG_ITERATION_RETRIES 0
+#  endif
 
 /**
  * The library tries to detect if a toolchain supports C++ <new> header, and if
@@ -252,9 +252,9 @@
  * The boolean parameter forces to always use toolchain's native <new> header
  * even though the detection doesn't indicate existence of such header.
  */
-# ifndef CONFIG_USE_NATIVE_CPP_NEW
-#  define CONFIG_USE_NATIVE_CPP_NEW 0
-# endif
+#  ifndef CONFIG_USE_NATIVE_CPP_NEW
+#   define CONFIG_USE_NATIVE_CPP_NEW 0
+#  endif
 
 /**
  * Dallas thermometers specific.
@@ -263,9 +263,9 @@
  * Configuring this boolean parameter turns on extended resolution calculation
  * for this type of sensors.
  */
-# ifndef CONFIG_DS18S20_EXT_RES
-#  define CONFIG_DS18S20_EXT_RES 0
-# endif
+#  ifndef CONFIG_DS18S20_EXT_RES
+#   define CONFIG_DS18S20_EXT_RES 0
+#  endif
 
 /**
  * For ESP8266 platform there were reported problems when no extra time
@@ -273,11 +273,12 @@
  * amount of time (in msecs) the service delays after performing its
  * initialization but before being ready to use. If 0 - no delay.
  */
-# ifndef CONFIG_ESP8266_INIT_TIME
-#  define CONFIG_ESP8266_INIT_TIME 500
-# endif
+#  ifndef CONFIG_ESP8266_INIT_TIME
+#   define CONFIG_ESP8266_INIT_TIME 500
+#  endif
 
-#endif /* OWNG_CONFIG_FILE */
+# endif /* !IDF_VER */
+#endif /* !OWNG_CONFIG_FILE */
 
 /*
  * If a boolean parameter is defined w/o value assigned, it is assumed as

@@ -18,8 +18,15 @@
 # include OWNG_CONFIG_FILE
 #else
 
-# ifdef IDF_VER
-/* use ESP-IDF configuration replacing the default one */
+/*
+ * For ESP-IDF framework user's configuration is being used instead of the
+ * one contained in this header.
+ *
+ * In case of Arduino framework, where ESP-IDF SDK is being part of the
+ * framework as an auxiliary library, the sdkconfig.h header doesn't contain
+ * user's configuration therefore the header's configuration is being used.
+ */
+# if defined(IDF_VER) && !defined(ARDUINO)
 #  include "sdkconfig.h"
 
 #  if CONFIG_CRC8_ALGO_BASIC

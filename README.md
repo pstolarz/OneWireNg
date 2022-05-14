@@ -92,8 +92,8 @@ git checkout VERSION
 ```
 
 While added the library shall be configured via ESP-IDF native configuration
-(see [`Kconfig`](Kconfig) for details). There is no need to directly change
-`OneWireNg_Config.h` configuration file.
+(see [`Kconfig`](Kconfig) for details), which shadows the `OneWireNg_Config.h`
+configuration file.
 
 ### Mbed OS
 
@@ -107,8 +107,8 @@ mbed add https://github.com/pstolarz/OneWireNg#VERSION
 ```
 
 While added the library shall be configured via Mbed OS native configuration
-(see [`mbed_lib.json`](mbed_lib.json) for details). There is no need to directly
-change `OneWireNg_Config.h` configuration file.
+(see [`mbed_lib.json`](mbed_lib.json) for details), which shadows the
+`OneWireNg_Config.h` configuration file.
 
 ## Supported platforms
 

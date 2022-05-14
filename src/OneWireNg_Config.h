@@ -20,21 +20,21 @@
 
 /**
  * For ESP-IDF framework there are 2 ways to specify the library configuration:
- * 1. Innate configuration, stored in @c sdkconfig.h header. The configuration
+ * 1. Native configuration, stored in @c sdkconfig.h header. The configuration
  *    changes relay on ESP-IDF toolset, which basing on Kconfig's scripts
  *    generates the final @c sdkconfig.h header. This is default and recommended
  *    configuration method.
  * 2. Standard configuration, basing on @c OneWireNg_Config.h header along
  *    with configuration changes provided by user parameters macro-defines.
  *    In this method @c sdkconfig.h header is ignored. The method is chosen if
- *    @c OWNG_NO_INNATE_CONFIG is defined.
+ *    @c OWNG_NO_NATIVE_CONFIG is defined.
  *
  * @note In case of Arduino framework, where ESP-IDF SDK is being part of the
  *     framework as an auxiliary library, the @c sdkconfig.h header doesn't
  *     contain user's configuration therefore the standard configuration is
  *     being used.
  */
-# if !defined(OWNG_NO_INNATE_CONFIG) && defined(IDF_VER) && !defined(ARDUINO)
+# if !defined(OWNG_NO_NATIVE_CONFIG) && defined(IDF_VER) && !defined(ARDUINO)
 #  include "sdkconfig.h"
 
 #  if CONFIG_CRC8_ALGO_BASIC
@@ -59,10 +59,10 @@
 
 /**
  * Similarly to ESP-IDF, for Mbed OS framework there are 2 ways to specify
- * the library configuration: standard (default one, recommended) and innate.
- * Define @c OWNG_NO_INNATE_CONFIG to enable the latter.
+ * the library configuration: standard (default one, recommended) and native.
+ * Define @c OWNG_NO_NATIVE_CONFIG to enable the latter.
  */
-# elif !defined(OWNG_NO_INNATE_CONFIG) && defined(__MBED__) && !defined(ARDUINO)
+# elif !defined(OWNG_NO_NATIVE_CONFIG) && defined(__MBED__) && !defined(ARDUINO)
 # else
 
 /**

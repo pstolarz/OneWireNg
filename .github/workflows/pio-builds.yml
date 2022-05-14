@@ -34,7 +34,7 @@ jobs:
           - DallasTemperature
     env:
       BUILD_FLAGS: "\
-        -DOWNG_NO_INNATE_CONFIG \
+        -DOWNG_NO_NATIVE_CONFIG \
         -DCONFIG_PWR_CTRL_ENABLED \
         -DCONFIG_OVERDRIVE_ENABLED \
         -DCONFIG_CRC16_ENABLED \
@@ -61,7 +61,7 @@ jobs:
           - DallasTemperature
     env:
       BUILD_FLAGS: "\
-        -DOWNG_NO_INNATE_CONFIG \
+        -DOWNG_NO_NATIVE_CONFIG \
         -DCONFIG_PWR_CTRL_ENABLED \
         -DCONFIG_OVERDRIVE_ENABLED \
         -DCONFIG_CRC16_ENABLED \

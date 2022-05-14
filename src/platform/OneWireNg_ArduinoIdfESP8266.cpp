@@ -11,6 +11,9 @@
  */
 
 #include "platform/OneWireNg_ArduinoIdfESP8266.h"
+#ifdef IDF_VER
+# include "sdkconfig.h"
+#endif
 
 /*
  * There have been identified and described problems with ESP platforms (both

@@ -27,7 +27,7 @@
 # define NOEXCEPT throw()
 #endif
 
-#ifdef CONFIG_USE_NATIVE_CPP_NEW
+#if CONFIG_USE_NATIVE_CPP_NEW
 # include <new>
 #else
 # ifdef __has_include

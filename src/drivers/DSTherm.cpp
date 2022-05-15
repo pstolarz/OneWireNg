@@ -49,7 +49,7 @@ OneWireNg::ErrorCode DSTherm::readScratchpad(
     return ec;
 }
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
 OneWireNg::ErrorCode DSTherm::filterSupportedSlaves()
 {
     size_t i;
@@ -165,7 +165,7 @@ long DSTherm::Scratchpad::getTemp() const
         }
         temp = div2(temp * 1000, res + 1);
     } else {
-#ifdef CONFIG_DS18S20_EXT_RES
+#if CONFIG_DS18S20_EXT_RES
         if (_scrpd[7]) {
             /* truncate fractional part */
             temp = rsh(temp, 1) * 1000;

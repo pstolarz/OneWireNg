@@ -29,7 +29,7 @@
 # error "Invalid CONFIG_CRC16_ALGO"
 #endif
 
-#ifdef CONFIG_FLASH_CRC_TAB
+#if CONFIG_FLASH_CRC_TAB
 # include "platform/Platform_FlashMem.h"
 # define tabRead_u8 flashRead_u8
 # define tabRead_u16 flashRead_u16
@@ -54,7 +54,7 @@ uint8_t OneWireNg::touchByte(uint8_t byte, bool power)
     return ret;
 }
 
-#ifdef CONFIG_SEARCH_ENABLED
+#if CONFIG_SEARCH_ENABLED
 # define __UPDATE_DISCREPANCY() \
     (memcpy(_lsrch, id, sizeof(Id)), ((_lzero = lzero) < 0))
 
@@ -67,7 +67,7 @@ OneWireNg::ErrorCode OneWireNg::search(Id& id, bool alarm)
         /* search process finished; no more slave devices available */
         return EC_NO_DEVS;
 
-# if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
 restart:
 # endif
     lzero = -2;
@@ -78,7 +78,7 @@ restart:
     if (ec != EC_SUCCESS)
         return ec;
 
-# if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
     searchFilterSelectAll();
 # endif
     touchByte(alarm ? CMD_SEARCH_ROM_COND : CMD_SEARCH_ROM);
@@ -87,7 +87,7 @@ restart:
     {
         ec = transmitSearchTriplet(n, id, lzero);
 
-# if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
         if (ec == EC_NO_DEVS) {
             if (__UPDATE_DISCREPANCY())
                 return EC_NO_DEVS;
@@ -115,7 +115,7 @@ restart:
 #define __BIT_IN_BYTE(t, n) (__BYTE_OF_BIT(t, n) & __BITMASK8(n))
 #define __BIT_SET(t, n)     (__BYTE_OF_BIT(t, n) |= __BITMASK8(n))
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
 OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
 {
     for (int i = 0; i < _n_fltrs; i++) {
@@ -124,7 +124,7 @@ OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
             return EC_SUCCESS;
     }
 
-    if (_n_fltrs >= CONFIG_MAX_SRCH_FILTERS)
+    if (_n_fltrs >= CONFIG_MAX_SEARCH_FILTERS)
         return EC_FULL;
 
     _fltrs[_n_fltrs].code = code;
@@ -175,9 +175,9 @@ void OneWireNg::searchFilterSelect(int n, int bit)
         }
     }
 }
-#endif /* CONFIG_MAX_SRCH_FILTERS */
+#endif /* CONFIG_MAX_SEARCH_FILTERS */
 
-#ifdef CONFIG_SEARCH_ENABLED
+#if CONFIG_SEARCH_ENABLED
 /**
  * Transmit search triplet on the bus (for a given bit position @c n)
  * consisting of the following bits:
@@ -227,7 +227,7 @@ OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
             /* no discrepancy is expected for CRC part of the id - bus error */
             return EC_BUS_ERROR;
         } else {
-# if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
             if (n >= 8 || (selBit = searchFilterApply(n)) == 2)
 # endif
             {
@@ -250,7 +250,7 @@ OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
          * Unambiguous value for this bit position.
          */
         selBit = !v1;
-# if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
         if (n < 8)
         {
             /* check if code matches filtering criteria */
@@ -262,7 +262,7 @@ OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
     }
 
     touchBit(selBit);
-# if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
     searchFilterSelect(n, selBit);
 # endif
     if (selBit) {
@@ -304,7 +304,7 @@ uint8_t OneWireNg::crc8(const void *in, size_t len, uint8_t crc_in)
     return crc;
 }
 
-#ifdef CONFIG_CRC16_ENABLED
+#if CONFIG_CRC16_ENABLED
 uint16_t OneWireNg::crc16(const void *in, size_t len, uint16_t crc_in)
 {
     uint16_t crc = crc_in;

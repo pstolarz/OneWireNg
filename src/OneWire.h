@@ -114,16 +114,16 @@ public:
     void depower(void) {
         _ow->powerBus(false);
     }
-#ifdef CONFIG_SEARCH_ENABLED
+#if CONFIG_SEARCH_ENABLED
     void reset_search() {
         _ow->searchReset();
-# if (CONFIG_MAX_SRCH_FILTERS > 0)
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
         _ow->searchFilterDelAll();
 # endif
     }
 #endif
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
     /**
      * @note This routine differs from the original OneWire's counterpart.
      *     The original @c target_search() returns only the first address
@@ -143,7 +143,7 @@ public:
     }
 #endif
 
-#ifdef CONFIG_SEARCH_ENABLED
+#if CONFIG_SEARCH_ENABLED
     bool search(uint8_t *newAddr, bool search_mode = true)
     {
         OneWireNg::Id id;
@@ -164,7 +164,7 @@ public:
         return OneWireNg::crc8(addr, len);
     }
 
-#ifdef CONFIG_CRC16_ENABLED
+#if CONFIG_CRC16_ENABLED
     static bool check_crc16(const uint8_t *input, uint16_t len,
         const uint8_t *inverted_crc, uint16_t crc = 0)
     {

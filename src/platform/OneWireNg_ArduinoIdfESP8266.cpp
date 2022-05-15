@@ -11,6 +11,9 @@
  */
 
 #include "platform/OneWireNg_ArduinoIdfESP8266.h"
+#ifdef IDF_VER
+# include "sdkconfig.h"
+#endif
 
 /*
  * There have been identified and described problems with ESP platforms (both
@@ -198,7 +201,7 @@ TIME_CRITICAL void OneWireNg_ArduinoIdfESP8266::setDtaGpioAsInput()
     __GPIO_AS_INPUT(_dtaGpio);
 }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
 TIME_CRITICAL void OneWireNg_ArduinoIdfESP8266::writeGpioOut(
     int state, GpioType gpio)
 {
@@ -233,7 +236,7 @@ TIME_CRITICAL void OneWireNg_ArduinoIdfESP8266::setGpioAsOutput(int state)
 }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
 TIME_CRITICAL int OneWireNg_ArduinoIdfESP8266::touch1Overdrive()
 {
     if (_dtaGpio.pin < 16)
@@ -270,7 +273,7 @@ void OneWireNg_ArduinoIdfESP8266::initDtaGpio(unsigned pin, bool pullUp)
     setupDtaGpio();
 }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
 void OneWireNg_ArduinoIdfESP8266::initPwrCtrlGpio(unsigned pin)
 {
     assert(pin <= 16);

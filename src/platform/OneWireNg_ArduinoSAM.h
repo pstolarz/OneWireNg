@@ -55,7 +55,7 @@ public:
         initDtaGpio(pin, pullUp);
     }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     /**
      * OneWireNg 1-wire service for Arduino SAM platform.
      *
@@ -92,7 +92,7 @@ protected:
         __GPIO_AS_INPUT(_dtaGpio);
     }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     TIME_CRITICAL void writeGpioOut(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
@@ -143,7 +143,7 @@ protected:
     }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     TIME_CRITICAL int touch1Overdrive()
     {
 # ifdef PIN_STATUS_UPDATE
@@ -184,7 +184,7 @@ protected:
         setupDtaGpio();
     }
 
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     void initPwrCtrlGpio(unsigned pin)
     {
         assert(g_APinDescription[pin].ulPinType != PIO_NOT_A_PIN);

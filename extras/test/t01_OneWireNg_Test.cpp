@@ -283,24 +283,24 @@ public:
         assert(!ow._n_fltrs);
 
         int i;
-        for (i=0; i < CONFIG_MAX_SRCH_FILTERS; i++) {
+        for (i=0; i < CONFIG_MAX_SEARCH_FILTERS; i++) {
             assert(ow.searchFilterAdd(i+1) == EC_SUCCESS);
             assert(!ow._fltrs[i].ns);
         }
-        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS);
+        assert(ow._n_fltrs == CONFIG_MAX_SEARCH_FILTERS);
 
         /* already exist */
         assert(ow.searchFilterAdd(1) == EC_SUCCESS);
-        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS);
+        assert(ow._n_fltrs == CONFIG_MAX_SEARCH_FILTERS);
 
         assert(ow.searchFilterAdd(0) == EC_FULL);
-        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS);
+        assert(ow._n_fltrs == CONFIG_MAX_SEARCH_FILTERS);
 
         ow.searchFilterDel(0);
-        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS);
+        assert(ow._n_fltrs == CONFIG_MAX_SEARCH_FILTERS);
 
         ow.searchFilterDel(1);
-        assert(ow._n_fltrs == CONFIG_MAX_SRCH_FILTERS-1 &&
+        assert(ow._n_fltrs == CONFIG_MAX_SEARCH_FILTERS-1 &&
             ow._fltrs[0].code == 2);
 
         ow.searchFilterDelAll();

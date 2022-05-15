@@ -22,23 +22,23 @@
 # define UNUSED(x) ((void)(x))
 #endif
 
-#ifdef CONFIG_EXT_VIRTUAL_INTF
+#if CONFIG_EXT_VIRTUAL_INTF
 # define EXT_VIRTUAL_INTF virtual
 #else
 # define EXT_VIRTUAL_INTF
 #endif
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
-# ifndef CONFIG_SEARCH_ENABLED
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
+# if !CONFIG_SEARCH_ENABLED
 /* search filtering is disabled if 1-wire search is disabled */
-#  undef CONFIG_MAX_SRCH_FILTERS
-#  define CONFIG_MAX_SRCH_FILTERS 0
-# elif (CONFIG_MAX_SRCH_FILTERS > 255)
-#  error "Invalid CONFIG_MAX_SRCH_FILTERS"
+#  undef CONFIG_MAX_SEARCH_FILTERS
+#  define CONFIG_MAX_SEARCH_FILTERS 0
+# elif (CONFIG_MAX_SEARCH_FILTERS > 255)
+#  error "Invalid CONFIG_MAX_SEARCH_FILTERS"
 # endif
 #endif
 
-#if (__cplusplus >= 201103L) && defined(CONFIG_SEARCH_ENABLED)
+#if (__cplusplus >= 201103L) && CONFIG_SEARCH_ENABLED
 # define USE_SEARCH_RANGE_LOOP
 #endif
 
@@ -232,7 +232,7 @@ public:
             bytes[i] = touchByte(0xff);
     }
 
-#ifdef CONFIG_SEARCH_ENABLED
+#if CONFIG_SEARCH_ENABLED
     /**
      * Perform single search step in the search-scan process to detect slave
      * devices connected to the bus. Before calling this routine for the first
@@ -370,7 +370,7 @@ public:
     }
 #endif /* USE_SEARCH_RANGE_LOOP */
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
     /**
      * Add a family @c code to the search filters.
      * During the search process slave devices with given family code
@@ -402,12 +402,12 @@ public:
      * one code effectively added. For this reason the value returned by this
      * function indicates number of different family codes configured to be
      * filtered out (not number of calls to @ref searchFilterAdd()) and is
-     * always less or equal than @CONFIG_MAX_SRCH_FILTERS.
+     * always less or equal than @CONFIG_MAX_SEARCH_FILTERS.
      */
     int searchFilterSize() const {
         return _n_fltrs;
     }
-#endif /* CONFIG_MAX_SRCH_FILTERS */
+#endif /* CONFIG_MAX_SEARCH_FILTERS */
 
     /**
      * In case there is only one slave connected to the 1-wire bus the routine
@@ -504,7 +504,7 @@ public:
         return ret;
     }
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     /**
      * Enable overdrive mode for single slave device (the device must support
      * the mode):
@@ -646,7 +646,7 @@ public:
      */
     static uint8_t crc8(const void *in, size_t len, uint8_t crc_in = 0);
 
-#ifdef CONFIG_CRC16_ENABLED
+#if CONFIG_CRC16_ENABLED
     /**
      * Compute CRC-16/ARC.
      * Polynomial used: x^16 + x^15 + x^2 + 1
@@ -733,7 +733,7 @@ public:
     const static uint8_t CMD_SKIP_ROM            = 0xCC;
     const static uint8_t CMD_SEARCH_ROM_COND     = 0xEC;
     const static uint8_t CMD_SEARCH_ROM          = 0xF0;
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     const static uint8_t CMD_SKIP_ROM_OVERDRIVE  = 0x3C;
     const static uint8_t CMD_MATCH_ROM_OVERDRIVE = 0x69;
 #endif
@@ -743,13 +743,13 @@ protected:
     * This class is intended to be inherited by specialized classes.
     */
     OneWireNg() {
-#ifdef CONFIG_SEARCH_ENABLED
+#if CONFIG_SEARCH_ENABLED
         searchReset();
 #endif
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
         searchFilterDelAll();
 #endif
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
         _overdrive = false;
 #endif
 #ifdef USE_SEARCH_RANGE_LOOP
@@ -757,7 +757,7 @@ protected:
 #endif
     }
 
-#if (CONFIG_MAX_SRCH_FILTERS > 0)
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
     /**
      * For currently selected family code filters apply them for bit
      * position @c n.
@@ -786,12 +786,12 @@ protected:
     struct {
         uint8_t code;   /** family code */
         bool ns;        /** not-selected flag */
-    } _fltrs[CONFIG_MAX_SRCH_FILTERS];
+    } _fltrs[CONFIG_MAX_SEARCH_FILTERS];
 
     int _n_fltrs;       /** number of configured filters */
-#endif /* CONFIG_MAX_SRCH_FILTERS */
+#endif /* CONFIG_MAX_SEARCH_FILTERS */
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     bool _overdrive;    /** overdrive turned on */
 #endif
 #ifdef USE_SEARCH_RANGE_LOOP
@@ -799,7 +799,7 @@ protected:
 #endif
 
 private:
-#ifdef CONFIG_SEARCH_ENABLED
+#if CONFIG_SEARCH_ENABLED
     ErrorCode transmitSearchTriplet(int n, Id& id, int& lzero);
 
     Id _lsrch;  /** last search result */

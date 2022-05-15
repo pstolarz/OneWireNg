@@ -14,7 +14,8 @@
  * MAX31850/MAX31851 thermocouple example (Arduino).
  *
  * Required configuration:
- * - @c CONFIG_MAX_SRCH_FILTERS >= 1.
+ * - @c CONFIG_SEARCH_ENABLED,
+ * - @c CONFIG_MAX_SEARCH_FILTERS >= 1.
  */
 #include "OneWireNg_CurrentPlatform.h"
 #include "drivers/MAX31850.h"
@@ -33,12 +34,12 @@
  */
 //#define PWR_CTRL_PIN    9
 
-#ifndef CONFIG_SEARCH_ENABLED
+#if !CONFIG_SEARCH_ENABLED
 # error "Example requires CONFIG_SEARCH_ENABLED to be configured"
 #endif
 
-#if (CONFIG_MAX_SRCH_FILTERS < 1)
-# error "Example requires CONFIG_MAX_SRCH_FILTERS >= 1 to be configured"
+#if (CONFIG_MAX_SEARCH_FILTERS < 1)
+# error "Example requires CONFIG_MAX_SEARCH_FILTERS >= 1 to be configured"
 #endif
 
 static OneWireNg *ow = NULL;
@@ -96,8 +97,8 @@ static void printScratchpad(const MAX31850::Scratchpad& scrpd)
 void setup()
 {
 #ifdef PWR_CTRL_PIN
-# ifndef CONFIG_PWR_CTRL_ENABLED
-#  error "CONFIG_PWR_CTRL_ENABLED needs to be enabled"
+# if !CONFIG_PWR_CTRL_ENABLED
+#  error "CONFIG_PWR_CTRL_ENABLED needs to be configured"
 # endif
     ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false);
 #else

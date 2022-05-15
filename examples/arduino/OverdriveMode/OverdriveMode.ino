@@ -12,17 +12,20 @@
 
 /**
  * 1-wire overdrive mode example (Arduino).
- * Requires @c CONFIG_OVERDRIVE_ENABLED.
+
+ * Required configuration:
+ * - @c CONFIG_SEARCH_ENABLED,
+ * - @c CONFIG_OVERDRIVE_ENABLED.
  */
 #include "OneWireNg_CurrentPlatform.h"
 
 #define OW_PIN          13
 
-#ifndef CONFIG_SEARCH_ENABLED
+#if !CONFIG_SEARCH_ENABLED
 # error "Example requires CONFIG_SEARCH_ENABLED to be configured"
 #endif
 
-#ifndef CONFIG_OVERDRIVE_ENABLED
+#if !CONFIG_OVERDRIVE_ENABLED
 # error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured"
 #endif
 

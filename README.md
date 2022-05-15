@@ -38,7 +38,7 @@ devices.
 * Search filtering.
 
   Search algorithm allows efficient filtering basing on a selected set of family
-  codes. Maximum size of the set is configurable by `CONFIG_MAX_SRCH_FILTERS`.
+  codes. Maximum size of the set is configurable by `CONFIG_MAX_SEARCH_FILTERS`.
 
 * Overdrive (high-speed) mode support.
 
@@ -92,8 +92,8 @@ git checkout VERSION
 ```
 
 While added the library shall be configured via ESP-IDF native configuration
-(see [`Kconfig`](Kconfig) for details). There is no need to directly change
-`OneWireNg_Config.h` configuration file.
+(see [`Kconfig`](Kconfig) for details), which shadows the `OneWireNg_Config.h`
+configuration file.
 
 ### Mbed OS
 
@@ -107,8 +107,8 @@ mbed add https://github.com/pstolarz/OneWireNg#VERSION
 ```
 
 While added the library shall be configured via Mbed OS native configuration
-(see [`mbed_lib.json`](mbed_lib.json) for details). There is no need to directly
-change `OneWireNg_Config.h` configuration file.
+(see [`mbed_lib.json`](mbed_lib.json) for details), which shadows the
+`OneWireNg_Config.h` configuration file.
 
 ## Supported platforms
 
@@ -198,7 +198,7 @@ void setup()
      * PWR_CTRL_PIN: power-control-GPIO pin number (optional).
      */
 #ifdef PWR_CTRL_PIN
-# ifndef CONFIG_PWR_CTRL_ENABLED
+# if CONFIG_PWR_CTRL_ENABLED
 #  error "CONFIG_PWR_CTRL_ENABLED needs to be enabled"
 # endif
     // switching transistor powering

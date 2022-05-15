@@ -89,7 +89,7 @@ TIME_CRITICAL OneWireNg::ErrorCode OneWireNg_BitBang::reset()
 
     if (_pwre) powerBus(false);
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     if (_overdrive)
     {
         /* Overdrive mode
@@ -126,7 +126,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit, bool power)
 
     if (_pwre) powerBus(false);
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
     if (_overdrive)
     {
         /* Overdrive mode
@@ -182,7 +182,7 @@ TIME_CRITICAL int OneWireNg_BitBang::touchBit(int bit, bool power)
     return smpl;
 }
 
-#ifdef CONFIG_OVERDRIVE_ENABLED
+#if CONFIG_OVERDRIVE_ENABLED
 int OneWireNg_BitBang::touch1Overdrive()
 {
     setBus(0);
@@ -190,7 +190,7 @@ int OneWireNg_BitBang::touch1Overdrive()
     delayUs(OD_WRITE1_LOW);
 # endif
     /* speed up low-to-high transition */
-# ifndef CONFIG_BUS_BLINK_PROTECTION
+# if !CONFIG_BUS_BLINK_PROTECTION
     writeDtaGpioOut(1);
 # endif
     setBus(1);
@@ -203,9 +203,9 @@ int OneWireNg_BitBang::touch1Overdrive()
 
 OneWireNg::ErrorCode OneWireNg_BitBang::powerBus(bool on)
 {
-#ifdef CONFIG_PWR_CTRL_ENABLED
+#if CONFIG_PWR_CTRL_ENABLED
     if (_pwrp) {
-# ifdef CONFIG_PWR_CTRL_REV_POLARITY
+# if CONFIG_PWR_CTRL_REV_POLARITY
         writeGpioOut((on != 0), GPIO_CTRL_PWR);
 # else
         writeGpioOut(!on, GPIO_CTRL_PWR);

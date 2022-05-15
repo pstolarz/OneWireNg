@@ -59,11 +59,16 @@
 
 /**
  * Similarly to ESP-IDF, for Mbed OS framework there are 2 ways to specify
- * the library configuration: standard (default one, recommended) and native.
+ * the library configuration: native (default one, recommended) and standard.
  * Define @c OWNG_NO_NATIVE_CONFIG to enable the latter.
  */
 # elif !defined(OWNG_NO_NATIVE_CONFIG) && defined(__MBED__) && !defined(ARDUINO)
 # else
+
+/*
+ * Standard configuration section - configuration parameters are set to their
+ * defaults with possible changes in a form of user provided macro-defines.
+ */
 
 /**
  * Boolean parameter controlling the way the 1-wire bus is powered for

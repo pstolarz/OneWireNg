@@ -18,8 +18,12 @@
 #include "OneWireNg_BitBang.h"
 #include "platform/Platform_TimeCritical.h"
 
-/* if defined - internal Arduino pin status in updated */
-//#define PIN_STATUS_UPDATE
+/*
+ * If configured - internal Arduino-SAM pin status in updated
+ */
+#ifndef ARDSAM_PIN_STATUS_UPDATE
+# define ARDSAM_PIN_STATUS_UPDATE 0
+#endif
 
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)
@@ -86,7 +90,7 @@ protected:
 
     TIME_CRITICAL void setDtaGpioAsInput()
     {
-#ifdef PIN_STATUS_UPDATE
+#if ARDSAM_PIN_STATUS_UPDATE
         *_dtaGpio.status = _dtaGpio.inputStatus;
 #endif
         __GPIO_AS_INPUT(_dtaGpio);
@@ -96,12 +100,12 @@ protected:
     TIME_CRITICAL void writeGpioOut(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
             *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
 # endif
             __WRITE_GPIO(_dtaGpio, state);
         } else {
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
             *_pwrCtrlGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
 # endif
             __WRITE_GPIO(_pwrCtrlGpio, state);
@@ -111,13 +115,13 @@ protected:
     TIME_CRITICAL void setGpioAsOutput(int state, GpioType gpio)
     {
         if (gpio == GPIO_DTA) {
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
             *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
 # endif
             __WRITE_GPIO(_dtaGpio, state);
             __GPIO_AS_OUTPUT(_dtaGpio);
         } else {
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
             *_pwrCtrlGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
 # endif
             __WRITE_GPIO(_pwrCtrlGpio, state);
@@ -127,7 +131,7 @@ protected:
 #else
     TIME_CRITICAL void writeGpioOut(int state)
     {
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
         *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
 # endif
         __WRITE_GPIO(_dtaGpio, state);
@@ -135,7 +139,7 @@ protected:
 
     TIME_CRITICAL void setGpioAsOutput(int state)
     {
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
         *_dtaGpio.status = (state << 4) | PIN_STATUS_DIGITAL_OUTPUT;
 # endif
         __WRITE_GPIO(_dtaGpio, state);
@@ -146,14 +150,14 @@ protected:
 #if CONFIG_OVERDRIVE_ENABLED
     TIME_CRITICAL int touch1Overdrive()
     {
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
         *_dtaGpio.status = PIN_STATUS_DIGITAL_OUTPUT;
 # endif
         __WRITE_GPIO(_dtaGpio, 0);
         __GPIO_AS_OUTPUT(_dtaGpio);
 
         /* speed up low-to-high transition */
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
         *_dtaGpio.status = (1 << 4) | PIN_STATUS_DIGITAL_OUTPUT;
 # endif
         __WRITE_GPIO(_dtaGpio, 1);
@@ -168,7 +172,7 @@ protected:
         assert(g_APinDescription[pin].ulPinType != PIO_NOT_A_PIN);
         const PinDescription *desc = &g_APinDescription[pin];
 
-#ifdef PIN_STATUS_UPDATE
+#if ARDSAM_PIN_STATUS_UPDATE
         _dtaGpio.status = &g_pinStatus[pin];
         _dtaGpio.inputStatus =
             (pullUp ? PIN_STATUS_DIGITAL_INPUT_PULLUP : PIN_STATUS_DIGITAL_INPUT);
@@ -190,7 +194,7 @@ protected:
         assert(g_APinDescription[pin].ulPinType != PIO_NOT_A_PIN);
         const PinDescription *desc = &g_APinDescription[pin];
 
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
         _pwrCtrlGpio.status = &g_pinStatus[pin];
 # endif
         _pwrCtrlGpio.bmsk = desc->ulPin;
@@ -204,7 +208,7 @@ protected:
     }
 
     struct {
-# ifdef PIN_STATUS_UPDATE
+# if ARDSAM_PIN_STATUS_UPDATE
         uint8_t *status;
 # endif
         uint32_t bmsk;
@@ -216,7 +220,7 @@ protected:
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
     struct {
-#ifdef PIN_STATUS_UPDATE
+#if ARDSAM_PIN_STATUS_UPDATE
         uint8_t *status;
         uint8_t inputStatus;
 #endif

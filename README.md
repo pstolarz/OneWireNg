@@ -199,7 +199,7 @@ void setup()
      */
 #ifdef PWR_CTRL_PIN
 # if CONFIG_PWR_CTRL_ENABLED
-#  error "CONFIG_PWR_CTRL_ENABLED needs to be enabled"
+#  error "CONFIG_PWR_CTRL_ENABLED needs to be configured"
 # endif
     // switching transistor powering
     ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN);

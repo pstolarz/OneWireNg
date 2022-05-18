@@ -39,7 +39,7 @@
 #endif
 
 #if (__cplusplus >= 201103L) && CONFIG_SEARCH_ENABLED
-# define USE_SEARCH_RANGE_LOOP
+# define USE_SEARCH_RANGE_LOOP 1
 #endif
 
 /**
@@ -280,7 +280,7 @@ public:
     }
 #endif /* CONFIG_SEARCH_ENABLED */
 
-#ifdef USE_SEARCH_RANGE_LOOP
+#if USE_SEARCH_RANGE_LOOP
 # if __cplusplus >= 201703L
     /* due to std namespace discrepancies between various toolchains
        decltype(nullptr) is used here instead of std::nullptr_t */
@@ -752,7 +752,7 @@ protected:
 #if CONFIG_OVERDRIVE_ENABLED
         _overdrive = false;
 #endif
-#ifdef USE_SEARCH_RANGE_LOOP
+#if USE_SEARCH_RANGE_LOOP
         _italm = false;
 #endif
     }
@@ -794,7 +794,7 @@ protected:
 #if CONFIG_OVERDRIVE_ENABLED
     bool _overdrive;    /** overdrive turned on */
 #endif
-#ifdef USE_SEARCH_RANGE_LOOP
+#if USE_SEARCH_RANGE_LOOP
     bool _italm;        /** search range-loop in alarm mode */
 #endif
 

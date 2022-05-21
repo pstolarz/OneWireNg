@@ -18,10 +18,6 @@
 #include "OneWireNg_Config.h"
 #include "platform/Platform_New.h"  /* operator delete (~OneWireNg) */
 
-#ifndef UNUSED
-# define UNUSED(x) ((void)(x))
-#endif
-
 #if CONFIG_EXT_VIRTUAL_INTF
 # define EXT_VIRTUAL_INTF virtual
 #else
@@ -613,7 +609,7 @@ public:
      *     bus.
      */
     virtual ErrorCode powerBus(bool on) {
-        UNUSED(on);
+        (void)(on);
         return EC_UNSUPPORED;
     }
 

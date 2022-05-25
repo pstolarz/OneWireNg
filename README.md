@@ -98,7 +98,7 @@ configuration file.
 ### Mbed OS
 
 *NOTE: The library usage for [Mbed OS](https://os.mbed.com) framework is
-experimental and was not tested.*
+experimental. The only board used for tests of this framework is NUCLEO-L552ZE-Q.*
 
 To add OneWireNg as a library for Mbed OS project use (for specific `VERSION`):
 
@@ -123,18 +123,18 @@ While added the library shall be configured via Mbed OS native configuration
     * Tested on WemOS D1
 * Arduino/ESP-IDF ESP32 (classic, S, C and H families).
     * Platform class: `OneWireNg_ArduinoIdfESP32`.
-    * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-C3-32S-Kit
+    * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-S3-WROOM-1, ESP32-C3-32S-Kit
 * Arduino/Mbed OS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
     * Platform class: `OneWireNg_ArduinoMbedHAL`.
     * Tested on Raspberry Pi Pico (RP2040)
+* Arduino STM32.
+    * Platform class: `OneWireNg_ArduinoSTM32`.
+    * Tested on Nucleo-144 (L552ZE-Q)
 * Arduino SAM.
     * Platform class: `OneWireNg_ArduinoSAM`.
     * [Reported to be working.](https://github.com/pstolarz/OneWireNg/issues/33)
 * Arduino SAMD/SAMD-Beta.
     * Platform class: `OneWireNg_ArduinoSAMD`.
-    * **Not tested**.
-* Arduino STM32.
-    * Platform class: `OneWireNg_ArduinoSTM32`.
     * **Not tested**.
 
 NOTE: Expect more platforms support in the future. **I'm inviting all developers**
@@ -156,9 +156,12 @@ work on the following platforms and CPU frequencies:
 * ESP32
     * ESP32-WROOM-32; 240,160,80,40,20MHz
     * ESP32-S2-WROVER; 240,160,80,40,20,10MHz
+    * ESP32-S3-WROOM-1; 240,160,80MHz (other freqs not tested)
     * ESP32-C3-32S-Kit; 240,160MHz (other freqs not tested)
 * RP2040
     * Raspberry Pi Pico; 125MHz
+* STM32
+    * NUCLEO-L552ZE-Q; 110MHz
 
 ## Parasite powering
 

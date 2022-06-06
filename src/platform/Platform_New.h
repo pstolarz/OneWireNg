@@ -19,6 +19,8 @@
  * support is insufficient.
  */
 
+#include "OneWireNg_Config.h"
+
 #if __cplusplus >= 201103L
 # define ALLOC_ALIGNED alignas(void*)
 # define NOEXCEPT noexcept

@@ -86,6 +86,9 @@
  * state in case the power is enabled on the bus via @ref OneWireNg::powerBus()
  * and to the high state otherwise (the logic may be reversed by
  * @c CONFIG_PWR_CTRL_REV_POLARITY parameter).
+ *
+ * @note The parameter is supported by bit-banging type of drivers (that is
+ *     the ones derived from @ref OneWireNg_BitBang class).
  */
 # ifndef CONFIG_PWR_CTRL_ENABLED
 #  define CONFIG_PWR_CTRL_ENABLED 0
@@ -305,6 +308,35 @@
 #  define CONFIG_ESP8266_INIT_TIME 500
 # endif
 
+/**
+ * RP2040 platform is supported by 2 types of drivers for the Arduino framework:
+ * - @ref OneWireNg_ArduinoMbedHAL: bit-banging driver using Mbed OS low level
+ *   GPIO API,
+ * - @ref OneWireNg_PicoRP2040PIO: driver using RP2040's Programmable I/O (PIO)
+ *   peripheral for more efficient handling of 1-wire protocol activities.
+ *
+ * Configuring the boolean parameter favors the latter PIO driver over the
+ * bit-banging one while choosing the driver inside @c OneWireNg_CurrentPlatform.h
+ * header.
+ *
+ * @note @c OneWireNg_PicoRP2040PIO driver doesn't support power-control-GPIO
+ *     configuration (@see CONFIG_PWR_CTRL_ENABLED). Since RP2040 platform is
+ *     able to provide direct voltage source via its GPIO pads, parasitically
+ *     powered devices need to powered directly by GPIO controlling the 1-wire
+ *     bus, while using this driver.
+ */
+# ifndef CONFIG_RP2040_PIO_DRIVER
+#  define CONFIG_RP2040_PIO_DRIVER 1
+# endif
+
+/**
+ * For RP2040 platform and @ref OneWireNg_PicoRP2040PIO driver, the parameter
+ * specifies PIO number (0 or 1) used to execute 1-wire activities.
+ */
+# ifndef CONFIG_RP2040_PIO_NUM
+#  define CONFIG_RP2040_PIO_NUM 0
+# endif
+
 #endif
 
 /*
@@ -388,6 +420,13 @@
 # if (__EXT1(CONFIG_DS18S20_EXT_RES) == 1)
 #  undef CONFIG_DS18S20_EXT_RES
 #  define CONFIG_DS18S20_EXT_RES 1
+# endif
+#endif
+
+#ifdef CONFIG_RP2040_PIO_DRIVER
+# if (__EXT1(CONFIG_RP2040_PIO_DRIVER) == 1)
+#  undef CONFIG_RP2040_PIO_DRIVER
+#  define CONFIG_RP2040_PIO_DRIVER 1
 # endif
 #endif
 

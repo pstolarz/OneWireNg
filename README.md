@@ -60,6 +60,7 @@ devices.
 
   The code architecture allows fast and easy porting for new Arduino platforms
   or even usage of core part of the library outside the Arduino environment.
+  See below for usage details on ESP-IDF and Mbed OS frameworks.
 
 ## Usage
 
@@ -165,8 +166,10 @@ work on the following platforms and CPU frequencies:
 
 ## Parasite powering
 
-The library supports two modes of providing a direct voltage source on the
-1-wire bus for parasitically powered slaves:
+**Bit-banging drivers**
+
+For bit-banging type of drivers, the library supports two modes of providing
+a direct voltage source on the 1-wire bus for parasitically powered slaves:
 
 1. If platform's GPIO set to the high-state (in the output mode) is able to
    serve as a voltage source, the library may leverage this trait. The master
@@ -227,13 +230,22 @@ void setup()
 
 configures 1-wire service to work in one of the above modes.
 
+**RP2040 PIO driver**
+
+RP2040 PIO driver (`OneWireNg_PicoRP2040PIO` class) doesn't support
+power-control-GPIO configuration. Since RP2040 platform is able to provide
+direct voltage source via its GPIO pads, parasitically powered devices need
+to powered directly by GPIO controlling the 1-wire bus, while using this
+driver.
+
+
 **1-wire stability and parasite powering**
 
 Parasite powered slaves are less stable (more error prone) than regularly
 powered devices. If possible, try to avoid parasitically powered setups.
 
-For legacy AVR platforms the library need to be configured with
-`CONFIG_BUS_BLINK_PROTECTION` to make the parasitic mode working.
+For legacy AVR (non mega-AVR) platforms the library need to be configured
+with `CONFIG_BUS_BLINK_PROTECTION` to make the parasitic mode working.
 
 ## Architecture details
 
@@ -334,6 +346,17 @@ The class is derived from `OneWireNg` and implements the 1-wire interface basing
 on GPIO bit-banging. Object of this class isn't constructed directly rather than
 the class is intended to be inherited by a derived class providing protected
 interface implementation for low level GPIO activities (set mode, read, write).
+
+### `OneWireNg_PicoRP2040PIO`
+
+The class is derived from `OneWireNg` and implements the 1-wire interface
+for RP2040 MCU using Programmable I/O (PIO) peripheral. This is a platform
+driver therefore may be created directly by its public constructor.
+
+NOTE: The RP2040 platform is supported via 2 types of drivers for the Arduino
+framework: bit-banging driver (`OneWireNg_ArduinoMbedHAL` class) and the PIO
+driver. By default the latter is chosen, see `CONFIG_RP2040_PIO_DRIVER`
+configuration parameter for more details.
 
 ### `OneWireNg_PLATFORM`
 

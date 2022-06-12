@@ -47,6 +47,8 @@ void idf_delayUs(uint32_t us);
  * performance reason, the library read the frequency once and next uses the
  * read value. If a user code changes the CPU frequency on runtime, it needs
  * to inform the library about the change by calling @c ccntUpdateCpuFreqMHz().
+ *
+ * @return Current CPU frequency (MHz).
  */
 unsigned ccntUpdateCpuFreqMHz(void);
 
@@ -70,8 +72,7 @@ extern unsigned ccntAdjst;
 #   define delayUs(us) \
     if (_tc_actv) { \
         unsigned stop = (_tc_ccnt += \
-            ((unsigned)(us) * (cpuFreqMhz ? cpuFreqMhz : ccntUpdateCpuFreqMHz())) + \
-            ccntAdjst); \
+            (unsigned)(us) * cpuFreqMhz + ccntAdjst); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
         _delayUs(us); \
@@ -80,8 +81,7 @@ extern unsigned ccntAdjst;
 #   define delayUs(us) \
     if (_tc[xPortGetCoreID()].actv) { \
         unsigned stop = (_tc[xPortGetCoreID()].ccnt += \
-            ((unsigned)(us) * (cpuFreqMhz ? cpuFreqMhz : ccntUpdateCpuFreqMHz())) + \
-            ccntAdjst); \
+            (unsigned)(us) * cpuFreqMhz + ccntAdjst); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
         _delayUs(us); \

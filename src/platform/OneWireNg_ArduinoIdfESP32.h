@@ -14,6 +14,7 @@
 #define __OWNG_ARDUINO_IDF_ESP32__
 
 #include "OneWireNg_BitBang.h"
+#include "platform/Platform_Delay.h"
 
 /**
  * Arduino/ESP-IDF ESP32 platform GPIO specific implementation.

@@ -40,33 +40,26 @@ void idf_delayUs(uint32_t us);
 
 #if CONFIG_BITBANG_DELAY_CCOUNT
 # if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)
-#  ifdef F_CPU
-#   define F_CPU_MHZ (F_CPU / 1000000)
-#  elif defined(CONFIG_IDF_TARGET_ESP32)
-#   define F_CPU_MHZ CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ
-#  elif defined(CONFIG_IDF_TARGET_ESP32S2)
-#   define F_CPU_MHZ CONFIG_ESP32S2_DEFAULT_CPU_FREQ_MHZ
-#  elif defined(CONFIG_IDF_TARGET_ESP32S3)
-#   define F_CPU_MHZ CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ
-#  elif defined(CONFIG_IDF_TARGET_ESP32C3)
-#   define F_CPU_MHZ CONFIG_ESP32C3_DEFAULT_CPU_FREQ_MHZ
-#  elif defined(CONFIG_IDF_TARGET_ESP32H2)
-#   define F_CPU_MHZ CONFIG_ESP32H2_DEFAULT_CPU_FREQ_MHZ
-#  elif defined(CONFIG_IDF_TARGET_ESP8266)
-#   define F_CPU_MHZ CONFIG_ESP8266_DEFAULT_CPU_FREQ_MHZ
-#  else
-#   error "Can't detect CPU frequency while configured with CONFIG_BITBANG_DELAY_CCOUNT"
-#  endif
+/**
+ * If the library is configured with @c CONFIG_BITBANG_DELAY_CCOUNT,
+ * CPU frequency is detected at runtime by the library. Since the frequency
+ * (in most common cases) is not an entity which is going to change, for
+ * performance reason, the library read the frequency once and next uses the
+ * read value. If a user code changes the CPU frequency on runtime, it needs
+ * to inform the library about the change by calling @c ccntUpdateCpuFreqMHz().
+ *
+ * @return Current CPU frequency (MHz).
+ */
+unsigned ccntUpdateCpuFreqMHz(void);
+
+/* CPU frequency (MHz) */
+extern unsigned cpuFreqMhz;
 
 /*
- * TC_CCNT_ADJST: cycles counter adjustment
+ * Cycles counter adjustment
  * (important for accurate timings on lower frequencies).
  */
-#  if F_CPU_MHZ >= 20
-#   define TC_CCNT_ADJST 15
-#  else
-#   define TC_CCNT_ADJST 0
-#  endif
+extern unsigned ccntAdjst;
 
 /*
  * Delay may be performed in two modes:
@@ -79,7 +72,7 @@ void idf_delayUs(uint32_t us);
 #   define delayUs(us) \
     if (_tc_actv) { \
         unsigned stop = (_tc_ccnt += \
-            ((unsigned)(us) * F_CPU_MHZ + TC_CCNT_ADJST)); \
+            (unsigned)(us) * cpuFreqMhz + ccntAdjst); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
         _delayUs(us); \
@@ -88,7 +81,7 @@ void idf_delayUs(uint32_t us);
 #   define delayUs(us) \
     if (_tc[xPortGetCoreID()].actv) { \
         unsigned stop = (_tc[xPortGetCoreID()].ccnt += \
-            ((unsigned)(us) * F_CPU_MHZ) + TC_CCNT_ADJST); \
+            (unsigned)(us) * cpuFreqMhz + ccntAdjst); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
         _delayUs(us); \

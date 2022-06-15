@@ -265,6 +265,11 @@ void OneWireNg_ArduinoIdfESP8266::initDtaGpio(unsigned pin, bool pullUp)
     /* only pins < 16 can be configured with internal pull-up */
     assert(pullUp ? pin < 16 : pin <= 16);
 
+#if CONFIG_BITBANG_DELAY_CCOUNT
+    /* retrieve CPU frequency (for clock-count bit-banging mode) */
+    ccntUpdateCpuFreqMHz();
+#endif
+
     _dtaGpio.pin = pin;
     _dtaGpio.bmsk = (pin < 16 ? (uint32_t)(1UL << pin) : 1);
     _dtaGpio.inReg = (pin < 16 ? &GPI : &GP16I);

@@ -159,6 +159,11 @@ void OneWireNg_ArduinoIdfESP32::initDtaGpio(unsigned pin, bool pullUp)
 {
     assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
 
+#if CONFIG_BITBANG_DELAY_CCOUNT
+    /* retrieve CPU frequency (for clock-count bit-banging mode) */
+    ccntUpdateCpuFreqMHz();
+#endif
+
     if (pin < 32) {
         _dtaGpio.bmsk = (uint32_t)(1UL << pin);
         _dtaGpio.inReg = &REG_GPIO_IN_LO;

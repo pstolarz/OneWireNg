@@ -326,7 +326,7 @@
  *     bus, while using this driver.
  */
 # ifndef CONFIG_RP2040_PIO_DRIVER
-#  define CONFIG_RP2040_PIO_DRIVER 1
+#  define CONFIG_RP2040_PIO_DRIVER 0
 # endif
 
 /**

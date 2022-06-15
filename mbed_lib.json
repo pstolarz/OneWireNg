@@ -77,7 +77,7 @@
         "rp2040_pio_driver": {
             "help": "Use RP2040 PIO driver in favor of bit-banging one",
             "macro_name": "CONFIG_RP2040_PIO_DRIVER",
-            "value": 1
+            "value": 0
         },
         "rp2040_pio_num": {
             "help": "RP2040 PIO number",

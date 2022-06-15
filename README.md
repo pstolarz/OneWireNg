@@ -355,8 +355,7 @@ driver therefore may be created directly by its public constructor.
 
 NOTE: The RP2040 platform is supported via 2 types of drivers for the Arduino
 framework: bit-banging driver (`OneWireNg_ArduinoMbedHAL` class) and the PIO
-driver. By default the latter is chosen, see `CONFIG_RP2040_PIO_DRIVER`
-configuration parameter for more details.
+driver. See `CONFIG_RP2040_PIO_DRIVER` configuration parameter for more details.
 
 ### `OneWireNg_PLATFORM`
 

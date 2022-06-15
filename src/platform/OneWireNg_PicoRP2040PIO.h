@@ -162,9 +162,6 @@ private:
             _pioBound = true;
         }
 
-        /* move to program start */
-        pio_sm_exec(_pio, _sm, pio_encode_jmp(_addrs[progId]));
-
         /*
          * Try to avoid some extra configuration if the lastly
          * executed program is the same as the requested one.
@@ -176,15 +173,16 @@ private:
                 _addrs[progId] + _wraps[progId],
                 _addrs[progId] + _wraps[progId]);
 
-            /* set clock divider */
-            pio_sm_set_clkdiv_int_frac(_pio, _sm, _divs[progId], 0);
-
             _exeProg = progId;
         }
 
         /* restart PIO SM */
         pio_sm_restart(_pio, _sm);
         pio_sm_clkdiv_restart(_pio, _sm);
+        pio_sm_set_clkdiv_int_frac(_pio, _sm, _divs[progId], 0);
+
+        /* move to program start */
+        pio_sm_exec(_pio, _sm, pio_encode_jmp(_addrs[progId]));
 
         /* start the program execution by PIO SM */
         pio_sm_set_enabled(_pio, _sm, true);

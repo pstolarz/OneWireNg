@@ -1,57 +1,64 @@
-; 
+;
 ; Copyright (c) 2022 Piotr Stolarz
 ; OneWireNg: Arduino 1-wire service library
-; 
+;
 ; Distributed under the 2-clause BSD License (the License)
 ; see accompanying file LICENSE for details.
-; 
+;
 ; This software is distributed WITHOUT ANY WARRANTY; without even the
 ; implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ; See the License for more information.
-; 
+;
 
 ;
-; w1 reset
+; reset
 ;
 .program w1_reset
-.define public cycle    35
+.define public cycle    350     ; standard mode
+.define public od_cycle 40      ; over-drive mode
 .side_set 1
 
-    SET  pindirs, 1 side 0 [13] ; OUT low: 490us
-    SET  pindirs, 0 side 1 [1]  ; high (IN by pull-up resistor)
-    IN   pins,    1 side 1      ; sampling at 70us high state
+    SET  pindirs, 1 side 0 [13] ; OUT low: 490us, 56us (OD)
+    SET  pindirs, 0 side 1 [1]  ; IN (high by pull-up resistor)
+    IN   pins,    1 side 1      ; sampling at 70us, 8us (OD) high state
     NOP             side 1 [9]
-    PUSH            side 1      ; 70+420us high-tail, push presence pulse
+.wrap_target
+    PUSH            side 1      ; 70+420us, 8+48us (OD) high-tail
+                                ; push presence pulse
 
 ;
-; w1 touch-0
+; touch-0
 ; TX FIFO: type of power pull-up set on the bus afterwards
 ;
 .program w1_touch0
-.define public cycle    3
+.define public cycle    30      ; standard mode
+.define public od_cycle 4       ; overdrive mode
 .define public strong   0xf001  ; SET pins,    1 side 1
 .define public weak     0xf080  ; SET pindirs, 0 side 1
 .side_set 1
 
     SET  pindirs, 1 side 0 [15]
-    PULL            side 0 [3]  ; OUT low 60us; get type of power pull-up to exec
+    PULL            side 0 [3]  ; OUT low 60us, 8us (OD); get type of power pull-up
     OUT  exec    16 side 1      ; high (via strong or weak pull-up); 2 cycles
     IN   null,    1 side 1
-    PUSH            side 1      ; 6+6us high-tail, push 0
+.wrap_target
+    PUSH            side 1      ; 6+6us, 0.8+0.8us (OD) high-tail; push 0
 
 ;
-; w1 touch-1
+; touch-1
 ; TX FIFO: type of power pull-up set on the bus afterwards
 ;
 .program w1_touch1
-.define public cycle    2
-.define public strong   0xf201  ; SET pins,    1 side 1 [2]
-.define public weak     0xf280  ; SET pindirs, 0 side 1 [2]
+.define public cycle    20
+.define public od_cycle 2
+.define public strong   0xff81  ; SET pindirs, 1 side 1 [15]
+.define public weak     0xbf42  ; NOP            side 1 [15]
 .side_set 1
 
     SET  pindirs, 1 side 0
-    PULL            side 0      ; OUT low 4us; get type of power pull-up to exec
-    OUT  exec    16 side 1      ; high (via strong or weak pull-up); 4 cycles
-    IN   pins,    1 side 1 [13] ; sampling at 12us (low + high)
-    NOP             side 1 [12]
-    PUSH            side 1      ; 8+56us high-tail, push sampl. result
+    PULL            side 0      ; OUT low 4us, 0.4us (OD); get type of power pull-up
+    SET  pindirs, 0 side 1 [3]  ; IN (high by pull-up resistor)
+    IN   pins,    1 side 1 [9]  ; sampling at 4+8us, 0.4+0.8us (OD) (low + high)
+    OUT  exec    16 side 1      ; set strong/weak power pull-up; 17 cycles
+.wrap_target
+    PUSH            side 1      ; 8+56us, 0.8+5.6us (OD) high-tail; push sampl. result

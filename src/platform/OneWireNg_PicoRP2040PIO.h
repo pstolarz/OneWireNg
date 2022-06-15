@@ -39,6 +39,7 @@ public:
     OneWireNg_PicoRP2040PIO(unsigned pin, bool pullUp)
     {
         assert(pin < 32);
+        _pin = pin;
 
 #if (CONFIG_RP2040_PIO_NUM == 0)
         _pio = pio0;
@@ -48,22 +49,40 @@ public:
 # error "Invalid CONFIG_RP2040_PIO_NUM parameter. 0 or 1 expected."
 #endif
         _sm = pio_claim_unused_sm(_pio, true);
-        _pin = pin;
+
+        _exeProg = INVALID_PROG;
 
         powerBus(false);
         if (pullUp) gpio_pull_up(pin);
 
+        /* turn off PIO SM */
         pio_sm_set_enabled(_pio, _sm, false);
 
-        _addrReset = pio_add_program(_pio, &w1_reset_program);
-        _addrTouch0 = pio_add_program(_pio, &w1_touch0_program);
-        _addrTouch1 = pio_add_program(_pio, &w1_touch1_program);
-
-        uint sys_mhz = clock_get_hz(clk_sys) / 1000000;
-        _divReset = w1_reset_cycle * sys_mhz;
-        _divTouch0 = w1_touch0_cycle * sys_mhz;
-        _divTouch1 = w1_touch1_cycle * sys_mhz;
-
+        _addrs[RESET_STD]  = pio_add_program(_pio, &w1_reset_program);
+        _addrs[TOUCH0_STD] = pio_add_program(_pio, &w1_touch0_program);
+        _addrs[TOUCH1_STD] = pio_add_program(_pio, &w1_touch1_program);
+#if CONFIG_OVERDRIVE_ENABLED
+        _addrs[RESET_OD]   = _addrs[RESET_STD];
+        _addrs[TOUCH0_OD]  = _addrs[TOUCH0_STD];
+        _addrs[TOUCH1_OD]  = _addrs[TOUCH1_STD];
+#endif
+        uint sysMHz = clock_get_hz(clk_sys) / 1000000;
+        _divs[RESET_STD]  = (w1_reset_cycle * sysMHz) / 10;
+        _divs[TOUCH0_STD] = (w1_touch0_cycle * sysMHz) / 10;
+        _divs[TOUCH1_STD] = (w1_touch1_cycle * sysMHz) / 10;
+#if CONFIG_OVERDRIVE_ENABLED
+        _divs[RESET_OD]   = (w1_reset_od_cycle * sysMHz) / 10;
+        _divs[TOUCH0_OD]  = (w1_touch0_od_cycle * sysMHz) / 10;
+        _divs[TOUCH1_OD]  = (w1_touch1_od_cycle * sysMHz) / 10;
+#endif
+        _wraps[RESET_STD]  = w1_reset_wrap_target;
+        _wraps[TOUCH0_STD] = w1_touch0_wrap_target;
+        _wraps[TOUCH1_STD] = w1_touch1_wrap_target;
+#if CONFIG_OVERDRIVE_ENABLED
+        _wraps[RESET_OD]   = _wraps[RESET_STD];
+        _wraps[TOUCH0_OD]  = _wraps[TOUCH0_STD];
+        _wraps[TOUCH1_OD]  = _wraps[TOUCH1_STD];
+#endif
         /* Prepare PIO configuration
          */
         _pioCfg = pio_get_default_sm_config();
@@ -76,7 +95,7 @@ public:
         sm_config_set_in_pins(&_pioCfg, pin);
         sm_config_set_sideset_pins(&_pioCfg, pin);
 
-        /* left-shift, IN threshold: 1 */
+        /* left-shift, no-autopush, IN threshold: 1 */
         sm_config_set_in_shift(&_pioCfg, false, false, 1);
 
         /* set the default config for the PIO SM */
@@ -86,8 +105,14 @@ public:
     /**
      * Transmit reset cycle on the 1-wire bus.
      */
-    ErrorCode reset() {
-        return (!pioRun(_divReset, _addrReset) ? EC_SUCCESS : EC_NO_DEVS);
+    ErrorCode reset()
+    {
+#if CONFIG_OVERDRIVE_ENABLED
+        int progId = RESET_STD + (int)(_overdrive == true);
+#else
+        int progId = RESET_STD;
+#endif
+        return ((pioRun(progId) & 1) ? EC_NO_DEVS : EC_SUCCESS);
     }
 
     /**
@@ -95,23 +120,21 @@ public:
      */
     int touchBit(int bit, bool power)
     {
-        int res;
+        static const uint16_t pwrpus[2][2] = {
+            {w1_touch0_weak,   w1_touch1_weak},   /* weak pull-up */
+            {w1_touch0_strong, w1_touch1_strong}  /* strong pull-up */
+        };
 
         /* pass type of power pull-up to the PIO SM */
         pio_sm_clear_fifos(_pio, _sm);
-        if (power) {
-            pio_sm_put(_pio, _sm, (bit ? w1_touch1_strong : w1_touch0_strong));
-        } else {
-            pio_sm_put(_pio, _sm, (bit ? w1_touch1_weak : w1_touch0_weak));
-        }
+        pio_sm_put(_pio, _sm, pwrpus[(uint)(power == true)][(uint)(bit != 0)]);
 
-        if (bit) {
-            res = pioRun(_divTouch1, _addrTouch1);
-        } else {
-            res = pioRun(_divTouch0, _addrTouch0);
-        }
-
-        return (res != 0);
+#if CONFIG_OVERDRIVE_ENABLED
+        int progId = (bit ? TOUCH1_STD : TOUCH0_STD) + (int)(_overdrive == true);
+#else
+        int progId = (bit ? TOUCH1_STD : TOUCH0_STD);
+#endif
+        return (pioRun(progId) & 1);
     }
 
     /**
@@ -124,31 +147,44 @@ public:
         gpio_init_mask(1 << _pin);
         gpio_set_dir(_pin, on);
         gpio_put(_pin, 1);
+        _pioBound = false;
 
         return EC_SUCCESS;
     }
 
 private:
-    /**
-     * Run w1 program on the PIO SM with given clock divider @c div.
-     *
-     * The program start at address @c addr and is already loaded
-     * to the PIO's internal memory.
-     */
-    uint32_t pioRun(uint div, uint addr)
+    /** Run w1 program on the PIO SM. */
+    uint32_t pioRun(int progId)
     {
-        /* make sure w1 pin is connected to PIO SM */
-        pio_gpio_init(_pio, _pin);
+        /* bind w1-bus GPIO to PIO if needed */
+        if (!_pioBound) {
+            pio_gpio_init(_pio, _pin);
+            _pioBound = true;
+        }
 
         /* move to program start */
-        pio_sm_exec(_pio, _sm, pio_encode_jmp(addr));
+        pio_sm_exec(_pio, _sm, pio_encode_jmp(_addrs[progId]));
+
+        /*
+         * Try to avoid some extra configuration if the lastly
+         * executed program is the same as the requested one.
+         */
+        if (progId != _exeProg)
+        {
+            /* set wrap for the program */
+            pio_sm_set_wrap(_pio, _sm,
+                _addrs[progId] + _wraps[progId],
+                _addrs[progId] + _wraps[progId]);
+
+            /* set clock divider */
+            pio_sm_set_clkdiv_int_frac(_pio, _sm, _divs[progId], 0);
+
+            _exeProg = progId;
+        }
 
         /* restart PIO SM */
         pio_sm_restart(_pio, _sm);
         pio_sm_clkdiv_restart(_pio, _sm);
-
-        /* set new clock divider */
-        _pio->sm[_sm].clkdiv = (div << PIO_SM0_CLKDIV_INT_LSB);
 
         /* start the program execution by PIO SM */
         pio_sm_set_enabled(_pio, _sm, true);
@@ -162,21 +198,50 @@ private:
         return res;
     }
 
+#if CONFIG_OVERDRIVE_ENABLED
+    enum {
+        RESET_STD = 0,
+        RESET_OD,
+        TOUCH0_STD,
+        TOUCH0_OD,
+        TOUCH1_STD,
+        TOUCH1_OD,
+
+        PROGS_NUM,
+        INVALID_PROG = PROGS_NUM
+    };
+#else
+    enum {
+        RESET_STD = 0,
+        TOUCH0_STD,
+        TOUCH1_STD,
+
+        PROGS_NUM,
+        INVALID_PROG = PROGS_NUM
+    };
+#endif
+
+    uint _pin;  /** w1 bus pin */
     PIO _pio;   /** PIO used */
     uint _sm;   /** PIO SM used */
-    uint _pin;  /** w1 bus pin */
+
+    /** PIO SM common config */
+    pio_sm_config _pioCfg;
+
+    /** Lastly executed program */
+    int _exeProg;
+
+    /** w1-bu GPIO bound to PIO flag */
+    bool _pioBound;
 
     /** PIO's w1 programs addresses */
-    uint _addrReset;
-    uint _addrTouch0;
-    uint _addrTouch1;
+    uint _addrs[PROGS_NUM];
 
     /** PIO clock dividers for w1 programs */
-    uint _divReset;
-    uint _divTouch0;
-    uint _divTouch1;
+    uint _divs[PROGS_NUM];
 
-    pio_sm_config _pioCfg;
+    /** Programs wrap addresses */
+    uint _wraps[PROGS_NUM];
 };
 
 #endif /* __OWNG_PICO_RP2040PIO__ */

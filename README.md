@@ -60,6 +60,7 @@ devices.
 
   The code architecture allows fast and easy porting for new Arduino platforms
   or even usage of core part of the library outside the Arduino environment.
+  See below for usage details on ESP-IDF and Mbed OS frameworks.
 
 ## Usage
 
@@ -126,7 +127,7 @@ While added the library shall be configured via Mbed OS native configuration
     * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-S3-WROOM-1, ESP32-C3-32S-Kit
 * Arduino/Mbed OS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
     * Platform class: `OneWireNg_ArduinoMbedHAL`.
-    * Tested on Raspberry Pi Pico (RP2040)
+    * Tested on Raspberry Pi Pico (RP2040) (bit-banging and PIO drivers)
 * Arduino STM32.
     * Platform class: `OneWireNg_ArduinoSTM32`.
     * Tested on Nucleo-144 (L552ZE-Q)
@@ -159,14 +160,16 @@ work on the following platforms and CPU frequencies:
     * ESP32-S3-WROOM-1; 240,160,80MHz (other freqs not tested)
     * ESP32-C3-32S-Kit; 240,160MHz (other freqs not tested)
 * RP2040
-    * Raspberry Pi Pico; 125MHz
+    * Raspberry Pi Pico; 125MHz (bit-banging and PIO drivers)
 * STM32
     * NUCLEO-L552ZE-Q; 110MHz
 
 ## Parasite powering
 
-The library supports two modes of providing a direct voltage source on the
-1-wire bus for parasitically powered slaves:
+**Bit-banging drivers**
+
+For bit-banging type of drivers, the library supports two modes of providing
+a direct voltage source on the 1-wire bus for parasitically powered slaves:
 
 1. If platform's GPIO set to the high-state (in the output mode) is able to
    serve as a voltage source, the library may leverage this trait. The master
@@ -227,13 +230,22 @@ void setup()
 
 configures 1-wire service to work in one of the above modes.
 
+**RP2040 PIO driver**
+
+RP2040 PIO driver (`OneWireNg_PicoRP2040PIO` class) doesn't support
+power-control-GPIO configuration. Since RP2040 platform is able to provide
+direct voltage source via its GPIO pads, parasitically powered devices need
+to powered directly by GPIO controlling the 1-wire bus, while using this
+driver.
+
+
 **1-wire stability and parasite powering**
 
 Parasite powered slaves are less stable (more error prone) than regularly
 powered devices. If possible, try to avoid parasitically powered setups.
 
-For legacy AVR platforms the library need to be configured with
-`CONFIG_BUS_BLINK_PROTECTION` to make the parasitic mode working.
+For legacy AVR (non mega-AVR) platforms the library need to be configured
+with `CONFIG_BUS_BLINK_PROTECTION` to make the parasitic mode working.
 
 ## Architecture details
 
@@ -334,6 +346,16 @@ The class is derived from `OneWireNg` and implements the 1-wire interface basing
 on GPIO bit-banging. Object of this class isn't constructed directly rather than
 the class is intended to be inherited by a derived class providing protected
 interface implementation for low level GPIO activities (set mode, read, write).
+
+### `OneWireNg_PicoRP2040PIO`
+
+The class is derived from `OneWireNg` and implements the 1-wire interface
+for RP2040 MCU using Programmable I/O (PIO) peripheral. This is a platform
+driver therefore may be created directly by its public constructor.
+
+NOTE: The RP2040 platform is supported via 2 types of drivers for the Arduino
+framework: bit-banging driver (`OneWireNg_ArduinoMbedHAL` class) and the PIO
+driver. See `CONFIG_RP2040_PIO_DRIVER` configuration parameter for more details.
 
 ### `OneWireNg_PLATFORM`
 

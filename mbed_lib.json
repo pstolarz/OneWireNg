@@ -73,6 +73,16 @@
             "help": "ESP8266 init time in msecs",
             "macro_name": "CONFIG_ESP8266_INIT_TIME",
             "value": 500
+        },
+        "rp2040_pio_driver": {
+            "help": "Use RP2040 PIO driver in favor of bit-banging one",
+            "macro_name": "CONFIG_RP2040_PIO_DRIVER",
+            "value": 0
+        },
+        "rp2040_pio_num": {
+            "help": "RP2040 PIO number",
+            "macro_name": "CONFIG_RP2040_PIO_NUM",
+            "value": 0
         }
     }
 }

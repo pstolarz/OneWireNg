@@ -15,7 +15,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "OneWireNg_Config.h"
 #include "platform/Platform_New.h"  /* operator delete (~OneWireNg) */
 
 #if CONFIG_EXT_VIRTUAL_INTF

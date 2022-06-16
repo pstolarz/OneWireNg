@@ -22,6 +22,10 @@
 /**
  * RP2040's PIO peripheral specific implementation of 1-wire bus activities:
  * reset, touch, parasite powering.
+ *
+ * @note The driver uses Pico SDK API to handle PIO activities. Since the SDK
+ *     is part of Arduino framework, the driver may be used for both of these
+ *     frameworks.
  */
 class OneWireNg_PicoRP2040PIO: public OneWireNg
 {

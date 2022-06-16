@@ -127,7 +127,7 @@ While added the library shall be configured via Mbed OS native configuration
     * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-S3-WROOM-1, ESP32-C3-32S-Kit
 * Arduino/Mbed OS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
     * Platform class: `OneWireNg_ArduinoMbedHAL`.
-    * Tested on Raspberry Pi Pico (RP2040)
+    * Tested on Raspberry Pi Pico (RP2040) (bit-banging and PIO drivers)
 * Arduino STM32.
     * Platform class: `OneWireNg_ArduinoSTM32`.
     * Tested on Nucleo-144 (L552ZE-Q)
@@ -160,7 +160,7 @@ work on the following platforms and CPU frequencies:
     * ESP32-S3-WROOM-1; 240,160,80MHz (other freqs not tested)
     * ESP32-C3-32S-Kit; 240,160MHz (other freqs not tested)
 * RP2040
-    * Raspberry Pi Pico; 125MHz
+    * Raspberry Pi Pico; 125MHz (bit-banging and PIO drivers)
 * STM32
     * NUCLEO-L552ZE-Q; 110MHz
 

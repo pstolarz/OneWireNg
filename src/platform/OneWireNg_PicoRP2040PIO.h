@@ -233,7 +233,7 @@ private:
     /** Lastly executed program */
     int _exeProg;
 
-    /** w1-bu GPIO bound to PIO flag */
+    /** w1-bus GPIO bound to PIO flag */
     bool _pioBound;
 
     /** PIO's w1 programs addresses */

@@ -100,6 +100,20 @@ extern tc_t _tc[portNUM_PROCESSORS];
 #elif defined(__MBED__)
 # define timeCriticalEnter() __disable_irq()
 # define timeCriticalExit() __enable_irq()
+#elif defined(PICO_BUILD)
+# include "hardware/sync.h"
+
+#define portNUM_PROCESSORS 2
+typedef struct {
+    uint32_t int_lev;       /* saved interrupt level */
+} tc_t;
+extern tc_t _tc[portNUM_PROCESSORS];
+
+# define timeCriticalEnter() \
+    _tc[get_core_num()].int_lev = save_and_disable_interrupts()
+
+# define timeCriticalExit() \
+    restore_interrupts(_tc[get_core_num()].int_lev)
 #else
 # ifndef __TEST__
 #  warning "Time critical API unsupported for the target platform. Disabled."

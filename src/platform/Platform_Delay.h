@@ -23,13 +23,17 @@
 void idf_delayUs(uint32_t us);
 # define delayMs(ms) vTaskDelay((ms) / portTICK_PERIOD_MS)
 # define _delayUs(us) idf_delayUs(us)
+#elif defined(PICO_BUILD)
+# include "pico/time.h"
+# define delayMs(ms) sleep_ms(ms)
+# define delayUs(us) sleep_us(us)
 #elif defined(__MBED__)
 # ifndef NO_RTOS
 #  define delayMs(ms) rtos::ThisThread::sleep_for(ms * 1ms)
 # else
 #  define delayMs(ms) wait_us(ms * 1000)
 # endif
-# define _delayUs(us) wait_us(us)
+# define delayUs(us) wait_us(us)
 #elif __TEST__
 # include <unistd.h>
 # define delayMs(ms) usleep(1000L * (ms))

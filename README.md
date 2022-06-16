@@ -60,7 +60,7 @@ devices.
 
   The code architecture allows fast and easy porting for new Arduino platforms
   or even usage of core part of the library outside the Arduino environment.
-  See below for usage details on ESP-IDF and Mbed OS frameworks.
+  See below for usage details on ESP-IDF, Pico SDK or Mbed OS frameworks.
 
 ## Usage
 
@@ -95,6 +95,46 @@ git checkout VERSION
 While added the library shall be configured via ESP-IDF native configuration
 (see [`Kconfig`](Kconfig) for details), which shadows the `OneWireNg_Config.h`
 configuration file.
+
+### Pico SDK
+
+Preferred way to add OneWireNg as a library for [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk)
+framework is to add it as a git submodule:
+
+```
+git submodule add -- https://github.com/pstolarz/OneWireNg OneWireNg
+```
+
+Checkout on a specific library `VERSION`:
+
+```
+cd OneWireNg
+git checkout VERSION
+```
+
+Finally add OneWireNg as a library in a Pico SDK project's `CMakeLists.txt`
+file as follows:
+
+```
+cmake_minimum_required(VERSION 3.13)
+include(pico_sdk_import.cmake)
+
+project(some_project)
+pico_sdk_init()
+
+add_executable(some_project)
+
+...
+
+add_subdirectory(OneWireNg)
+target_link_libraries(some_project PRIVATE OneWireNg)
+
+pico_add_extra_outputs(some_project)
+```
+
+NOTE: Currently only PIO driver (`OneWireNg_PicoRP2040PIO`) is supported for
+Pico SDK environment. See [below](#architecture-details) for more details.
+
 
 ### Mbed OS
 

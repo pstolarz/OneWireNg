@@ -156,7 +156,7 @@ public:
         return EC_SUCCESS;
     }
 
-private:
+protected:
     /** Run w1 program on the PIO SM. */
     uint32_t pioRun(int progId)
     {

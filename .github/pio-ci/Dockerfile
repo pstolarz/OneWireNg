@@ -23,13 +23,6 @@ RUN ln -s ~/.platformio/penv/bin/platformio /usr/local/bin/platformio && \
   ln -s ~/.platformio/penv/bin/pio /usr/local/bin/pio && \
   ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 
-RUN pio platform install atmelavr
-RUN pio platform install atmelmegaavr
-RUN pio platform install atmelsam
-RUN pio platform install espressif32
-RUN pio platform install espressif8266
-RUN pio platform install ststm32
-
 RUN mkdir /pio-ard-ci && cd /pio-ard-ci && \
   pio project init -s && \
   echo                                  >>platformio.ini && \
@@ -56,9 +49,10 @@ RUN mkdir /pio-ard-ci && cd /pio-ard-ci && \
   echo "platform = espressif8266"       >>platformio.ini && \
   echo "board = d1"                     >>platformio.ini && \
   echo                                  >>platformio.ini && \
-  echo "[env:nucleo_f767zi]"            >>platformio.ini && \
+  echo "[env:nucleo_l552ze_q]"          >>platformio.ini && \
   echo "platform = ststm32"             >>platformio.ini && \
-  echo "board = nucleo_f767zi"          >>platformio.ini
+  echo "board = nucleo_l552ze_q"        >>platformio.ini && \
+  pio pkg install
 
 RUN mkdir /pio-idf-ci && cd /pio-idf-ci && \
   pio project init -s && \
@@ -71,4 +65,5 @@ RUN mkdir /pio-idf-ci && cd /pio-idf-ci && \
   echo "[env:esp32-c3-devkitm-1]"       >>platformio.ini && \
   echo "framework = espidf"             >>platformio.ini && \
   echo "platform = espressif32"         >>platformio.ini && \
-  echo "board = esp32-c3-devkitm-1"     >>platformio.ini
+  echo "board = esp32-c3-devkitm-1"     >>platformio.ini && \
+  pio pkg install

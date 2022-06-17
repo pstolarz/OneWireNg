@@ -17,7 +17,8 @@ jobs:
     steps:
       - name: PlatformIO update info
         run: |
-          sudo pio update --dry-run
+          cd /pio-ard-ci && sudo pio pkg list && sudo pio pkg outdated
+          cd /pio-idf-ci && sudo pio pkg list && sudo pio pkg outdated
   pio_ard_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/pio-ci
@@ -29,7 +30,7 @@ jobs:
           - due
           - esp32dev
           - d1
-          - nucleo_f767zi
+          - nucleo_l552ze_q
         example:
           - DallasTemperature
     env:
@@ -47,7 +48,7 @@ jobs:
           cd /pio-ard-ci
           cp $repo_dir/examples/arduino/${{ matrix.example }}/${{ matrix.example }}.ino \
             src/${{ matrix.example }}.ino
-          sudo pio lib install $repo_dir
+          sudo pio pkg install -l $repo_dir
           sudo PLATFORMIO_BUILD_FLAGS=${BUILD_FLAGS} pio run -e ${{ matrix.plat }}
   pio_idf_build:
     runs-on: ubuntu-latest
@@ -74,5 +75,5 @@ jobs:
           cd /pio-idf-ci
           cp $repo_dir/examples/esp-idf/${{ matrix.example }}/main/${{ matrix.example }}.cpp \
             src/${{ matrix.example }}.cpp
-          sudo pio lib install $repo_dir
+          sudo pio pkg install -l $repo_dir
           sudo PLATFORMIO_BUILD_FLAGS=${BUILD_FLAGS} pio run -e ${{ matrix.plat }}

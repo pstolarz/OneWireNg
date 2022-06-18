@@ -1,0 +1,8 @@
+{
+    "target_overrides": {
+        "*": {
+            "platform.stdio-baud-rate": 115200,
+            "OneWireNg.search_enabled": "1"
+        }
+    }
+}

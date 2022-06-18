@@ -40,7 +40,7 @@ jobs:
           - esp32:esp32:esp32s3
           - esp32:esp32:esp32c3
           - esp8266:esp8266:generic
-          - STMicroelectronics:stm32:GenF7
+          - STMicroelectronics:stm32:GenL5
           - megaTinyCore:megaavr:atxy4
         example:
           - DallasTemperature

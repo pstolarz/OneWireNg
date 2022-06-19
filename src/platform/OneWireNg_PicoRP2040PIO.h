@@ -249,7 +249,7 @@ protected:
     uint _sm2;    /** PIO SM 2 */
 #endif
 
-    /** PIO SMs common config */
+    /** PIO SM(s) common config */
     pio_sm_config _pioCfg;
 
     /** Lastly executed program */

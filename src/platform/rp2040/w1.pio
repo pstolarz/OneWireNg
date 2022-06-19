@@ -11,6 +11,17 @@
 ;
 
 ;
+; NOTES
+; 1. Cycle times in standard and over-drive modes expressed in 0.1us units.
+; 2. Start and weak power pull-ups are defined as PIO opcodes switching the
+;    1-wire bus into strong or weak high state.
+; 3. At the end of each of the following programs PIO pushes single bit result
+;    into RX FIFO, where the main driver waits for it and if gets it, turns
+;    the PIO SM off. Each of the programs wrap around blocking PUSH opcode
+;    (with 1 bit PUSH threshold configured) waiting for the termination.
+;
+
+;
 ; reset
 ;
 .program w1_reset

@@ -291,4 +291,17 @@ void OneWireNg_ArduinoIdfESP8266::initPwrCtrlGpio(unsigned pin)
 }
 #endif
 
+#undef __GPIO_AS_OUTPUT
+#undef __GPIO16_SET_OUTPUT
+#undef __GPIO_SET_OUTPUT
+#undef __GPIO_AS_INPUT
+#undef __GPIO16_SET_INPUT
+#undef __GPIO_SET_INPUT
+#undef __WRITE_GPIO
+#undef __WRITE1_GPIO16
+#undef __WRITE1_GPIO
+#undef __WRITE0_GPIO16
+#undef __WRITE0_GPIO
+#undef __READ_GPIO
+
 #endif /* ESP8266 */

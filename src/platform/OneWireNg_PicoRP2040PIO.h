@@ -19,6 +19,16 @@
 #include "hardware/gpio.h"
 #include "platform/rp2040/w1.pio.h"
 
+#if CONFIG_RP2040_PIOSM_NUM_USED == 1
+# define __SM_RESET _sm1
+# define __SM_TOUCH _sm1
+#elif CONFIG_RP2040_PIOSM_NUM_USED == 2
+# define __SM_RESET _sm1
+# define __SM_TOUCH _sm2
+#else
+# error "Invalid CONFIG_RP2040_PIOSM_NUM_USED"
+#endif
+
 /**
  * RP2040's PIO peripheral specific implementation of 1-wire bus activities:
  * reset, touch, parasite powering.
@@ -52,15 +62,21 @@ public:
 #else
 # error "Invalid CONFIG_RP2040_PIO_NUM parameter. 0 or 1 expected."
 #endif
-        _sm = pio_claim_unused_sm(_pio, true);
+        _sm1 = pio_claim_unused_sm(_pio, true);
+#if CONFIG_RP2040_PIOSM_NUM_USED > 1
+        _sm2 = pio_claim_unused_sm(_pio, true);
+#endif
 
         _exeProg = INVALID_PROG;
 
         powerBus(false);
         if (pullUp) gpio_pull_up(pin);
 
-        /* turn off PIO SM */
-        pio_sm_set_enabled(_pio, _sm, false);
+        /* turn off PIO SM(s) */
+        pio_sm_set_enabled(_pio, _sm1, false);
+#if CONFIG_RP2040_PIOSM_NUM_USED > 1
+        pio_sm_set_enabled(_pio, _sm2, false);
+#endif
 
         _addrs[RESET_STD]  = pio_add_program(_pio, &w1_reset_program);
         _addrs[TOUCH0_STD] = pio_add_program(_pio, &w1_touch0_program);
@@ -102,8 +118,11 @@ public:
         /* left-shift, no-autopush, IN threshold: 1 */
         sm_config_set_in_shift(&_pioCfg, false, false, 1);
 
-        /* set the default config for the PIO SM */
-        pio_sm_set_config(_pio, _sm, &_pioCfg);
+        /* set the default config for the PIO SM(s) */
+        pio_sm_set_config(_pio, _sm1, &_pioCfg);
+#if CONFIG_RP2040_PIOSM_NUM_USED > 1
+        pio_sm_set_config(_pio, _sm2, &_pioCfg);
+#endif
     }
 
     /**
@@ -116,7 +135,7 @@ public:
 #else
         int progId = RESET_STD;
 #endif
-        return ((pioRun(progId) & 1) ? EC_NO_DEVS : EC_SUCCESS);
+        return ((pioRun(progId, __SM_RESET) & 1) ? EC_NO_DEVS : EC_SUCCESS);
     }
 
     /**
@@ -130,15 +149,15 @@ public:
         };
 
         /* pass type of power pull-up to the PIO SM */
-        pio_sm_clear_fifos(_pio, _sm);
-        pio_sm_put(_pio, _sm, pwrpus[(uint)(power == true)][(uint)(bit != 0)]);
+        pio_sm_clear_fifos(_pio, __SM_TOUCH);
+        pio_sm_put(_pio, __SM_TOUCH, pwrpus[(uint)(power == true)][(uint)(bit != 0)]);
 
 #if CONFIG_OVERDRIVE_ENABLED
         int progId = (bit ? TOUCH1_STD : TOUCH0_STD) + (int)(_overdrive == true);
 #else
         int progId = (bit ? TOUCH1_STD : TOUCH0_STD);
 #endif
-        return (pioRun(progId) & 1);
+        return (pioRun(progId, __SM_TOUCH) & 1);
     }
 
     /**
@@ -158,7 +177,7 @@ public:
 
 protected:
     /** Run w1 program on the PIO SM. */
-    uint32_t pioRun(int progId)
+    uint32_t pioRun(int progId, uint sm)
     {
         /* bind w1-bus GPIO to PIO if needed */
         if (!_pioBound) {
@@ -173,7 +192,7 @@ protected:
         if (progId != _exeProg)
         {
             /* set wrap for the program */
-            pio_sm_set_wrap(_pio, _sm,
+            pio_sm_set_wrap(_pio, sm,
                 _addrs[progId] + _wraps[progId],
                 _addrs[progId] + _wraps[progId]);
 
@@ -181,21 +200,21 @@ protected:
         }
 
         /* restart PIO SM */
-        pio_sm_restart(_pio, _sm);
-        pio_sm_clkdiv_restart(_pio, _sm);
-        pio_sm_set_clkdiv_int_frac(_pio, _sm, _divs[progId], 0);
+        pio_sm_restart(_pio, sm);
+        pio_sm_clkdiv_restart(_pio, sm);
+        pio_sm_set_clkdiv_int_frac(_pio, sm, _divs[progId], 0);
 
         /* move to program start */
-        pio_sm_exec(_pio, _sm, pio_encode_jmp(_addrs[progId]));
+        pio_sm_exec(_pio, sm, pio_encode_jmp(_addrs[progId]));
 
         /* start the program execution by PIO SM */
-        pio_sm_set_enabled(_pio, _sm, true);
+        pio_sm_set_enabled(_pio, sm, true);
 
         /* wait until result will be ready */
-        uint32_t res = pio_sm_get_blocking(_pio, _sm);
+        uint32_t res = pio_sm_get_blocking(_pio, sm);
 
         /* stop PIO SM */
-        pio_sm_set_enabled(_pio, _sm, false);
+        pio_sm_set_enabled(_pio, sm, false);
 
         return res;
     }
@@ -223,11 +242,14 @@ protected:
     };
 #endif
 
-    uint _pin;  /** w1 bus pin */
-    PIO _pio;   /** PIO used */
-    uint _sm;   /** PIO SM used */
+    uint _pin;    /** w1 bus pin */
+    PIO _pio;     /** PIO used */
+    uint _sm1;    /** PIO SM 1 */
+#if CONFIG_RP2040_PIOSM_NUM_USED > 1
+    uint _sm2;    /** PIO SM 2 */
+#endif
 
-    /** PIO SM common config */
+    /** PIO SMs common config */
     pio_sm_config _pioCfg;
 
     /** Lastly executed program */
@@ -245,5 +267,8 @@ protected:
     /** Programs wrap addresses */
     uint _wraps[PROGS_NUM];
 };
+
+#undef __SM_TOUCH
+#undef __SM_RESET
 
 #endif /* __OWNG_PICO_RP2040PIO__ */

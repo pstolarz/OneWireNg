@@ -212,4 +212,11 @@ void OneWireNg_ArduinoIdfESP32::initPwrCtrlGpio(unsigned pin)
 }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
 
+#undef __GPIO_AS_OUTPUT
+#undef __GPIO_AS_INPUT
+#undef __WRITE_GPIO
+#undef __WRITE1_GPIO
+#undef __WRITE0_GPIO
+#undef __READ_GPIO
+
 #endif /* ESP32 */

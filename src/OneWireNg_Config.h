@@ -337,6 +337,20 @@
 #  define CONFIG_RP2040_PIO_NUM 0
 # endif
 
+/**
+ * For RP2040 platform and @ref OneWireNg_PicoRP2040PIO driver, the parameter
+ * specifies number of PIO SM used by the driver:
+ * - 1: The same SM used for reset and touch,
+ * - 2: Separate SMs used for reset and touch.
+ *
+ * @note The rationale behind this parameter are occasional issues, which
+ *     have been observed with starting reset SM while sharing the same SM
+ *     for both reset and touch activities.
+ */
+#ifndef CONFIG_RP2040_PIOSM_NUM_USED
+# define CONFIG_RP2040_PIOSM_NUM_USED 2
+#endif
+
 #endif
 
 /*

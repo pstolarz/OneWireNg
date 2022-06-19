@@ -162,7 +162,7 @@ void loop()
             if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);
             else
-                Serial.println("  Invalid device.");
+                Serial.println("  Read scratchpad error.");
         }
     } else if (ec == OneWireNg::EC_CRC_ERROR) {
         Serial.println("  Invalid CRC. "
@@ -175,7 +175,7 @@ void loop()
             if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);
             else
-                Serial.println("  Invalid device.");
+                Serial.println("  Read scratchpad error.");
         }
     }
 #endif

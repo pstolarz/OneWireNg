@@ -149,7 +149,7 @@ void loop()
             if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);
             else
-                printf("  Invalid device.\n");
+                printf("  Read scratchpad error.\n");
         }
     } else if (ec == OneWireNg::EC_CRC_ERROR) {
         printf("  Invalid CRC. "
@@ -162,7 +162,7 @@ void loop()
             if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
                 printScratchpad(_scrpd);
             else
-                printf("  Invalid device\n");
+                printf("  Read scratchpad error.\n");
         }
     }
 #endif

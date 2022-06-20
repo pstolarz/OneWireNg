@@ -1,6 +1,6 @@
 {
     "name": "OneWireNg",
-    "version": "0.11.2",
+    "version": "0.12.0",
     "description": "Arduino 1-wire service library. OneWire alternative.",
     "keywords": ["onewire", "1-wire", "sensor", "temperature", "dallas", "ds18b20"],
     "homepage": "https://github.com/pstolarz/OneWireNg",

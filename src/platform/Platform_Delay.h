@@ -57,7 +57,7 @@ void idf_delayUs(uint32_t us);
 unsigned ccntUpdateCpuFreqMHz(void);
 
 /* CPU frequency (MHz) */
-extern unsigned cpuFreqMhz;
+extern unsigned cpuFreqMHz;
 
 /*
  * Cycles counter adjustment
@@ -76,7 +76,7 @@ extern unsigned ccntAdjst;
 #   define delayUs(us) \
     if (_tc_actv) { \
         unsigned stop = (_tc_ccnt += \
-            (unsigned)(us) * cpuFreqMhz + ccntAdjst); \
+            (unsigned)(us) * cpuFreqMHz + ccntAdjst); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
         _delayUs(us); \
@@ -85,7 +85,7 @@ extern unsigned ccntAdjst;
 #   define delayUs(us) \
     if (_tc[xPortGetCoreID()].actv) { \
         unsigned stop = (_tc[xPortGetCoreID()].ccnt += \
-            (unsigned)(us) * cpuFreqMhz + ccntAdjst); \
+            (unsigned)(us) * cpuFreqMHz + ccntAdjst); \
         while ((int)(stop - get_cpu_cycle_count()) > 0); \
     } else { \
         _delayUs(us); \

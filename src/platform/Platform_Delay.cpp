@@ -16,7 +16,7 @@
 # define CCOUNT_ADJUST 15
 
 # if defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266)
-unsigned cpuFreqMhz = 0;
+unsigned cpuFreqMHz = 0;
 unsigned ccntAdjst = CCOUNT_ADJUST;
 
 #  ifdef ARDUINO
@@ -24,8 +24,8 @@ unsigned ccntAdjst = CCOUNT_ADJUST;
 
 unsigned ccntUpdateCpuFreqMHz(void)
 {
-    cpuFreqMhz =  (unsigned)esp_get_cpu_freq_mhz();
-    return cpuFreqMhz;
+    cpuFreqMHz =  (unsigned)esp_get_cpu_freq_mhz();
+    return cpuFreqMHz;
 }
 #  else
 /* ESP8266 RTOS SDK specific */
@@ -36,20 +36,20 @@ unsigned ccntUpdateCpuFreqMHz(void)
     switch (rtc_clk_cpu_freq_get())
     {
     case RTC_CPU_FREQ_80M:
-        cpuFreqMhz =  80;
+        cpuFreqMHz =  80;
         break;
 
     case RTC_CPU_FREQ_160M:
-        cpuFreqMhz =  160;
+        cpuFreqMHz =  160;
         break;
     }
-    return cpuFreqMhz;
+    return cpuFreqMHz;
 }
 #  endif
 # elif defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)
 #  include "soc/rtc.h"
 
-unsigned cpuFreqMhz = 0;
+unsigned cpuFreqMHz = 0;
 unsigned ccntAdjst = 0;
 
 unsigned ccntUpdateCpuFreqMHz(void)
@@ -57,10 +57,10 @@ unsigned ccntUpdateCpuFreqMHz(void)
     rtc_cpu_freq_config_t conf;
     rtc_clk_cpu_freq_get_config(&conf);
 
-    cpuFreqMhz =  (unsigned)conf.freq_mhz;
-    ccntAdjst = (cpuFreqMhz >= 20 ? CCOUNT_ADJUST : 0);
+    cpuFreqMHz =  (unsigned)conf.freq_mhz;
+    ccntAdjst = (cpuFreqMHz >= 20 ? CCOUNT_ADJUST : 0);
 
-    return cpuFreqMhz;
+    return cpuFreqMHz;
 }
 # endif
 #endif /* CONFIG_BITBANG_DELAY_CCOUNT */

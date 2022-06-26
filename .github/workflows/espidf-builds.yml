@@ -43,9 +43,7 @@ jobs:
           echo "CONFIG_BUS_BLINK_PROTECTION=y"  >>sdkconfig.defaults
           echo "CONFIG_ITERATION_RETRIES=1"     >>sdkconfig.defaults
           if [[ ${{ matrix.plat }} = "esp8266" ]]; then
-            source /ESP8266_RTOS_SDK/export.sh
+            sudo bash -c "source /ESP8266_RTOS_SDK/export.sh; idf.py build"
           else
-            source /esp-idf/export.sh
-            idf.py --preview set-target ${{ matrix.plat }}
+            sudo bash -c "source /esp-idf/export.sh; idf.py --preview set-target ${{ matrix.plat }}; idf.py build"
           fi
-          idf.py build

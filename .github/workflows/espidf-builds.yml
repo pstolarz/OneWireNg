@@ -1,0 +1,51 @@
+name: ESP-IDF builds
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+defaults:
+  run:
+    shell: bash
+jobs:
+  espidf_build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/espidf-ci
+    strategy:
+      matrix:
+        plat:
+          - esp32
+          - esp32s2
+          - esp32s3
+          - esp32c3
+          - esp32h2
+          - esp8266
+        example:
+          - DallasTemperature
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          repo_dir=$(pwd)
+          cd .. && rm -rf {{ matrix.plat }} && mkdir ${{ matrix.plat }} && cd $${{ matrix.plat }}
+          mkdir components
+          ln -s $repo_dir components/OneWireNg
+          ln -s $repo_dir/examples/esp-idf/${{ matrix.example }}/main main
+          ln -s $repo_dir/examples/esp-idf/${{ matrix.example }}/CMakeLists.txt CMakeLists.txt
+          echo "CONFIG_PWR_CTRL_ENABLED=y"      >sdkconfig.defaults
+          echo "CONFIG_OVERDRIVE_ENABLED=y"     >>sdkconfig.defaults
+          echo "CONFIG_CRC8_ALGO_TAB_16LH=y"    >>sdkconfig.defaults
+          echo "CONFIG_CRC16_ENABLED=y"         >>sdkconfig.defaults
+          echo "CONFIG_CRC16_ALGO_BASIC=y"      >>sdkconfig.defaults
+          echo "CONFIG_BUS_BLINK_PROTECTION=y"  >>sdkconfig.defaults
+          echo "CONFIG_ITERATION_RETRIES=1"     >>sdkconfig.defaults
+          if [[ ${{ matrix.plat }} = "esp8266" ]]; then
+            source /ESP8266_RTOS_SDK/export.sh
+          else
+            source /esp-idf/export.sh
+            idf.py --preview set-target ${{ matrix.plat }}
+          fi
+          idf.py build

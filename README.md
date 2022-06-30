@@ -6,7 +6,7 @@
 [![ESP-IDF builds](https://github.com/pstolarz/OneWireNg/workflows/ESP-IDF%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/espidf-builds.yml)
 [![Unit tests](https://github.com/pstolarz/OneWireNg/workflows/Unit%20tests/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml)
 [![Join the chat at https://gitter.im/pstolarz/OneWireNg](https://badges.gitter.im/pstolarz/OneWireNg.svg)](https://gitter.im/pstolarz/OneWireNg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![PlatformIO Registry](https://badges.registry.platformio.org/packages/pstolarz/library/OneWireNg.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)
+[![PlatformIO Registry](https://api.registry.platformio.org/v3/packages/pstolarz/library/OneWireNg/badge.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)
 <br>
 
 This is an 1-wire service library, intended as an alternative for the classic
@@ -60,7 +60,7 @@ devices.
 * Clear and flexible architecture.
 
   The code architecture allows fast and easy porting for new Arduino platforms
-  or even usage of core part of the library outside the Arduino environment.
+  or even usage core part of the library outside the Arduino environment.
   See below for usage details on ESP-IDF, Pico SDK or Mbed OS frameworks.
 
 ## Usage

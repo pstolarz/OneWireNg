@@ -48,7 +48,7 @@ void idf_delayUs(uint32_t us);
  * If the library is configured with @c CONFIG_BITBANG_DELAY_CCOUNT,
  * CPU frequency is detected at runtime by the library. Since the frequency
  * (in most common cases) is not an entity which is going to change, for
- * performance reason, the library read the frequency once and next uses the
+ * performance reason the library read the frequency once and next uses the
  * read value. If a user code changes the CPU frequency on runtime, it needs
  * to inform the library about the change by calling @c ccntUpdateCpuFreqMHz().
  *

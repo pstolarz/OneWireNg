@@ -1,0 +1,38 @@
+name: Pico SDK builds
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+defaults:
+  run:
+    shell: bash
+jobs:
+  picosdk_build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/picosdk-ci
+    strategy:
+      matrix:
+        example:
+          - DallasTemperature
+    env:
+      BUILD_FLAGS: "\
+        -DCONFIG_PWR_CTRL_ENABLED \
+        -DCONFIG_OVERDRIVE_ENABLED \
+        -DCONFIG_CRC16_ENABLED \
+        -DCONFIG_ITERATION_RETRIES=1"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          repo_dir=$(pwd)
+          rm -rf /tmp/picosdk-build && mkdir /tmp/picosdk-build && cd /tmp/picosdk-build
+          ln -s $repo_dir OneWireNg
+          ln -s $repo_dir/examples/pico-sdk/${{ matrix.example }}/${{ matrix.example }}.cpp ${{ matrix.example }}.cpp
+          ln -s $repo_dir/examples/pico-sdk/${{ matrix.example }}/CMakeLists.txt CMakeLists.txt
+          ln -s $repo_dir/examples/pico-sdk/${{ matrix.example }}/pico_sdk_import.cmake pico_sdk_import.cmake
+          mkdir build && cd build
+          sudo bash -c "PICO_SDK_PATH=/pico-sdk CXXFLAGS=\"${BUILD_FLAGS}\" CFLAGS=\"${BUILD_FLAGS}\" cmake .. && make"

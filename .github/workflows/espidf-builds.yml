@@ -30,7 +30,7 @@ jobs:
       - name: Build
         run: |
           repo_dir=$(pwd)
-          cd .. && rm -rf {{ matrix.plat }} && mkdir ${{ matrix.plat }} && cd $${{ matrix.plat }}
+          rm -rf /tmp/espidf-build && mkdir /tmp/espidf-build && cd /tmp/espidf-build
           mkdir components
           ln -s $repo_dir components/OneWireNg
           ln -s $repo_dir/examples/esp-idf/${{ matrix.example }}/main main

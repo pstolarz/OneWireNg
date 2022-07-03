@@ -32,9 +32,9 @@ jobs:
           repo_dir=$(pwd)
           rm -rf /tmp/espidf-build && mkdir /tmp/espidf-build && cd /tmp/espidf-build
           mkdir components
-          ln -s $repo_dir components/OneWireNg
-          ln -s $repo_dir/examples/esp-idf/${{ matrix.example }}/main main
-          ln -s $repo_dir/examples/esp-idf/${{ matrix.example }}/CMakeLists.txt CMakeLists.txt
+          ln -s ${repo_dir} components/OneWireNg
+          ln -s ${repo_dir}/examples/esp-idf/${{ matrix.example }}/main main
+          ln -s ${repo_dir}/examples/esp-idf/${{ matrix.example }}/CMakeLists.txt CMakeLists.txt
           echo "CONFIG_PWR_CTRL_ENABLED=y"      >sdkconfig.defaults
           echo "CONFIG_OVERDRIVE_ENABLED=y"     >>sdkconfig.defaults
           echo "CONFIG_CRC8_ALGO_TAB_16LH=y"    >>sdkconfig.defaults
@@ -42,7 +42,7 @@ jobs:
           echo "CONFIG_CRC16_ALGO_BASIC=y"      >>sdkconfig.defaults
           echo "CONFIG_BUS_BLINK_PROTECTION=y"  >>sdkconfig.defaults
           echo "CONFIG_ITERATION_RETRIES=1"     >>sdkconfig.defaults
-          if [[ ${{ matrix.plat }} = "esp8266" ]]; then
+          if [[ "${{ matrix.plat }}" = "esp8266" ]]; then
             sudo bash -c "source /ESP8266_RTOS_SDK/export.sh; idf.py build"
           else
             sudo bash -c "source /esp-idf/export.sh; idf.py --preview set-target ${{ matrix.plat }}; idf.py build"

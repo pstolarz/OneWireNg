@@ -14,42 +14,64 @@
  * Dallas family thermometers access example (Arduino).
  *
  * Required configuration:
- * - @c CONFIG_SEARCH_ENABLED if @c SINGLE_SENSOR is not defined.
+ * - @c CONFIG_SEARCH_ENABLED if @c SINGLE_SENSOR is not defined,
+ * - @c CONFIG_PWR_CTRL_ENABLED if @c PWR_CTRL_PIN is defined.
  */
 #include "OneWireNg_CurrentPlatform.h"
 #include "drivers/DSTherm.h"
 #include "utils/Placeholder.h"
 
-#define OW_PIN          13
-
 /*
- * Set to true for parasitically powered sensors.
+ * 1-wire bus pin number.
  */
-#define PARASITE_POWER  false
+#ifndef OW_PIN
+# define OW_PIN         13
+#endif
 
 /*
- * Uncomment for single sensor setup.
- *
- * With this scenario only one sensor device is allowed to be connected
- * to the bus. The library may be configured with 1-wire search activity
- * disabled to reduce its footprint.
+ * If defined: sensors powered parasitically.
+ */
+//#define PARASITE_POWER
+
+/*
+ * If defined: only one sensor device is allowed to be connected to the bus.
+ * The library may be configured with 1-wire search activity disabled to
+ * reduce its footprint.
  */
 //#define SINGLE_SENSOR
 
 /*
- * Uncomment for power provided by a switching
- * transistor and controlled by this pin.
+ * The parameter specific type of power provisioning for parasitically powered
+ * sensors:
+ * - Not defined: power provided by bus pin.
+ * - Defined: power provided by a switching transistor and controlled by the
+ *   pin number specified by the parameter.
  */
 //#define PWR_CTRL_PIN    9
 
 /*
- * Uncomment to set permanent, common resolution for all
- * sensors on the bus. Resolution may vary from 9 to 12 bits.
+ * If defined: set permanent, common resolution for all sensors on the bus.
+ * Resolution may vary from 9 to 12 bits.
  */
 //#define COMMON_RES      (DSTherm::RES_12_BIT)
 
 #if !defined(SINGLE_SENSOR) && !CONFIG_SEARCH_ENABLED
 # error "CONFIG_SEARCH_ENABLED is required for non SINGLE_SENSOR setup"
+#endif
+
+#if defined(PWR_CTRL_PIN) && !CONFIG_PWR_CTRL_ENABLED
+# error "CONFIG_PWR_CTRL_ENABLED is required if PWR_CTRL_PIN is defined"
+#endif
+
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
+static_assert(CONFIG_MAX_SEARCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
+    "CONFIG_MAX_SEARCH_FILTERS too small");
+#endif
+
+#ifdef PARASITE_POWER
+# define PARASITE_POWER_ARG true
+#else
+# define PARASITE_POWER_ARG false
 #endif
 
 static Placeholder<OneWireNg_CurrentPlatform> _ow;
@@ -109,9 +131,6 @@ static void printScratchpad(const DSTherm::Scratchpad& scrpd)
 void setup()
 {
 #ifdef PWR_CTRL_PIN
-# if !CONFIG_PWR_CTRL_ENABLED
-#  error "CONFIG_PWR_CTRL_ENABLED needs to be configured"
-# endif
     new (&_ow) OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false);
 #else
     new (&_ow) OneWireNg_CurrentPlatform(OW_PIN, false);
@@ -121,9 +140,6 @@ void setup()
     Serial.begin(115200);
 
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)
-    static_assert(CONFIG_MAX_SEARCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
-        "CONFIG_MAX_SEARCH_FILTERS too small");
-
     drv.filterSupportedSlaves();
 #endif
 
@@ -139,7 +155,7 @@ void setup()
      * memory and will be lost after power unplug. Therefore store the
      * configuration permanently in sensors EEPROM.
      */
-    drv.copyScratchpadAll(PARASITE_POWER);
+    drv.copyScratchpadAll(PARASITE_POWER_ARG);
 #endif
 }
 
@@ -150,7 +166,7 @@ void loop()
     Placeholder<DSTherm::Scratchpad> _scrpd;
 
     /* convert temperature on all sensors connected... */
-    drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER);
+    drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER_ARG);
 
 #ifdef SINGLE_SENSOR
     /* single sensor expected */

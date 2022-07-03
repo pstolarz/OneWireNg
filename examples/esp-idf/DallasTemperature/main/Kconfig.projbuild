@@ -1,0 +1,42 @@
+menu "DallasTemperature example"
+
+config OW_PIN
+    int "1-wire pin number"
+    default 13
+
+config PARASITE_POWER
+    bool "Sensors powered parasitically"
+    default n
+
+if PARASITE_POWER
+config PWR_OW_BUS
+    bool "Power provided by 1-wire bus"
+    default y
+
+if !PWR_OW_BUS
+config PWR_CTRL_PIN
+    int "Pin number controlling power switching transistor"
+    default 9
+endif
+endif
+
+config SINGLE_SENSOR
+    bool "Single sensor setup"
+    default n
+    help
+        If set - only one sensor device is allowed to be connected to
+        the bus. The library may be configured with 1-wire search activity
+        disabled to reduce its footprint.
+
+config SET_COMMON_RES
+    bool "Set common resolution for connected sensors"
+    default n
+
+if SET_COMMON_RES
+config COMMON_RES
+    int "Common resolution (9-12 bits)"
+    range 9 12
+    default 12
+endif
+
+endmenu

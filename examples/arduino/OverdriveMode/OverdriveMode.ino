@@ -19,7 +19,12 @@
  */
 #include "OneWireNg_CurrentPlatform.h"
 
-#define OW_PIN          13
+/*
+ * 1-wire bus pin number.
+ */
+#ifndef OW_PIN
+# define OW_PIN         13
+#endif
 
 #if !CONFIG_SEARCH_ENABLED
 # error "Example requires CONFIG_SEARCH_ENABLED to be configured"

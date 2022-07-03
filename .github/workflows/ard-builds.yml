@@ -56,8 +56,8 @@ jobs:
         run: |
           dir=$(basename `pwd`)
           arch=/tmp/${dir}.zip
-          cd .. && zip -qr $arch $dir && cd -
-          sudo arduino-cli lib install --zip-path $arch
+          cd .. && zip -qr ${arch} ${dir} && cd -
+          sudo arduino-cli lib install --zip-path ${arch}
           sudo arduino-cli compile -b ${{ matrix.plat }} \
             --build-property "compiler.cpp.extra_flags=$BUILD_FLAGS" \
             examples/arduino/${{ matrix.example }}/${{ matrix.example }}.ino

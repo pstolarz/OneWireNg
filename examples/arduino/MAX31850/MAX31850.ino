@@ -15,22 +15,31 @@
  *
  * Required configuration:
  * - @c CONFIG_SEARCH_ENABLED,
+ * - @c CONFIG_PWR_CTRL_ENABLED if @c PWR_CTRL_PIN is defined,
  * - @c CONFIG_MAX_SEARCH_FILTERS >= 1.
  */
 #include "OneWireNg_CurrentPlatform.h"
 #include "drivers/MAX31850.h"
 #include "utils/Placeholder.h"
 
-#define OW_PIN          13
-
 /*
- * Set to true for parasitically powered sensors.
+ * 1-wire bus pin number.
  */
-#define PARASITE_POWER  false
+#ifndef OW_PIN
+# define OW_PIN         13
+#endif
 
 /*
- * Uncomment for power provided by a switching
- * transistor and controlled by this pin.
+ * If defined: sensors powered parasitically.
+ */
+//#define PARASITE_POWER
+
+/*
+ * The parameter specific type of power provisioning for parasitically powered
+ * sensors:
+ * - Not defined: power provided by bus pin.
+ * - Defined: power provided by a switching transistor and controlled by the
+ *   pin number specified by the parameter.
  */
 //#define PWR_CTRL_PIN    9
 
@@ -38,8 +47,18 @@
 # error "Example requires CONFIG_SEARCH_ENABLED to be configured"
 #endif
 
+#if defined(PWR_CTRL_PIN) && !CONFIG_PWR_CTRL_ENABLED
+# error "CONFIG_PWR_CTRL_ENABLED is required if PWR_CTRL_PIN is defined"
+#endif
+
 #if (CONFIG_MAX_SEARCH_FILTERS < 1)
 # error "Example requires CONFIG_MAX_SEARCH_FILTERS >= 1 to be configured"
+#endif
+
+#ifdef PARASITE_POWER
+# define PARASITE_POWER_ARG true
+#else
+# define PARASITE_POWER_ARG false
 #endif
 
 static OneWireNg *ow = NULL;
@@ -97,9 +116,6 @@ static void printScratchpad(const MAX31850::Scratchpad& scrpd)
 void setup()
 {
 #ifdef PWR_CTRL_PIN
-# if !CONFIG_PWR_CTRL_ENABLED
-#  error "CONFIG_PWR_CTRL_ENABLED needs to be configured"
-# endif
     ow = new OneWireNg_CurrentPlatform(OW_PIN, PWR_CTRL_PIN, false);
 #else
     ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
@@ -117,7 +133,7 @@ void loop()
     Placeholder<MAX31850::Scratchpad> _scrpd;
 
     /* convert temperature on all sensors connected... */
-    drv.convertTempAll(MAX31850::SCAN_BUS, PARASITE_POWER);
+    drv.convertTempAll(MAX31850::SCAN_BUS, PARASITE_POWER_ARG);
 
     /* ...and read them one-by-one */
     for (const auto& id: *ow) {

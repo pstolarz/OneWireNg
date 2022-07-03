@@ -46,10 +46,10 @@ jobs:
         run: |
           repo_dir=$(pwd)
           cd /pio-ard-ci
-          cp $repo_dir/examples/arduino/${{ matrix.example }}/${{ matrix.example }}.ino \
+          cp ${repo_dir}/examples/arduino/${{ matrix.example }}/${{ matrix.example }}.ino \
             src/${{ matrix.example }}.ino
-          sudo pio pkg install -l $repo_dir
-          sudo PLATFORMIO_BUILD_FLAGS=${BUILD_FLAGS} pio run -e ${{ matrix.plat }}
+          sudo pio pkg install -l ${repo_dir}
+          sudo PLATFORMIO_BUILD_FLAGS="${BUILD_FLAGS}" pio run -e ${{ matrix.plat }}
   pio_idf_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/pio-ci
@@ -66,14 +66,15 @@ jobs:
         -DCONFIG_PWR_CTRL_ENABLED \
         -DCONFIG_OVERDRIVE_ENABLED \
         -DCONFIG_CRC16_ENABLED \
-        -DCONFIG_ITERATION_RETRIES=1"
+        -DCONFIG_ITERATION_RETRIES=1 \
+        -DCONFIG_OW_PIN=13"
     steps:
       - uses: actions/checkout@v2
       - name: Build
         run: |
           repo_dir=$(pwd)
           cd /pio-idf-ci
-          cp $repo_dir/examples/esp-idf/${{ matrix.example }}/main/${{ matrix.example }}.cpp \
+          cp ${repo_dir}/examples/esp-idf/${{ matrix.example }}/main/${{ matrix.example }}.cpp \
             src/${{ matrix.example }}.cpp
-          sudo pio pkg install -l $repo_dir
-          sudo PLATFORMIO_BUILD_FLAGS=${BUILD_FLAGS} pio run -e ${{ matrix.plat }}
+          sudo pio pkg install -l ${repo_dir}
+          sudo PLATFORMIO_BUILD_FLAGS="${BUILD_FLAGS}" pio run -e ${{ matrix.plat }}

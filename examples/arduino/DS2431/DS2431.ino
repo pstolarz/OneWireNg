@@ -21,12 +21,21 @@
  */
 #include "OneWireNg_CurrentPlatform.h"
 
-#define OW_PIN      13
+/*
+ * 1-wire bus pin number.
+ */
+#ifndef OW_PIN
+# define OW_PIN         13
+#endif
 
-/* if defined use overdrive mode */
+/*
+ * If defined: use overdrive mode.
+ */
 //#define USE_OD_MODE
 
-/* if defined write demo is enabled */
+/*
+ * If defined: enable write demo.
+ */
 //#define WRITE_DEMO
 
 /* DS2431 family code */

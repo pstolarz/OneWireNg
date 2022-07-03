@@ -1,8 +1,27 @@
 {
+    "config": {
+        "ow_pin": {
+            "help": "1-wire pin number"
+        },
+        "parasite_power": {
+            "help": "If set to 1: sensors powered parasitically. 0 or absent: normal powering mode."
+        },
+        "single_sensor": {
+            "help": "If set to 1: only one sensor device is allowed to be connected to the bus. The library may be configured with 1-wire search activity disabled to reduce its footprint. 0 or absent: multi-sensors mode."
+        },
+        "pwr_ctrl_pin": {
+            "help": "If an integer value is provided, it specifies pin number controlling power switching transistor for parasitically powered sensors. If the parameter value is absent the sensors are powered by 1-wire bus."
+        },
+        "common_res": {
+            "help": "If an integer value is provided (9 to 12), the value specifies common bit resolution to set for all connected sensors. If the parameter value is not provided, don't set the common resolution."
+        }
+    },
     "target_overrides": {
         "*": {
-            "platform.stdio-baud-rate": 115200,
-            "OneWireNg.search_enabled": "1"
+            "platform.stdio-baud-rate": 115200
+        },
+        "NUCLEO_L552ZE_Q": {
+            "ow_pin": "ARDUINO_UNO_D13"
         }
     }
 }

@@ -30,9 +30,9 @@ jobs:
         run: |
           repo_dir=$(pwd)
           rm -rf /tmp/picosdk-build && mkdir /tmp/picosdk-build && cd /tmp/picosdk-build
-          ln -s $repo_dir OneWireNg
-          ln -s $repo_dir/examples/pico-sdk/${{ matrix.example }}/${{ matrix.example }}.cpp ${{ matrix.example }}.cpp
-          ln -s $repo_dir/examples/pico-sdk/${{ matrix.example }}/CMakeLists.txt CMakeLists.txt
-          ln -s $repo_dir/examples/pico-sdk/${{ matrix.example }}/pico_sdk_import.cmake pico_sdk_import.cmake
+          ln -s ${repo_dir} OneWireNg
+          ln -s ${repo_dir}/examples/pico-sdk/${{ matrix.example }}/${{ matrix.example }}.cpp ${{ matrix.example }}.cpp
+          ln -s ${repo_dir}/examples/pico-sdk/${{ matrix.example }}/CMakeLists.txt CMakeLists.txt
+          ln -s ${repo_dir}/examples/pico-sdk/${{ matrix.example }}/pico_sdk_import.cmake pico_sdk_import.cmake
           mkdir build && cd build
           sudo bash -c "PICO_SDK_PATH=/pico-sdk CXXFLAGS=\"${BUILD_FLAGS}\" CFLAGS=\"${BUILD_FLAGS}\" cmake .. && make"

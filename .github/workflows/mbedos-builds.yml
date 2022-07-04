@@ -18,7 +18,6 @@ jobs:
       matrix:
         example:
           - DallasTemperature
-    env:
     steps:
       - uses: actions/checkout@v2
       - name: Build

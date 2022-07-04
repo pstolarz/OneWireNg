@@ -5,6 +5,7 @@
 [![PlatformIO builds](https://github.com/pstolarz/OneWireNg/workflows/PlatformIO%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/pio-builds.yml)
 [![ESP-IDF builds](https://github.com/pstolarz/OneWireNg/workflows/ESP-IDF%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/espidf-builds.yml)
 [![Pico SDK builds](https://github.com/pstolarz/OneWireNg/workflows/Pico%20SDK%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/picosdk-builds.yml)
+[![Mbed OS builds](https://github.com/pstolarz/OneWireNg/workflows/Mbed%20OS%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/mbedos-builds.yml)
 [![Unit tests](https://github.com/pstolarz/OneWireNg/workflows/Unit%20tests/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml)
 [![Join the chat at https://gitter.im/pstolarz/OneWireNg](https://badges.gitter.im/pstolarz/OneWireNg.svg)](https://gitter.im/pstolarz/OneWireNg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![PlatformIO Registry](https://api.registry.platformio.org/v3/packages/pstolarz/library/OneWireNg/badge.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)

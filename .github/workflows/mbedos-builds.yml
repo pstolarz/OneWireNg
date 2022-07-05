@@ -1,0 +1,36 @@
+name: Mbed OS builds
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+defaults:
+  run:
+    shell: bash
+jobs:
+  mbedos_build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/mbedos-ci
+    strategy:
+      matrix:
+        example:
+          - DallasTemperature
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          repo_dir=$(pwd)
+          mkdir /tmp/mbedos-build && cd /tmp/mbedos-build
+          ln -s ${repo_dir} OneWireNg
+          ln -s ${repo_dir}/examples/mbed-os/${{ matrix.example }}/${{ matrix.example }}.cpp ${{ matrix.example }}.cpp
+          jq '.target_overrides."*" += {
+            "OneWireNg.pwr_ctrl_enabled": 1,
+            "OneWireNg.overdrive_enabled": 1,
+            "OneWireNg.crc16_enabled": 1,
+            "OneWireNg.iteration_retries": 1}' \
+            ${repo_dir}/examples/mbed-os/${{ matrix.example }}/mbed_app.json >mbed_app.json
+          sudo mbed new .
+          sudo mbed compile -m NUCLEO_L552ZE_Q

@@ -278,7 +278,7 @@ configures 1-wire service to work in one of the above modes.
 RP2040 PIO driver (`OneWireNg_PicoRP2040PIO` class) doesn't support
 power-control-GPIO configuration. Since RP2040 platform is able to provide
 direct voltage source via its GPIO pads, parasitically powered devices need
-to powered directly by GPIO controlling the 1-wire bus, while using this
+to be powered directly by GPIO controlling the 1-wire bus, while using this
 driver.
 
 

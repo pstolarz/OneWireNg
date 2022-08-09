@@ -139,7 +139,7 @@ void OneWireNg::searchFilterDel(uint8_t code)
     for (int i = 0; i < _n_fltrs; i++) {
         if (_fltrs[i].code == code) {
             for (i++; i < _n_fltrs; i++) {
-                _fltrs[i-1].code = _fltrs[i].code;
+                _fltrs[i - 1].code = _fltrs[i].code;
             }
             _n_fltrs--;
             break;
@@ -223,7 +223,7 @@ OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
         /*
          * Discrepancy detected for this bit position.
          */
-        if (n >= (int)(8 * (sizeof(Id)-1))) {
+        if (n >= (int)(8 * (sizeof(Id) - 1))) {
             /* no discrepancy is expected for CRC part of the id - bus error */
             return EC_BUS_ERROR;
         } else {

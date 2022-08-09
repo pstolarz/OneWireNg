@@ -18,6 +18,7 @@ powering) and may serve for further work while interfacing with various 1-wire
 devices.
 
 ## Table of Contents
+
 [Features](#features)<br>
 [Usage](#usage)<br>
 &nbsp;&nbsp;[ESP-IDF](#usage_idf)<br>

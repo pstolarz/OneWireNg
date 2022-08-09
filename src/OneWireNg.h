@@ -682,8 +682,8 @@ public:
      */
     static ErrorCode checkCrcId(const Id& id)
     {
-        uint8_t crc = crc8(&id[0], sizeof(Id)-1);
-        return (crc == id[sizeof(Id)-1] ? EC_SUCCESS : EC_CRC_ERROR);
+        uint8_t crc = crc8(&id[0], sizeof(Id) - 1);
+        return (crc == id[sizeof(Id) - 1] ? EC_SUCCESS : EC_CRC_ERROR);
     }
 
     /**

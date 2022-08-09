@@ -130,7 +130,7 @@ OneWireNg::ErrorCode DSTherm::_writeScratchpad(
          * environments where various types of sensors are connected.
          */
         size_t cmd_len =
-            (id && (*id)[0] == DS18S20 ? sizeof(cmd)-1 : sizeof(cmd));
+            (id && (*id)[0] == DS18S20 ? sizeof(cmd) - 1 : sizeof(cmd));
 
         _ow.writeBytes(cmd, cmd_len);
     }
@@ -145,7 +145,7 @@ OneWireNg::ErrorCode DSTherm::Scratchpad::writeScratchpad() const
         uint8_t cmd[4] = {
             CMD_WRITE_SCRATCHPAD, _scrpd[2], _scrpd[3], _scrpd[4]
         };
-        size_t len = (_id[0] == DS18S20 ? sizeof(cmd)-1 : sizeof(cmd));
+        size_t len = (_id[0] == DS18S20 ? sizeof(cmd) - 1 : sizeof(cmd));
 
         _ow.writeBytes(cmd, len);
     }

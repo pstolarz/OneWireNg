@@ -174,7 +174,7 @@ void OneWireNg_ArduinoIdfESP32::initDtaGpio(unsigned pin, bool pullUp)
     }
 #if (GPIO_PIN_COUNT > 32)
     else {
-        _dtaGpio.bmsk = (uint32_t)(1UL << (pin-32));
+        _dtaGpio.bmsk = (uint32_t)(1UL << (pin - 32));
         _dtaGpio.inReg = &REG_GPIO_IN_HI;
         _dtaGpio.outSetReg = &REG_GPIO_OUT_SET_HI;
         _dtaGpio.outClrReg = &REG_GPIO_OUT_CLR_HI;
@@ -200,7 +200,7 @@ void OneWireNg_ArduinoIdfESP32::initPwrCtrlGpio(unsigned pin)
     }
 # if (GPIO_PIN_COUNT > 32)
     else {
-        _pwrCtrlGpio.bmsk = (uint32_t)(1UL << (pin-32));
+        _pwrCtrlGpio.bmsk = (uint32_t)(1UL << (pin - 32));
         _pwrCtrlGpio.outSetReg = &REG_GPIO_OUT_SET_HI;
         _pwrCtrlGpio.outClrReg = &REG_GPIO_OUT_CLR_HI;
         _pwrCtrlGpio.modSetReg = &REG_GPIO_MOD_SET_HI;

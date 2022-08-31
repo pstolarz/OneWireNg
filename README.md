@@ -1,6 +1,7 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine/)
 
 # OneWireNg
+
 [![Arduino builds](https://github.com/pstolarz/OneWireNg/workflows/Arduino%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ard-builds.yml)
 [![PlatformIO builds](https://github.com/pstolarz/OneWireNg/workflows/PlatformIO%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/pio-builds.yml)
 [![ESP-IDF builds](https://github.com/pstolarz/OneWireNg/workflows/ESP-IDF%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/espidf-builds.yml)
@@ -19,23 +20,23 @@ devices.
 
 ## Table of Contents
 
-[Features](#features)<br>
-[Usage](#usage)<br>
-&nbsp;&nbsp;[ESP-IDF](#usage_idf)<br>
-&nbsp;&nbsp;[Pico SDK](#usage_pico)<br>
-&nbsp;&nbsp;[Mbed OS](#usage_mbed)<br>
-[Supported platforms](#supported_plats)<br>
-[Overdrive mode](#od_mode)<br>
-[Parasite powering](#parasite)<br>
-[Architecture details](#arch)<br>
-&nbsp;&nbsp;[`OneWireNg`](#arch_owng)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[Memory allocation caveat](#arch_owng_malloc)<br>
-&nbsp;&nbsp;[`OneWireNg_BitBang`](#arch_bb)<br>
-&nbsp;&nbsp;[`OneWireNg_PicoRP2040PIO`](#arch_pio)<br>
-&nbsp;&nbsp;[`OneWireNg_PLATFORM`](#arch_plat)<br>
-[OneWire compatibility](#ow)<br>
-&nbsp;&nbsp;[DallasTemperature library](#ow_dallas)<br>
-[License](#license)<br>
+* [Features](#features)
+* [Usage](#usage)
+  * [ESP-IDF](#usage_idf)
+  * [Pico SDK](#usage_pico)
+  * [Mbed OS](#usage_mbed)
+* [Supported platforms](#supported_plats)
+* [Overdrive mode](#od_mode)
+* [Parasite powering](#parasite)
+* [Architecture details](#arch)
+  * [`OneWireNg`](#arch_owng)
+    * [Memory allocation caveat](#arch_owng_malloc)
+  * [`OneWireNg_BitBang`](#arch_bb)
+  * [`OneWireNg_PicoRP2040PIO`](#arch_pio)
+  * [`OneWireNg_PLATFORM`](#arch_plat)
+* [OneWire compatibility](#ow)
+  * [DallasTemperature library](#ow_dallas)
+* [License](#license)
 
 <a name="features"></a>
 ## Features
@@ -89,7 +90,8 @@ devices.
 <a name="usage"></a>
 ## Usage
 
-Refer to [`examples`](examples) directory for usage details.
+Refer to [`examples`](examples) directory for usage details for each of the
+supported frameworks: Arduino, ESP-IDF, Pico SDK and Mbed OS.
 
 For API specification refer to sources inline documentation (mainly
 [`OneWireNg`](src/OneWireNg.h) class). For convenience it's possible to generate

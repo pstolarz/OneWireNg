@@ -22,7 +22,9 @@
 class MAX31850: DSTherm
 {
 public:
-
+    /**
+     * Thermocouple scratchpad.
+     */
     class Scratchpad: DSTherm::Scratchpad
     {
     public:

@@ -184,6 +184,17 @@ public:
     }
 
     /**
+     * Read sensor scratchpad - single sensor mode.
+     *
+     * @see DSTherm::readScratchpadSingle
+     */
+    OneWireNg::ErrorCode readScratchpadSingle(
+        Scratchpad *scratchpad, bool reuseId = true)
+    {
+        return DSTherm::readScratchpadSingle(scratchpad, reuseId);
+    }
+
+    /**
      * Check if specified sensor is parasitically powered.
      *
      * @see DSTherm::readPowerSupply

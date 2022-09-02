@@ -49,6 +49,28 @@ OneWireNg::ErrorCode DSTherm::readScratchpad(
     return ec;
 }
 
+OneWireNg::ErrorCode DSTherm::readScratchpadSingle(
+    Scratchpad *scratchpad, bool reuseId)
+{
+    OneWireNg::ErrorCode ec;
+
+    if (reuseId &&
+        (OneWireNg::checkCrcId(scratchpad->_id) == OneWireNg::EC_SUCCESS) &&
+        getFamilyName(scratchpad->_id) != NULL)
+    {
+        ec = readScratchpad(scratchpad->_id, scratchpad);
+    } else
+    {
+        OneWireNg::Id id;
+
+        ec = _ow.readSingleId(id);
+        if (ec == OneWireNg::EC_SUCCESS) {
+            ec = readScratchpad(id, scratchpad);
+        }
+    }
+    return ec;
+}
+
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)
 OneWireNg::ErrorCode DSTherm::filterSupportedSlaves()
 {

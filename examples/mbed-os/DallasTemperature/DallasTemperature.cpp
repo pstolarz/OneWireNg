@@ -133,21 +133,16 @@ void loop()
     drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER_ARG);
 
 #if MBED_CONF_APP_SINGLE_SENSOR
-    /* single sensor expected */
-    OneWireNg::Id id;
+    OneWireNg::ErrorCode ec;
+    DSTherm::Scratchpad& scrpd = _scrpd;
 
-    OneWireNg::ErrorCode ec = ow.readSingleId(id);
+    /* single sensor expected */
+    ec = drv.readScratchpadSingle(&scrpd);
     if (ec == OneWireNg::EC_SUCCESS) {
-        if (printId(id)) {
-            if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
-                printScratchpad(_scrpd);
-            else
-                printf("  Read scratchpad error.\n");
-        }
-    } else if (ec == OneWireNg::EC_CRC_ERROR) {
-        printf("  Invalid CRC. "
-            "Possibly more than one device connected to the bus.\n");
-    }
+        printId(scrpd.getId());
+        printScratchpad(scrpd);
+    } else if (ec == OneWireNg::EC_CRC_ERROR)
+        printf("  CRC error.\n");
 #else
     /* read sensors one-by-one */
     for (const auto& id: ow) {

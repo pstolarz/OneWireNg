@@ -287,7 +287,7 @@ public:
      * Read sensor scratchpad.
      *
      * @param id Sensor id the scratchpad shall be read from.
-     * @param scratchpad Points to memory region where DSTherm_Test::Scratchpad
+     * @param scratchpad Points to memory region where @c DSTherm_Test::Scratchpad
      *    object representing read scratchpad will be created in-place:
      *
      * @code
@@ -336,6 +336,40 @@ public:
      */
     OneWireNg::ErrorCode readScratchpad(
         const OneWireNg::Id& id, Scratchpad *scratchpad);
+
+    /**
+     * Read sensor scratchpad - single sensor mode.
+     *
+     * The routine performs the following steps:
+     * - Detects connected sensor id by calling @ref OneWireNg::readSingleId().
+     *   If more than one sensor is connected the routine returns @c EC_CRC_ERROR.
+     * - Calls @ref readScratchpad() with the id from the previous step.
+     *
+     * To avoid redundant @c readSingleId() calls on a single sensor environment
+     * @c reuseId argument may use sensor id stored in @c scratchpad set by the
+     * previous call to the routine:
+     * - If @c reuseId is @c true (default value), the routine examines passed
+     *   @c scratchpad content if it contains valid sensor id. If so, the id is
+     *   used and the @c readSingleId() is not called.
+     * - If @c reuseId is @c false, the routine calls @c readSingleId() every
+     *   time to scan the bus for a connected sensor.
+     *
+     * @param scratchpad Points to memory region where @c DSTherm_Test::Scratchpad
+     *    object representing read scratchpad will be created in-place. The
+     *    routine may examine the region against valid id if @c reuseId is
+     *    @c true.
+     * @param reuseId If @c true reuse id in the passed @c scratchpad. If @false
+     *    scan the bus for the id.
+     *
+     * @return Error codes:
+     *     - @c EC_SUCCESS Scratchpad successfully read and available under
+     *         @c scratchpad address.
+     *     - @c EC_NO_DEVS: No devices on the bus.
+     *     - @c EC_CRC_ERROR: CRC error - scratchpad read error or more than
+     *         one sensor connected to the 1-wire bus.
+     */
+    OneWireNg::ErrorCode readScratchpadSingle(
+        Scratchpad *scratchpad, bool reuseId = true);
 
     /**
      * Write whole thermometer configuration to a given sensor.

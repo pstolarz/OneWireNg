@@ -313,7 +313,7 @@ public:
      *
      * // access Scratchpad object via reference or pointer
      * DSTherm::Scratchpad& scrpd_ref = _scrpd;
-     * DSTherm::Scratchpad *scrpd_ptr = &_scrpd;
+     * DSTherm::Scratchpad *scrpd_ptr = _scrpd;
      * @endcode
      *
      * The same Scratchpad placeholder may be used by subsequent sensor reads:

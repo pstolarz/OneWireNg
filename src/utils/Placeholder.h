@@ -17,9 +17,9 @@
 #include "platform/Platform_New.h"
 
 /**
- * Simple placeholder template with automatic conversion to a reference of the
- * stored object. Overloaded @c operator&() allows to retrieve casted address
- * of a buffer storing the object.
+ * Simple placeholder template with automatic conversion to a reference or a
+ * pointer of the stored object. Overloaded @c operator&() and @c operator*()
+ * allow to retrieve casted address and a reference to the stored object.
  */
 template<class T>
 class Placeholder
@@ -27,6 +27,14 @@ class Placeholder
 public:
     T *operator&() {
         return reinterpret_cast<T*>(buf);
+    }
+
+    T& operator*() {
+        return *operator&();
+    }
+
+    operator T*() {
+        return operator&();
     }
 
     operator T&() {

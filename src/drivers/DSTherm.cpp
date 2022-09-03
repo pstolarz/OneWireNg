@@ -65,7 +65,8 @@ OneWireNg::ErrorCode DSTherm::readScratchpadSingle(
 
         ec = _ow.readSingleId(id);
         if (ec == OneWireNg::EC_SUCCESS) {
-            ec = readScratchpad(id, scratchpad);
+            ec = (getFamilyName(id) != NULL ?
+                readScratchpad(id, scratchpad) : OneWireNg::EC_UNSUPPORED);
         }
     }
     return ec;

@@ -367,6 +367,8 @@ public:
      *     - @c EC_NO_DEVS: No devices on the bus.
      *     - @c EC_CRC_ERROR: CRC error - scratchpad read error or more than
      *         one sensor connected to the 1-wire bus.
+     *     - @c EC_UNSUPPORED: Connected device is not a sensor supported by
+     *         the driver.
      */
     OneWireNg::ErrorCode readScratchpadSingle(
         Scratchpad *scratchpad, bool reuseId = true);

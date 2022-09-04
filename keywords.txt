@@ -67,6 +67,7 @@ getLSB_u32	KEYWORD2
 convertTemp	KEYWORD2
 convertTempAll	KEYWORD2
 readScratchpad	KEYWORD2
+readScratchpadSingle	KEYWORD2
 writeScratchpad	KEYWORD2
 writeScratchpadAll	KEYWORD2
 copyScratchpad	KEYWORD2

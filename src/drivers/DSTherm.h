@@ -349,8 +349,12 @@ public:
      * @c reuseId argument may use sensor id stored in @c scratchpad set by the
      * previous call to the routine:
      * - If @c reuseId is @c true (default value), the routine examines passed
-     *   @c scratchpad content if it contains valid sensor id. If so, the id is
-     *   used and the @c readSingleId() is not called.
+     *   @c scratchpad content if it contains valid sensor id. If so, the id
+     *   is used and the @c readSingleId() is not called. To avoid ambiguous
+     *   behavior of initial call of the routine resulted from using uninitialized
+     *   memory of the scratchpad placeholder, it's recommended to initialize
+     *   the placeholder with zeroes. See @c Init parameter of @ref Placeholder
+     *   template.
      * - If @c reuseId is @c false, the routine calls @c readSingleId() every
      *   time to scan the bus for a connected sensor.
      *

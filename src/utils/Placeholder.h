@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Piotr Stolarz
+ * Copyright (c) 2021,2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -14,6 +14,7 @@
 #define __OWNG_PLACEHOLDER__
 
 #include <stdint.h>
+#include <string.h>  /* memset */
 #include "platform/Platform_New.h"
 
 /**
@@ -21,12 +22,12 @@
  * pointer of the stored object. Overloaded @c operator&() and @c operator*()
  * allow to retrieve casted address and a reference to the stored object.
  */
-template<class T>
+template<class T, bool Init = false>
 class Placeholder
 {
 public:
     T *operator&() {
-        return reinterpret_cast<T*>(buf);
+        return reinterpret_cast<T*>(_buf);
     }
 
     T& operator*() {
@@ -41,8 +42,20 @@ public:
         return *operator&();
     }
 
-private:
-    ALLOC_ALIGNED uint8_t buf[sizeof(T)];
+protected:
+    ALLOC_ALIGNED uint8_t _buf[sizeof(T)];
+};
+
+/**
+ * Zero initialized @c Placeholder specialization.
+ */
+template<class T>
+class Placeholder<T, true>: public Placeholder<T, false>
+{
+public:
+    Placeholder() {
+        memset(this->_buf, 0, sizeof(this->_buf));
+    }
 };
 
 #endif /* __OWNG_PLACEHOLDER__ */

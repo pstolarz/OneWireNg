@@ -151,14 +151,21 @@ void setup()
 
 void loop()
 {
-    static Placeholder<DSTherm::Scratchpad> _scrpd;
     DSTherm drv(*_ow);
 
     /* convert temperature on all sensors connected... */
     drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER_ARG);
 
 #ifdef SINGLE_SENSOR
-    /* single sensor expected */
+    /* single sensor environment */
+
+    /*
+     * Scratchpad placeholder is static to allow reuse of the associated
+     * sensor id while reissuing readScratchpadSingle() calls.
+     * Note, due to its storage class the placeholder is zero initialized.
+     */
+    static Placeholder<DSTherm::Scratchpad> _scrpd;
+
     OneWireNg::ErrorCode ec = drv.readScratchpadSingle(&_scrpd);
     if (ec == OneWireNg::EC_SUCCESS) {
         printId((*_scrpd).getId());
@@ -167,6 +174,8 @@ void loop()
         printf("  CRC error.\n");
 #else
     /* read sensors one-by-one */
+    Placeholder<DSTherm::Scratchpad> _scrpd;
+
     for (const auto& id: *_ow) {
         if (printId(id)) {
             if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)

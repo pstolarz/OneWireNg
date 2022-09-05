@@ -59,8 +59,8 @@ OneWireNg::ErrorCode DSTherm::readScratchpadSingle(
      * to supported sensor family and its CRC is valid.
      */
     if (reuseId &&
-        (OneWireNg::checkCrcId(scratchpad->_id) == OneWireNg::EC_SUCCESS) &&
-        getFamilyName(scratchpad->_id) != NULL)
+        (getFamilyName(scratchpad->_id) != NULL) &&
+        (OneWireNg::checkCrcId(scratchpad->_id) == OneWireNg::EC_SUCCESS))
     {
         ec = readScratchpad(scratchpad->_id, scratchpad);
     } else

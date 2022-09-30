@@ -21,11 +21,21 @@ private:
     void setDtaGpioAsInput() {}
 
 #if CONFIG_PWR_CTRL_ENABLED
-    void writeGpioOut(int state, GpioType gpio) {}
-    void setGpioAsOutput(int state, GpioType gpio) {}
+    void writeGpioOut(int state, GpioType gpio) {
+        (void)state;
+        (void)gpio;
+    }
+    void setGpioAsOutput(int state, GpioType gpio) {
+        (void)state;
+        (void)gpio;
+    }
 #else
-    void writeGpioOut(int state) {}
-    void setGpioAsOutput(int state) {}
+    void writeGpioOut(int state) {
+        (void)state;
+    }
+    void setGpioAsOutput(int state) {
+        (void)state;
+    }
 #endif
 };
 

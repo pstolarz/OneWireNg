@@ -14,7 +14,7 @@
 
 #define MAX_TEST_SLAVES 20
 
-static const OneWireNg::Id ZERO_ID = {};
+// static const OneWireNg::Id ZERO_ID = {};
 static const OneWireNg::Id TEST1_IDS[] =
 {
     {0x28, 0xff, 0x11, 0x8a, 0x60, 0x14, 0x02, 0xf5},

@@ -794,6 +794,15 @@ protected:
 #endif
 
 private:
+    /* OneWireNg objects are not intended to be copied or moved */
+    OneWireNg(const OneWireNg&);
+    OneWireNg& operator=(const OneWireNg&);
+
+#if __cplusplus >= 201103L
+    OneWireNg(OneWireNg&&) noexcept;
+    OneWireNg& operator=(OneWireNg&&) noexcept;
+#endif
+
 #if CONFIG_SEARCH_ENABLED
     ErrorCode transmitSearchTriplet(int n, Id& id, int& lzero);
 

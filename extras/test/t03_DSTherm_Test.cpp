@@ -206,6 +206,7 @@ private:
     }
 
     int touchBit(int bit, bool power) {
+        (void)power;
         return bit;
     }
 };

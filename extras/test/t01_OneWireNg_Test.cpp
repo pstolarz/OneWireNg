@@ -147,6 +147,8 @@ public:
 
     int touchBit(int bit, bool power)
     {
+        (void)power;
+
         if (_trans_n < 8)
         {
             /* read until completed command id */

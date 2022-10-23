@@ -613,18 +613,18 @@ public:
     }
 
     /**
-     * Generic CRC-8/16/32 calculation.
+     * Generic CRC calculation (reflected-input, reflected-output mode).
      *
      * Template parameters:
-     * @param Ret CRC type: uint8_t for CRC-8, uint16_t for CRC-16, uint32_t for
-     *     CRC-32
+     * @param CrcType CRC type. For example @c uint8_t for CRC-8, @c uint16_t
+     *     for CRC-16, @c uint32_t for CRC-32.
      * @param RevPoly CRC polynomial coefficients in reverse order, e.g. 0x8C
      *     (not 0x31) for CRC-8/MAXIM, 0xA001 (not 0x8005) for CRC-16/ARC.
      */
-    template<class Ret, Ret RevPoly>
-    static inline Ret crc(const void *in, size_t len, Ret crc_in = 0)
+    template<class CrcType, CrcType RevPoly>
+    static inline CrcType crc(const void *in, size_t len, CrcType crc_in = 0)
     {
-        Ret crc = crc_in;
+        CrcType crc = crc_in;
         const uint8_t *in_bts = (const uint8_t*)in;
 
         while (len--) {

@@ -280,11 +280,9 @@ public:
     /* due to std namespace discrepancies between various toolchains
        decltype(nullptr) is used here instead of std::nullptr_t */
     typedef decltype(nullptr) end_iterator;
-    typedef decltype(nullptr) end_iterator_ref;
 # else
     class iterator;
     typedef iterator end_iterator;
-    typedef iterator& end_iterator_ref;
 # endif
 
     /** Range-loop iterator. */
@@ -304,7 +302,7 @@ public:
         }
 
         /* called only to detect the final iteration */
-        bool operator!=(const end_iterator_ref) {
+        bool operator!=(const end_iterator&) {
             return (_ow != nullptr);
         }
 

@@ -217,8 +217,7 @@ OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
          * indicated presence of some - bus error is returned.
          */
         return EC_BUS_ERROR;
-    } else
-    if (!v1 && !v0)
+    } else if (!v1 && !v0)
     {
         /*
          * Discrepancy detected for this bit position.
@@ -233,8 +232,7 @@ OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
             {
                 if (n < _lzero) {
                     selBit = (__BIT_IN_BYTE(_lsrch, n) != 0);
-                } else
-                if (n == _lzero) {
+                } else if (n == _lzero) {
                     selBit = 1;
                 } else {
                     selBit = 0;

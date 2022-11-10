@@ -139,7 +139,7 @@ void loop()
     for (const auto& id: *ow) {
         printId(id);
 
-        if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
+        if (drv.readScratchpad(id, _scrpd) == OneWireNg::EC_SUCCESS)
             printScratchpad(_scrpd);
         else
             Serial.println("  Invalid CRC!");

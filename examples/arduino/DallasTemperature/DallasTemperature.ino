@@ -135,7 +135,7 @@ void setup()
 #else
     new (&_ow) OneWireNg_CurrentPlatform(OW_PIN, false);
 #endif
-    DSTherm drv(*_ow);
+    DSTherm drv(_ow);
 
     Serial.begin(115200);
 
@@ -161,7 +161,7 @@ void setup()
 
 void loop()
 {
-    DSTherm drv(*_ow);
+    DSTherm drv(_ow);
 
     /* convert temperature on all sensors connected... */
     drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER_ARG);
@@ -176,10 +176,10 @@ void loop()
      */
     static Placeholder<DSTherm::Scratchpad> _scrpd;
 
-    OneWireNg::ErrorCode ec = drv.readScratchpadSingle(&_scrpd);
+    OneWireNg::ErrorCode ec = drv.readScratchpadSingle(_scrpd);
     if (ec == OneWireNg::EC_SUCCESS) {
-        printId((*_scrpd).getId());
-        printScratchpad(*_scrpd);
+        printId(_scrpd->getId());
+        printScratchpad(_scrpd);
     } else if (ec == OneWireNg::EC_CRC_ERROR)
         Serial.println("  CRC error.");
 #else
@@ -188,8 +188,8 @@ void loop()
 
     for (const auto& id: *_ow) {
         if (printId(id)) {
-            if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
-                printScratchpad(*_scrpd);
+            if (drv.readScratchpad(id, _scrpd) == OneWireNg::EC_SUCCESS)
+                printScratchpad(_scrpd);
             else
                 Serial.println("  Read scratchpad error.");
         }

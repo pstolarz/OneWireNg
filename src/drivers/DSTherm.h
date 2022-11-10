@@ -309,7 +309,7 @@ public:
      * Placeholder<DSTherm::Scratchpad> _scrpd;
      *
      * // fill the placeholder with the read scratchpad
-     * dsth.readScratchpad(id, &_scrpd);
+     * dsth.readScratchpad(id, _scrpd);
      *
      * // access Scratchpad object via reference or pointer
      * DSTherm::Scratchpad& scrpd_ref = _scrpd;
@@ -320,11 +320,11 @@ public:
      *
      * @code
      * Placeholder<DSTherm::Scratchpad> _scrpd;
-     * dsth.readScratchpad(id1, &_scrpd);
+     * dsth.readScratchpad(id1, _scrpd);
      * // ...
-     * dsth.readScratchpad(id2, &_scrpd);
+     * dsth.readScratchpad(id2, _scrpd);
      * // ...
-     * dsth.readScratchpad(id3, &_scrpd);
+     * dsth.readScratchpad(id3, _scrpd);
      * // ...
      * @endcode
      *

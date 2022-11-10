@@ -94,7 +94,7 @@ void setup()
 #else
     new (&_ow) OneWireNg_CurrentPlatform(CONFIG_OW_PIN, false);
 #endif
-    DSTherm drv(*_ow);
+    DSTherm drv(_ow);
 
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)
     drv.filterSupportedSlaves();
@@ -119,7 +119,7 @@ void setup()
 
 void loop()
 {
-    DSTherm drv(*_ow);
+    DSTherm drv(_ow);
 
     /* convert temperature on all sensors connected... */
     drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER_ARG);
@@ -134,10 +134,10 @@ void loop()
      */
     static Placeholder<DSTherm::Scratchpad> _scrpd;
 
-    OneWireNg::ErrorCode ec = drv.readScratchpadSingle(&_scrpd);
+    OneWireNg::ErrorCode ec = drv.readScratchpadSingle(_scrpd);
     if (ec == OneWireNg::EC_SUCCESS) {
-        printId((*_scrpd).getId());
-        printScratchpad(*_scrpd);
+        printId(_scrpd->getId());
+        printScratchpad(_scrpd);
     } else if (ec == OneWireNg::EC_CRC_ERROR)
         printf("  CRC error.\n");
 #else
@@ -146,8 +146,8 @@ void loop()
 
     for (const auto& id: *_ow) {
         if (printId(id)) {
-            if (drv.readScratchpad(id, &_scrpd) == OneWireNg::EC_SUCCESS)
-                printScratchpad(*_scrpd);
+            if (drv.readScratchpad(id, _scrpd) == OneWireNg::EC_SUCCESS)
+                printScratchpad(_scrpd);
             else
                 printf("  Read scratchpad error.\n");
         }

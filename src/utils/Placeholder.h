@@ -21,6 +21,7 @@
  * Simple placeholder template with automatic conversion to a reference or a
  * pointer of the stored object. Overloaded @c operator&() and @c operator*()
  * allow to retrieve casted address and a reference to the stored object.
+ * @c operator->() enables accessing placeholded object's members.
  */
 template<class T, bool Init = false>
 class Placeholder
@@ -32,6 +33,10 @@ public:
 
     T& operator*() {
         return *operator&();
+    }
+
+    T *operator->() {
+        return operator&();
     }
 
     operator T*() {

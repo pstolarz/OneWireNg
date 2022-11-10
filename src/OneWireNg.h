@@ -647,8 +647,8 @@ public:
     static uint16_t crc16(const void *in, size_t len, uint16_t crc_in = 0);
 
     /**
-     * Check bitwise inverted CRC-16/ARC for a given input @c in of length
-     * @c len bytes.
+     * Check bitwise inverted CRC-16/ARC (aka CRC-16/MAXIM) for a given input
+     * @c in of length @c len bytes.
      *
      * @c invCrc argument represents a bitwise inverted CRC checksum sent over
      * the 1-wire bus which needs to be compliant with the computed checksum.

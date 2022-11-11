@@ -13,6 +13,7 @@
 #ifndef __OWNG_PICO_RP2040PIO__
 #define __OWNG_PICO_RP2040PIO__
 
+#include <string.h>  /* memcpy */
 #include "OneWireNg.h"
 
 #include "hardware/clocks.h"
@@ -103,6 +104,67 @@ public:
         _wraps[TOUCH0_OD]  = _wraps[TOUCH0_STD];
         _wraps[TOUCH1_OD]  = _wraps[TOUCH1_STD];
 #endif
+        /* Prepare PIO configuration
+         */
+        _pioCfg = pio_get_default_sm_config();
+
+        /* 1-bit side-set (required), output set */
+        sm_config_set_sideset(&_pioCfg, 1, false, false);
+
+        /* PINS, IN and SET configured to w1 pin */
+        sm_config_set_set_pins(&_pioCfg, pin, 1);
+        sm_config_set_in_pins(&_pioCfg, pin);
+        sm_config_set_sideset_pins(&_pioCfg, pin);
+
+        /* left-shift, no-autopush, IN threshold: 1 */
+        sm_config_set_in_shift(&_pioCfg, false, false, 1);
+
+        /* set the default config for the PIO SM(s) */
+        pio_sm_set_config(_pio, _sm1, &_pioCfg);
+#if CONFIG_RP2040_PIOSM_NUM_USED > 1
+        pio_sm_set_config(_pio, _sm2, &_pioCfg);
+#endif
+    }
+
+    /**
+     * Make RP2040 1-wire service (using PIO peripheral) for a given @c pin
+     * basing on already created 1-wire service as follows:
+     * - Use the same PIO peripheral along with loaded programs as for the
+     *   @c base service.
+     * - New service will use its own 1 or 2 state machine(s), depending on
+     *   @c CONFIG_RP2040_PIOSM_NUM_USED configuration.
+     *
+     * @note The routine enables create up to 2 or 4 (depending on @c
+     *     CONFIG_RP2040_PIOSM_NUM_USED configuration) 1-wire services
+     *     handled by different pins for a single PIO peripheral.
+     */
+    OneWireNg_PicoRP2040PIO(
+        unsigned pin, bool pullUp, const OneWireNg_PicoRP2040PIO& base)
+    {
+        assert(pin < 32);
+        _pin = pin;
+        _pio = base._pio;
+
+        _sm1 = pio_claim_unused_sm(_pio, true);
+#if CONFIG_RP2040_PIOSM_NUM_USED > 1
+        _sm2 = pio_claim_unused_sm(_pio, true);
+#endif
+
+        _exeProg = INVALID_PROG;
+
+        powerBus(false);
+        if (pullUp) gpio_pull_up(pin);
+
+        /* turn off PIO SM(s) */
+        pio_sm_set_enabled(_pio, _sm1, false);
+#if CONFIG_RP2040_PIOSM_NUM_USED > 1
+        pio_sm_set_enabled(_pio, _sm2, false);
+#endif
+
+        memcpy(_addrs, base._addrs, sizeof(_addrs));
+        memcpy(_divs, base._divs, sizeof(_divs));
+        memcpy(_wraps, base._wraps, sizeof(_wraps));
+
         /* Prepare PIO configuration
          */
         _pioCfg = pio_get_default_sm_config();

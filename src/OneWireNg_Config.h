@@ -331,14 +331,6 @@
 
 /**
  * For RP2040 platform and @ref OneWireNg_PicoRP2040PIO driver, the parameter
- * specifies PIO number (0 or 1) used to execute 1-wire activities.
- */
-# ifndef CONFIG_RP2040_PIO_NUM
-#  define CONFIG_RP2040_PIO_NUM 0
-# endif
-
-/**
- * For RP2040 platform and @ref OneWireNg_PicoRP2040PIO driver, the parameter
  * specifies number of PIO SM used by the driver:
  * - 1: The same SM used for reset and touch,
  * - 2: Separate SMs used for reset and touch.

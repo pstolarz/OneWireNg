@@ -49,19 +49,19 @@ public:
      *
      * @param pin RP2040's GPIO pin number used for bit-banging 1-wire bus.
      * @param pullUp If @c true configure internal pull-up resistor for the bus.
+     * @param pioNum PIO number (0 or 1) used to execute 1-wire activities.
      */
-    OneWireNg_PicoRP2040PIO(unsigned pin, bool pullUp)
+    OneWireNg_PicoRP2040PIO(unsigned pin, bool pullUp, int pioNum = 0)
     {
         assert(pin < 32);
+        assert(pioNum == 0 || pioNum == 1);
         _pin = pin;
 
-#if (CONFIG_RP2040_PIO_NUM == 0)
-        _pio = pio0;
-#elif (CONFIG_RP2040_PIO_NUM == 1)
-        _pio = pio1;
-#else
-# error "Invalid CONFIG_RP2040_PIO_NUM parameter. 0 or 1 expected."
-#endif
+        if (pioNum == 0)
+            _pio = pio0;
+        else
+            _pio = pio1;
+
         _sm1 = pio_claim_unused_sm(_pio, true);
 #if CONFIG_RP2040_PIOSM_NUM_USED > 1
         _sm2 = pio_claim_unused_sm(_pio, true);

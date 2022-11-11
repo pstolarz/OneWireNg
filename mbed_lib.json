@@ -84,7 +84,7 @@
             "macro_name": "CONFIG_RP2040_PIO_NUM",
             "value": 0
         },
-        "rp2040_pio_num": {
+        "rp2040_piosm_num_used": {
             "help": "Number of RP2040 PIO SM used",
             "macro_name": "CONFIG_RP2040_PIOSM_NUM_USED",
             "value": 2

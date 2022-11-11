@@ -306,25 +306,26 @@ public:
      *
      * @code
      * // create placeholder
-     * Placeholder<DSTherm::Scratchpad> _scrpd;
+     * Placeholder<DSTherm::Scratchpad> scrpd;
      *
      * // fill the placeholder with the read scratchpad
-     * dsth.readScratchpad(id, _scrpd);
+     * dsth.readScratchpad(id, scrpd);
      *
-     * // access Scratchpad object via reference or pointer
-     * DSTherm::Scratchpad& scrpd_ref = _scrpd;
-     * DSTherm::Scratchpad *scrpd_ptr = _scrpd;
+     * // The placeholder object may be used in the conext of Scratchpad
+     * // reference or pointer
+     * DSTherm::Scratchpad& scrpd_ref = scrpd;
+     * DSTherm::Scratchpad *scrpd_ptr = scrpd;
      * @endcode
      *
      * The same Scratchpad placeholder may be used by subsequent sensor reads:
      *
      * @code
-     * Placeholder<DSTherm::Scratchpad> _scrpd;
-     * dsth.readScratchpad(id1, _scrpd);
+     * Placeholder<DSTherm::Scratchpad> scrpd;
+     * dsth.readScratchpad(id1, scrpd);
      * // ...
-     * dsth.readScratchpad(id2, _scrpd);
+     * dsth.readScratchpad(id2, scrpd);
      * // ...
-     * dsth.readScratchpad(id3, _scrpd);
+     * dsth.readScratchpad(id3, scrpd);
      * // ...
      * @endcode
      *

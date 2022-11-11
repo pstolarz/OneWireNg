@@ -404,16 +404,18 @@ or use `Placeholder` utility template to store `OneWireNg` specialized object:
 #include "OneWireNg_CurrentPlatform.h"
 #include "utils/Placeholder.h"
 
-static Placeholder<OneWireNg_CurrentPlatform> _ow;
-static OneWireNg *ow = NULL;
+static Placeholder<OneWireNg_CurrentPlatform> ow;
 
 void setup()
 {
     // initialize the placeholded object by in-place new
-    ow = new (&_ow) OneWireNg_CurrentPlatform(10);
+    new (&ow) OneWireNg_CurrentPlatform(10);
     // ...
 }
 ```
+
+Refer to [examples](examples) for more information how to use the
+`Placeholder<OneWireNg>` in the context of `OneWireNg` object.
 
 <a name="arch_bb"></a>
 ### `OneWireNg_BitBang`

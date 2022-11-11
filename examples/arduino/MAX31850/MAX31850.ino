@@ -130,7 +130,7 @@ void setup()
 void loop()
 {
     MAX31850 drv(*ow);
-    Placeholder<MAX31850::Scratchpad> _scrpd;
+    Placeholder<MAX31850::Scratchpad> scrpd;
 
     /* convert temperature on all sensors connected... */
     drv.convertTempAll(MAX31850::SCAN_BUS, PARASITE_POWER_ARG);
@@ -139,8 +139,8 @@ void loop()
     for (const auto& id: *ow) {
         printId(id);
 
-        if (drv.readScratchpad(id, _scrpd) == OneWireNg::EC_SUCCESS)
-            printScratchpad(_scrpd);
+        if (drv.readScratchpad(id, scrpd) == OneWireNg::EC_SUCCESS)
+            printScratchpad(scrpd);
         else
             Serial.println("  Invalid CRC!");
     }

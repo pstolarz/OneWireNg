@@ -52,7 +52,7 @@ static_assert(CONFIG_MAX_SEARCH_FILTERS >= DSTherm::SUPPORTED_SLAVES_NUM,
 # define PARASITE_POWER_ARG false
 #endif
 
-static Placeholder<OneWireNg_CurrentPlatform> _ow;
+static Placeholder<OneWireNg_CurrentPlatform> ow;
 
 /* returns false if not supported */
 static bool printId(const OneWireNg::Id& id)
@@ -95,12 +95,12 @@ static void printScratchpad(const DSTherm::Scratchpad& scrpd)
 void setup()
 {
 #ifdef MBED_CONF_APP_PWR_CTRL_PIN
-    new (&_ow) OneWireNg_CurrentPlatform(
+    new (&ow) OneWireNg_CurrentPlatform(
         MBED_CONF_APP_OW_PIN, MBED_CONF_APP_PWR_CTRL_PIN, false);
 #else
-    new (&_ow) OneWireNg_CurrentPlatform(MBED_CONF_APP_OW_PIN, false);
+    new (&ow) OneWireNg_CurrentPlatform(MBED_CONF_APP_OW_PIN, false);
 #endif
-    DSTherm drv(_ow);
+    DSTherm drv(ow);
 
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)
     drv.filterSupportedSlaves();
@@ -125,7 +125,7 @@ void setup()
 
 void loop()
 {
-    DSTherm drv(_ow);
+    DSTherm drv(ow);
 
     /* convert temperature on all sensors connected... */
     drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER_ARG);
@@ -138,22 +138,22 @@ void loop()
      * sensor id while reissuing readScratchpadSingle() calls.
      * Note, due to its storage class the placeholder is zero initialized.
      */
-    static Placeholder<DSTherm::Scratchpad> _scrpd;
+    static Placeholder<DSTherm::Scratchpad> scrpd;
 
-    OneWireNg::ErrorCode ec = drv.readScratchpadSingle(_scrpd);
+    OneWireNg::ErrorCode ec = drv.readScratchpadSingle(scrpd);
     if (ec == OneWireNg::EC_SUCCESS) {
-        printId(_scrpd->getId());
-        printScratchpad(_scrpd);
+        printId(scrpd->getId());
+        printScratchpad(scrpd);
     } else if (ec == OneWireNg::EC_CRC_ERROR)
         printf("  CRC error.\n");
 #else
     /* read sensors one-by-one */
-    Placeholder<DSTherm::Scratchpad> _scrpd;
+    Placeholder<DSTherm::Scratchpad> scrpd;
 
-    for (const auto& id: *_ow) {
+    for (const auto& id: *ow) {
         if (printId(id)) {
-            if (drv.readScratchpad(id, _scrpd) == OneWireNg::EC_SUCCESS)
-                printScratchpad(_scrpd);
+            if (drv.readScratchpad(id, scrpd) == OneWireNg::EC_SUCCESS)
+                printScratchpad(scrpd);
             else
                 printf("  Read scratchpad error.\n");
         }

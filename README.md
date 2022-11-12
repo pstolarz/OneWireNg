@@ -414,8 +414,8 @@ void setup()
 }
 ```
 
-Refer to [examples](examples) for more information how to use the
-`Placeholder<OneWireNg>` in the context of `OneWireNg` object.
+Refer to [examples](examples) for more information how to use the `Placeholder`
+in the context of object stored within.
 
 <a name="arch_bb"></a>
 ### `OneWireNg_BitBang`

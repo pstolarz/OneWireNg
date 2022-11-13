@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/arduino-ci
     steps:
-      - name: Arduino cores info
+      - name: Arduino recent cores versions info
         run: |
           sudo arduino-cli update
           sudo arduino-cli core list

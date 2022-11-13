@@ -11,6 +11,18 @@ defaults:
   run:
     shell: bash
 jobs:
+  espidf_info:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/espidf-ci
+    steps:
+      - name: ESP-IDF recent versions info
+        run: |
+          cd /esp-idf && git fetch
+          git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
+      - name: ESP8266_RTOS_SDK recent versions info
+        run: |
+          cd /ESP8266_RTOS_SDK && git fetch
+          git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
   espidf_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/espidf-ci

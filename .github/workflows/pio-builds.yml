@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/pio-ci
     steps:
-      - name: PlatformIO update info
+      - name: PlatformIO recent packages versions info
         run: |
           cd /pio-ard-ci && sudo pio pkg list && sudo pio pkg outdated
           cd /pio-idf-ci && sudo pio pkg list && sudo pio pkg outdated

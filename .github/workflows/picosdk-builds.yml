@@ -11,6 +11,14 @@ defaults:
   run:
     shell: bash
 jobs:
+  picosdk_info:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/picosdk-ci
+    steps:
+      - name: Pico SDK recent versions info
+        run: |
+          cd /pico-sdk && git fetch
+          git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
   picosdk_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/picosdk-ci

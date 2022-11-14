@@ -115,7 +115,7 @@ extern tc_t _tc[portNUM_PROCESSORS];
 # define timeCriticalExit() \
     restore_interrupts(_tc[get_core_num()].int_lev)
 #else
-# ifndef __TEST__
+# ifndef OWNG_TEST
 #  warning "Time critical API unsupported for the target platform. Disabled."
 # endif
 # define timeCriticalEnter()

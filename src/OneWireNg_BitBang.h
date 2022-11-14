@@ -194,7 +194,7 @@ private:
     void setDtaGpioAsOutput(int state) { setGpioAsOutput(state); }
 #endif
 
-#ifdef __TEST__
+#ifdef OWNG_TEST
 friend class OneWireNg_BitBang_Test;
 #endif
 };

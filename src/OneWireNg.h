@@ -808,7 +808,7 @@ private:
     int _lzero; /** last 0-value search discrepancy bit number */
 #endif
 
-#ifdef __TEST__
+#ifdef OWNG_TEST
 friend class OneWireNg_Test;
 #endif
 };

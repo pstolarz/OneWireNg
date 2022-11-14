@@ -34,7 +34,7 @@ void idf_delayUs(uint32_t us);
 #  define delayMs(ms) wait_us(ms * 1000)
 # endif
 # define delayUs(us) wait_us(us)
-#elif __TEST__
+#elif OWNG_TEST
 # include <unistd.h>
 # define delayMs(ms) usleep(1000L * (ms))
 # define delayUs(us) usleep(us)

@@ -1,4 +1,4 @@
 def Settings( **kwargs ):
   return {
-    "flags": ["-xc++", "-Wall", "-Isrc", "-D__TEST__"]
+    "flags": ["-xc++", "-Wall", "-Isrc", "-DOWNG_TEST"]
   }

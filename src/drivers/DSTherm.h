@@ -211,7 +211,7 @@ public:
         uint8_t _scrpd[LENGTH];
 
     friend class DSTherm;
-#ifdef __TEST__
+#ifdef OWNG_TEST
     friend class DSTherm_Test;
 #endif
     };

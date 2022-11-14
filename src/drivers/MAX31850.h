@@ -127,7 +127,7 @@ public:
             DSTherm::Scratchpad(ow, id, scratchpad) {}
 
     friend class MAX31850;
-#ifdef __TEST__
+#ifdef OWNG_TEST
     friend class MAX31850_Test;
 #endif
     };

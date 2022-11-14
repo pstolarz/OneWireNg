@@ -20,7 +20,7 @@
 # define flashRead_u16(addr) pgm_read_word(addr)
 # define flashRead_u32(addr) pgm_read_dword(addr)
 #else
-# if !(defined(IDF_VER) || defined(__TEST__))
+# if !(defined(IDF_VER) || defined(OWNG_TEST))
 #  warning "Flash memory API unsupported for the target platform. Disabled."
 # endif
 # define FLASH_STORAGE

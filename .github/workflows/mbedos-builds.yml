@@ -33,4 +33,5 @@ jobs:
             "OneWireNg.iteration_retries": 1}' \
             ${repo_dir}/examples/mbed-os/${{ matrix.example }}/mbed_app.json >mbed_app.json
           sudo mbed new .
+          sudo mbed ls
           sudo mbed compile -m NUCLEO_L552ZE_Q

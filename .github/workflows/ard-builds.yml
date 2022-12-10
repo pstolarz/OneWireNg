@@ -41,6 +41,7 @@ jobs:
           - esp32:esp32:esp32c3
           - esp8266:esp8266:generic
           - STMicroelectronics:stm32:GenL5
+          - rp2040:rp2040:rpipico
           - megaTinyCore:megaavr:atxy4
         example:
           - DallasTemperature

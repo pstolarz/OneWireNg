@@ -17,7 +17,8 @@ jobs:
     steps:
       - name: Pico SDK recent versions info
         run: |
-          cd /pico-sdk && git fetch
+          cd /pico-sdk
+          git fetch || true
           git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
   picosdk_build:
     runs-on: ubuntu-latest

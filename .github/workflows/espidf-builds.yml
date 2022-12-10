@@ -17,11 +17,13 @@ jobs:
     steps:
       - name: ESP-IDF recent versions info
         run: |
-          cd /esp-idf && git fetch
+          cd /esp-idf
+          git fetch || true
           git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
       - name: ESP8266_RTOS_SDK recent versions info
         run: |
-          cd /ESP8266_RTOS_SDK && git fetch
+          cd /ESP8266_RTOS_SDK
+          git fetch || true
           git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
   espidf_build:
     runs-on: ubuntu-latest

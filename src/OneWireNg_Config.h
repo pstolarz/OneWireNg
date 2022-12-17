@@ -309,24 +309,26 @@
 # endif
 
 /**
- * RP2040 platform is supported by 2 types of drivers for the Arduino framework:
- * - @ref OneWireNg_ArduinoMbedHAL: bit-banging driver using Mbed OS low level
- *   GPIO API,
- * - @ref OneWireNg_PicoRP2040PIO: driver using RP2040's Programmable I/O (PIO)
- *   peripheral for more efficient handling of 1-wire protocol activities.
+ * RP2040 platform is supported by 2 types of drivers:
+ * - @c OneWireNg_PicoRP2040 bit-banging driver.
+ * - @c OneWireNg_PicoRP2040PIO driver using RP2040's Programmable I/O (PIO)
+ *   peripheral for handling 1-wire protocol activities.
  *
  * Configuring the boolean parameter favors the latter PIO driver over the
  * bit-banging one while choosing the driver inside @c OneWireNg_CurrentPlatform.h
  * header.
  *
  * @note @c OneWireNg_PicoRP2040PIO driver doesn't support power-control-GPIO
- *     configuration (@see CONFIG_PWR_CTRL_ENABLED). Since RP2040 platform is
+ *     configuration (@ref CONFIG_PWR_CTRL_ENABLED). Since RP2040 platform is
  *     able to provide direct voltage source via its GPIO pads, parasitically
- *     powered devices need to powered directly by GPIO controlling the 1-wire
- *     bus, while using this driver.
+ *     powered devices need to be powered directly by GPIO controlling the
+ *     1-wire bus while using this driver.
+ * @note There are observed problems with Pico SDK's serial output
+ *     (USB, UART) while using the bit-banging driver in `TIMING_STRICT`
+ *     mode (@ref CONFIG_BITBANG_TIMING).
  */
 # ifndef CONFIG_RP2040_PIO_DRIVER
-#  define CONFIG_RP2040_PIO_DRIVER 0
+#  define CONFIG_RP2040_PIO_DRIVER 1
 # endif
 
 /**

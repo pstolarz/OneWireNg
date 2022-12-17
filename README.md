@@ -32,8 +32,8 @@ devices.
   * [`OneWireNg`](#arch_owng)
     * [Memory allocation caveat](#arch_owng_malloc)
   * [`OneWireNg_BitBang`](#arch_bb)
-  * [`OneWireNg_PicoRP2040PIO`](#arch_pio)
   * [`OneWireNg_PLATFORM`](#arch_plat)
+    * [RP2040 drivers](#arch_rp2040)
 * [OneWire compatibility](#ow)
   * [DallasTemperature library](#ow_dallas)
 * [License](#license)
@@ -161,9 +161,6 @@ target_link_libraries(some_project PRIVATE OneWireNg)
 pico_add_extra_outputs(some_project)
 ```
 
-NOTE: Currently only PIO driver (`OneWireNg_PicoRP2040PIO`) is supported for
-Pico SDK environment. See [below](#architecture-details) for more details.
-
 <a name="usage_mbed"></a>
 ### Mbed OS
 
@@ -191,16 +188,19 @@ While added the library shall be configured via Mbed OS native configuration
     * [Reported to be working.](https://github.com/SpenceKonde/megaTinyCore/blob/master/megaavr/extras/LibraryCompatibility.md)
 * Arduino ESP8266/ESP-IDF.
     * Platform class: `OneWireNg_ArduinoIdfESP8266`.
-    * Tested on WemOS D1
+    * Tested on WemOS D1.
 * Arduino/ESP-IDF ESP32 (classic, S, C and H families).
     * Platform class: `OneWireNg_ArduinoIdfESP32`.
-    * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-S3-WROOM-1, ESP32-C3-32S-Kit
+    * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-S3-WROOM-1, ESP32-C3-32S-Kit.
+* Arduino/Pico SDK RP2040.
+    * Platform classes: `OneWireNg_PicoRP2040`, `OneWireNg_PicoRP2040PIO`.
+    * Tested on Raspberry Pi Pico.
 * Arduino/Mbed OS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
     * Platform class: `OneWireNg_ArduinoMbedHAL`.
-    * Tested on Raspberry Pi Pico (RP2040) (bit-banging and PIO drivers)
+    * Tested on Raspberry Pi Pico, Nucleo-144 (L552ZE-Q).
 * Arduino STM32.
     * Platform class: `OneWireNg_ArduinoSTM32`.
-    * Tested on Nucleo-144 (L552ZE-Q)
+    * Tested on Nucleo-144 (L552ZE-Q).
 * Arduino SAM.
     * Platform class: `OneWireNg_ArduinoSAM`.
     * [Reported to be working.](https://github.com/pstolarz/OneWireNg/issues/33)
@@ -231,7 +231,7 @@ work on the following platforms and CPU frequencies:
     * ESP32-S3-WROOM-1; 240,160,80MHz (other freqs not tested)
     * ESP32-C3-32S-Kit; 240,160MHz (other freqs not tested)
 * RP2040
-    * Raspberry Pi Pico; 125MHz (bit-banging and PIO drivers)
+    * Raspberry Pi Pico; 50-250MHz (bit-banging and PIO drivers)
 * STM32
     * NUCLEO-L552ZE-Q; 110MHz
 
@@ -307,9 +307,8 @@ configures 1-wire service to work in one of the above modes.
 RP2040 PIO driver (`OneWireNg_PicoRP2040PIO` class) doesn't support
 power-control-GPIO configuration. Since RP2040 platform is able to provide
 direct voltage source via its GPIO pads, parasitically powered devices need
-to be powered directly by GPIO controlling the 1-wire bus, while using this
+to be powered directly by GPIO controlling the 1-wire bus while using this
 driver.
-
 
 **1-wire stability and parasite powering**
 
@@ -425,17 +424,6 @@ on GPIO bit-banging. Object of this class isn't constructed directly rather than
 the class is intended to be inherited by a derived class providing protected
 interface implementation for low level GPIO activities (set mode, read, write).
 
-<a name="arch_pio"></a>
-### `OneWireNg_PicoRP2040PIO`
-
-The class is derived from `OneWireNg` and implements the 1-wire interface
-for RP2040 MCU using Programmable I/O (PIO) peripheral. This is a platform
-driver therefore may be created directly by its public constructor.
-
-NOTE: The RP2040 platform is supported via 2 types of drivers for the Arduino
-framework: bit-banging driver (`OneWireNg_ArduinoMbedHAL` class) and the PIO
-driver. See `CONFIG_RP2040_PIO_DRIVER` configuration parameter for more details.
-
 <a name="arch_plat"></a>
 ### `OneWireNg_PLATFORM`
 
@@ -456,6 +444,19 @@ NOTE: For the convenience there has been provided `OneWireNg_CurrentPlatform.h`
 header which tries to detect platform the compilation is proceeded and:
  * include proper platform class header,
  * assign `OneWireNg_CurrentPlatform` macro-define to the detected platform class.
+
+<a name="arch_rp2040"></a>
+### RP2040 drivers
+
+`OneWireNg_PicoRP2040PIO` is derived from `OneWireNg` and implements the 1-wire
+interface for RP2040 MCU using Programmable I/O (PIO) peripheral. Second type
+of driver supporting RP2040 platform is `OneWireNg_PicoRP2040` bit-banging
+driver. Use `CONFIG_RP2040_PIO_DRIVER` configuration parameter to setup a
+specific driver for the platform.
+
+NOTE: There are observed problems with Pico SDK's serial output (USB,
+UART) while using the bit-banging driver in `TIMING_STRICT` mode (see
+`CONFIG_BITBANG_TIMING`).
 
 <a name="ow"></a>
 ## OneWire compatibility

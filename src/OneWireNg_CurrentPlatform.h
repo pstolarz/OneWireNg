@@ -43,17 +43,17 @@
 #elif defined(ARDUINO_ARCH_STM32)
 # include "platform/OneWireNg_ArduinoSTM32.h"
 # define OneWireNg_CurrentPlatform OneWireNg_ArduinoSTM32
-#elif defined(ARDUINO_ARCH_MBED) || defined(__MBED__)
-# if CONFIG_RP2040_PIO_DRIVER && defined(ARDUINO_ARCH_RP2040)
-#  include "platform/OneWireNg_PicoRP2040PIO.h"
-# define OneWireNg_CurrentPlatform OneWireNg_PicoRP2040PIO
-# else
-#  include "platform/OneWireNg_ArduinoMbedHAL.h"
-#  define OneWireNg_CurrentPlatform OneWireNg_ArduinoMbedHAL
-# endif
 #elif defined(PICO_BUILD) || defined(ARDUINO_ARCH_RP2040)
-# include "platform/OneWireNg_PicoRP2040PIO.h"
-# define OneWireNg_CurrentPlatform OneWireNg_PicoRP2040PIO
+# if CONFIG_RP2040_PIO_DRIVER
+#  include "platform/OneWireNg_PicoRP2040PIO.h"
+#  define OneWireNg_CurrentPlatform OneWireNg_PicoRP2040PIO
+# else
+#  include "platform/OneWireNg_PicoRP2040.h"
+#  define OneWireNg_CurrentPlatform OneWireNg_PicoRP2040
+# endif
+#elif defined(ARDUINO_ARCH_MBED) || defined(__MBED__)
+# include "platform/OneWireNg_ArduinoMbedHAL.h"
+# define OneWireNg_CurrentPlatform OneWireNg_ArduinoMbedHAL
 #else
 # define OneWireNg_CurrentPlatform
 # warning "Can't detect platform. Use proper class for the platform you are compiling for!"

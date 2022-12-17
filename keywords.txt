@@ -8,6 +8,7 @@
 
 OneWireNg	KEYWORD1
 OneWireNg_BitBang	KEYWORD1
+OneWireNg_PicoRP2040	KEYWORD1
 OneWireNg_PicoRP2040PIO	KEYWORD1
 OneWireNg_ArduinoAVR	KEYWORD1
 OneWireNg_ArduinoMegaAVR	KEYWORD1

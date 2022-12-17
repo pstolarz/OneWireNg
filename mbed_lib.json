@@ -46,11 +46,6 @@
             "help": "Data bus GPIO blink protection",
             "macro_name": "CONFIG_BUS_BLINK_PROTECTION"
         },
-        "bitbang_delay_ccount": {
-            "help": "Bit-banging timings using CPU cycles counter",
-            "macro_name": "CONFIG_BITBANG_DELAY_CCOUNT",
-            "value": "1"
-        },
         "bitbang_timing": {
             "help": "Bit-banging timing regime",
             "macro_name": "CONFIG_BITBANG_TIMING",
@@ -68,21 +63,6 @@
         "ds18s20_ext_res": {
             "help": "Extended temperature resolution for DS18S20",
             "macro_name": "CONFIG_DS18S20_EXT_RES"
-        },
-        "esp8266_init_time": {
-            "help": "ESP8266 init time in msecs",
-            "macro_name": "CONFIG_ESP8266_INIT_TIME",
-            "value": 500
-        },
-        "rp2040_pio_driver": {
-            "help": "Use RP2040 PIO driver in favor of bit-banging one",
-            "macro_name": "CONFIG_RP2040_PIO_DRIVER",
-            "value": 0
-        },
-        "rp2040_piosm_num_used": {
-            "help": "Number of RP2040 PIO SM used",
-            "macro_name": "CONFIG_RP2040_PIOSM_NUM_USED",
-            "value": 2
         }
     }
 }

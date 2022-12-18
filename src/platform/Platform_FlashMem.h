@@ -15,15 +15,12 @@
 
 #ifdef ARDUINO
 # include "Arduino.h"
-# define FLASH_STORAGE PROGMEM
+# define FLASH_STORAGE PROGMEM const
 # define flashRead_u8(addr) pgm_read_byte(addr)
 # define flashRead_u16(addr) pgm_read_word(addr)
 # define flashRead_u32(addr) pgm_read_dword(addr)
 #else
-# if !(defined(IDF_VER) || defined(OWNG_TEST))
-#  warning "Flash memory API unsupported for the target platform. Disabled."
-# endif
-# define FLASH_STORAGE
+# define FLASH_STORAGE const
 # define flashRead_u8(addr) (*(const uint8_t*)(addr))
 # define flashRead_u16(addr) (*(const uint16_t*)(addr))
 # define flashRead_u32(addr) (*(const uint32_t*)(addr))

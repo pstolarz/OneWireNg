@@ -282,11 +282,11 @@ uint8_t OneWireNg::crc8(const void *in, size_t len, uint8_t crc_in)
 #if (CONFIG_CRC8_ALGO == CRC8_TAB_16LH)
     const uint8_t *in_bts = (const uint8_t*)in;
 
-    static const uint8_t CRCTAB_STORAGE CRC8_16L[] = {
+    CRCTAB_STORAGE static uint8_t CRC8_16L[] = {
         0x00, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83,
         0xc2, 0x9c, 0x7e, 0x20, 0xa3, 0xfd, 0x1f, 0x41
     };
-    static const uint8_t CRCTAB_STORAGE CRC8_16H[] = {
+    CRCTAB_STORAGE static uint8_t CRC8_16H[] = {
         0x00, 0x9d, 0x23, 0xbe, 0x46, 0xdb, 0x65, 0xf8,
         0x8c, 0x11, 0xaf, 0x32, 0xca, 0x57, 0xe9, 0x74
     };
@@ -310,11 +310,11 @@ uint16_t OneWireNg::crc16(const void *in, size_t len, uint16_t crc_in)
 # if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
     const uint8_t *in_bts = (const uint8_t*)in;
 
-    static const uint16_t CRCTAB_STORAGE CRC16_16L[] = {
+    CRCTAB_STORAGE static uint16_t CRC16_16L[] = {
         0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0, 0x0280, 0xc241,
         0xc601, 0x06c0, 0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440
     };
-    static const uint16_t CRCTAB_STORAGE CRC16_16H[] = {
+    CRCTAB_STORAGE static uint16_t CRC16_16H[] = {
         0x0000, 0xcc01, 0xd801, 0x1400, 0xf001, 0x3c00, 0x2800, 0xe401,
         0xa001, 0x6c00, 0x7800, 0xb401, 0x5000, 0x9c01, 0x8801, 0x4400
     };

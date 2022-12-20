@@ -203,8 +203,8 @@
  *     CONFIG_BUS_BLINK_PROTECTION parameter.
  *  3. High state visible via pull-up resistor (GPIO configured as input).
  *
- * @note The parameter shall be for legacy AVR platforms especially working
- *     in the parasitic mode.
+ * @note The parameter shall be used for legacy AVR platforms especially
+ *     working in the parasitic mode.
  * @note @c CONFIG_BUS_BLINK_PROTECTION may be useful to improve 1-wire
  *     communication on long cables by speeding-up low-to-high transition.
  */

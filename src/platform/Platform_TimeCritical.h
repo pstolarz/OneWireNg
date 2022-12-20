@@ -25,11 +25,17 @@
 #endif
 
 #if CONFIG_BITBANG_DELAY_CCOUNT
-# if defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32H2)
-#  include "hal/cpu_hal.h"
-#  define get_cpu_cycle_count() cpu_hal_get_cycle_count()
+# if defined(CONFIG_IDF_TARGET_ESP32C2) || defined(CONFIG_IDF_TARGET_ESP32C3) || \
+    defined(CONFIG_IDF_TARGET_ESP32H2)
+#  include "esp_cpu.h"
+#  include "esp_idf_version.h"
+#  if (ESP_IDF_VERSION_MAJOR >= 5)
+#   define get_cpu_cycle_count() esp_cpu_get_cycle_count()
+#  else
+#   define get_cpu_cycle_count() esp_cpu_get_ccount()
+#  endif
 # elif defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)
-extern "C" uint32_t xthal_get_ccount();
+extern "C" unsigned xthal_get_ccount();
 #  define get_cpu_cycle_count() xthal_get_ccount()
 # endif
 #endif

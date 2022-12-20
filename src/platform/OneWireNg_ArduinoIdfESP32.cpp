@@ -32,6 +32,7 @@
 #else
 /* ESP-IDF */
 # include "driver/gpio.h"
+# include "soc/gpio_periph.h"
 
 # define INPUT  0x01
 # define OUTPUT 0x02
@@ -157,7 +158,7 @@ TIME_CRITICAL int OneWireNg_ArduinoIdfESP32::touch1Overdrive()
 
 void OneWireNg_ArduinoIdfESP32::initDtaGpio(unsigned pin, bool pullUp)
 {
-    assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
+    assert(GPIO_IS_VALID_GPIO((int)pin) && GPIO_IS_VALID_OUTPUT_GPIO((int)pin));
 
 #if CONFIG_BITBANG_DELAY_CCOUNT
     /* retrieve CPU frequency (for clock-count bit-banging mode) */
@@ -189,7 +190,7 @@ void OneWireNg_ArduinoIdfESP32::initDtaGpio(unsigned pin, bool pullUp)
 #if CONFIG_PWR_CTRL_ENABLED
 void OneWireNg_ArduinoIdfESP32::initPwrCtrlGpio(unsigned pin)
 {
-    assert(GPIO_IS_VALID_GPIO(pin) && GPIO_IS_VALID_OUTPUT_GPIO(pin));
+    assert(GPIO_IS_VALID_GPIO((int)pin) && GPIO_IS_VALID_OUTPUT_GPIO((int)pin));
 
     if (pin < 32) {
         _pwrCtrlGpio.bmsk = (uint32_t)(1UL << pin);

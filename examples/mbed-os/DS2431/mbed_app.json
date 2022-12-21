@@ -1,0 +1,24 @@
+{
+    "config": {
+        "ow_pin": {
+            "help": "1-wire pin number"
+        },
+        "use_od_mode": {
+            "help": "If set to 1: use overdrive mode"
+        },
+        "write_demo": {
+            "help": "If set to 1: enable write to FLASH demo"
+        }
+    },
+    "target_overrides": {
+        "*": {
+            "use_od_mode": 1,
+            "OneWireNg.overdrive_enabled": 1,
+            "OneWireNg.crc16_enabled": 1,
+            "platform.stdio-baud-rate": 115200
+        },
+        "NUCLEO_L552ZE_Q": {
+            "ow_pin": "ARDUINO_UNO_D13"
+        }
+    }
+}

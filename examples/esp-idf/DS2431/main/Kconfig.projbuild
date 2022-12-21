@@ -1,0 +1,15 @@
+menu "DS2431 example"
+
+config OW_PIN
+    int "1-wire pin number"
+    default 13
+
+config USE_OD_MODE
+    bool "Use overdrive mode"
+    default n
+
+config WRITE_DEMO
+    bool "Enable write to FLASH demo"
+    default n
+
+endmenu

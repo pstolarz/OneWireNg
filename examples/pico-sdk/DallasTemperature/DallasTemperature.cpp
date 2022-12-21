@@ -14,8 +14,8 @@
  * Dallas family thermometers access example (Pico SDK).
  *
  * Required configuration:
- * - @c CONFIG_SEARCH_ENABLED if @c SINGLE_SENSOR is not defined,
- * - @c CONFIG_PWR_CTRL_ENABLED if @c PWR_CTRL_PIN is defined.
+ * - @c CONFIG_SEARCH_ENABLED for non single sensor setup,
+ * - @c CONFIG_PWR_CTRL_ENABLED if @c PWR_CTRL_PIN is configured.
  */
 #include <stdio.h>
 #include "pico/stdio.h"
@@ -60,11 +60,11 @@
 //#define COMMON_RES      (DSTherm::RES_12_BIT)
 
 #if !defined(SINGLE_SENSOR) && !CONFIG_SEARCH_ENABLED
-# error "CONFIG_SEARCH_ENABLED is required for non SINGLE_SENSOR setup"
+# error "CONFIG_SEARCH_ENABLED is required for non signle sensor setup"
 #endif
 
 #if defined(PWR_CTRL_PIN) && !CONFIG_PWR_CTRL_ENABLED
-# error "CONFIG_PWR_CTRL_ENABLED is required if PWR_CTRL_PIN is defined"
+# error "CONFIG_PWR_CTRL_ENABLED is required if PWR_CTRL_PIN is configured"
 #endif
 
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)

@@ -28,7 +28,10 @@ Basic overdrive example. Scan the bus for overdrive enabled devices.
 
 ---
 ### `DS2431`
-[*Arduino*](arduino/DS2431/DS2431.ino)
+[*Arduino*](arduino/DS2431/DS2431.ino) |
+[*ESP-IDF*](esp-idf/DS2431/main/DS2431.cpp) |
+[*Pico SDK*](pico-sdk/DS2431/DS2431.cpp) |
+[*Mbed OS*](mbed-os/DS2431/DS2431.cpp)
 
 Simple DS2431 device (EEPROM memory) example. Read + write. Overdrive mode
 support.

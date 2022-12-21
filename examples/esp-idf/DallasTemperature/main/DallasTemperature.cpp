@@ -14,8 +14,8 @@
  * Dallas family thermometers access example (ESP-IDF).
  *
  * Required configuration:
- * - @c CONFIG_SEARCH_ENABLED if @c CONFIG_SINGLE_SENSOR is not defined,
- * - @c CONFIG_PWR_CTRL_ENABLED if @c CONFIG_PWR_CTRL_PIN is defined.
+ * - @c CONFIG_SEARCH_ENABLED for non single sensor setup,
+ * - @c CONFIG_PWR_CTRL_ENABLED if @c CONFIG_PWR_CTRL_PIN is configured.
  */
 #include <stdio.h>
 
@@ -29,11 +29,11 @@
 #endif
 
 #if !defined(CONFIG_SINGLE_SENSOR) && !CONFIG_SEARCH_ENABLED
-# error "CONFIG_SEARCH_ENABLED is required for non CONFIG_SINGLE_SENSOR setup"
+# error "CONFIG_SEARCH_ENABLED is required for non signle sensor setup"
 #endif
 
 #if defined(CONFIG_PWR_CTRL_PIN) && !CONFIG_PWR_CTRL_ENABLED
-# error "CONFIG_PWR_CTRL_ENABLED is required if CONFIG_PWR_CTRL_PIN is defined"
+# error "CONFIG_PWR_CTRL_ENABLED is required if CONFIG_PWR_CTRL_PIN is configured"
 #endif
 
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)

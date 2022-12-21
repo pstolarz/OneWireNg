@@ -15,7 +15,7 @@
  *
  * Required configuration:
  * - @c CONFIG_SEARCH_ENABLED,
- * - @c CONFIG_PWR_CTRL_ENABLED if @c PWR_CTRL_PIN is defined,
+ * - @c CONFIG_PWR_CTRL_ENABLED if @c PWR_CTRL_PIN is configured,
  * - @c CONFIG_MAX_SEARCH_FILTERS >= 1.
  */
 #include "OneWireNg_CurrentPlatform.h"
@@ -44,15 +44,15 @@
 //#define PWR_CTRL_PIN    9
 
 #if !CONFIG_SEARCH_ENABLED
-# error "Example requires CONFIG_SEARCH_ENABLED to be configured"
+# error "CONFIG_SEARCH_ENABLED is required"
 #endif
 
 #if defined(PWR_CTRL_PIN) && !CONFIG_PWR_CTRL_ENABLED
-# error "CONFIG_PWR_CTRL_ENABLED is required if PWR_CTRL_PIN is defined"
+# error "CONFIG_PWR_CTRL_ENABLED is required if PWR_CTRL_PIN is configured"
 #endif
 
 #if (CONFIG_MAX_SEARCH_FILTERS < 1)
-# error "Example requires CONFIG_MAX_SEARCH_FILTERS >= 1 to be configured"
+# error "CONFIG_MAX_SEARCH_FILTERS >= 1 is required"
 #endif
 
 #ifdef PARASITE_POWER

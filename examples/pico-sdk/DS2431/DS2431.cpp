@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022 Piotr Stolarz
+ * Copyright (c) 2022 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -11,7 +11,7 @@
  */
 
 /**
- * DS2431 EEPROM usage example (Arduino).
+ * DS2431 EEPROM usage example (Pico SDK).
  *
  * Required configuration:
  * - @c CONFIG_SEARCH_ENABLED,
@@ -19,7 +19,12 @@
  * - @c CONFIG_MAX_SEARCH_FILTERS >= 1,
  * - @c CONFIG_OVERDRIVE_ENABLED if @c USE_OD_MODE is configured.
  */
+#include <stdio.h>
+#include <string.h>
+#include "pico/stdio.h"
+
 #include "OneWireNg_CurrentPlatform.h"
+#include "platform/Platform_Delay.h"
 
 /*
  * 1-wire bus pin number.
@@ -74,12 +79,10 @@ static OneWireNg *ow = NULL;
 
 static void printId(const OneWireNg::Id& id)
 {
-    Serial.print(id[0], HEX);
-    for (size_t i = 1; i < sizeof(OneWireNg::Id); i++) {
-        Serial.print(':');
-        Serial.print(id[i], HEX);
-    }
-    Serial.println();
+    for (size_t i = 0; i < sizeof(OneWireNg::Id); i++)
+        printf("%s%02X", (!i ? "" : ":"), id[i]);
+
+    printf("\n");
 }
 
 /**
@@ -93,7 +96,6 @@ static void printId(const OneWireNg::Id& id)
  */
 static void printMem(const OneWireNg::Id *id)
 {
-    static const char HEX_DIGS[] = "0123456789ABCDEF";
     uint8_t cmd[DS2431_MEM_SIZE + 3];
 
     cmd[0] = CMD_READ_MEMORY;
@@ -114,46 +116,36 @@ static void printMem(const OneWireNg::Id *id)
 
     for (int i = 0; i < DS2431_MEM_SIZE; i++)
     {
-        char hex[3] = {};
-
-        if (!(i % DS2431_ROW_SIZE))
-        {
-            hex[0] = HEX_DIGS[(i >> 4)];
-            hex[1] = HEX_DIGS[(i & 0x0f)];
-
-            Serial.print("00");
-            Serial.print(hex);
-            Serial.print(' ');
+        if (!(i % DS2431_ROW_SIZE)) {
+            printf("%02X ", (uint8_t)i);
         }
-        hex[0] = HEX_DIGS[(mem[i] >> 4)];
-        hex[1] = HEX_DIGS[(mem[i] & 0x0f)];
+        printf("%02X", mem[i]);
 
-        Serial.print(hex);
         if (((i+1) % DS2431_ROW_SIZE) != 0) {
-            Serial.print(':');
+            printf(":");
         } else {
             switch (i/DS2431_ROW_SIZE)
             {
             case 0:
-                Serial.println(" Data Memory Page 0");
+                printf(" Data Memory Page 0\n");
                 break;
             case 4:
-                Serial.println(" Data Memory Page 1");
+                printf(" Data Memory Page 1\n");
                 break;
             case 8:
-                Serial.println(" Data Memory Page 2");
+                printf(" Data Memory Page 2\n");
                 break;
             case 12:
-                Serial.println(" Data Memory Page 3");
+                printf(" Data Memory Page 3\n");
                 break;
             case 16:
-                Serial.println(" Control Bytes: PCB0:PCB1:PCB2:PCB3:CPB:FACT:USR1:USR2");
+                printf(" Control Bytes: PCB0:PCB1:PCB2:PCB3:CPB:FACT:USR1:USR2\n");
                 break;
             case 17:
-                Serial.println(" Reserved");
+                printf(" Reserved\n");
                 break;
             default:
-                Serial.println();
+                printf("\n");
                 break;
             }
         }
@@ -207,7 +199,7 @@ static bool writeRow(const OneWireNg::Id *id,
     if (ow->checkInvCrc16(cmd, DS2431_ROW_SIZE + 3, ow->getLSB_u16(crc16)) !=
         OneWireNg::EC_SUCCESS)
     {
-        Serial.println("WRITE SCRATCHPAD: CRC error");
+        printf("WRITE SCRATCHPAD: CRC error\n");
         return false;
     }
 
@@ -224,7 +216,7 @@ static bool writeRow(const OneWireNg::Id *id,
     if (ow->checkInvCrc16(cmd, DS2431_ROW_SIZE + 4, ow->getLSB_u16(crc16)) !=
         OneWireNg::EC_SUCCESS)
     {
-        Serial.println("READ SCRATCHPAD: CRC error");
+        printf("READ SCRATCHPAD: CRC error\n");
         return false;
     }
 
@@ -232,14 +224,14 @@ static bool writeRow(const OneWireNg::Id *id,
     uint8_t es = cmd[3];
     if (ta1 != cmd[1] || ta2 != cmd[2] || (es & 0x20) || (es & 0x80))
     {
-        Serial.println("READ SCRATCHPAD: command status error");
+        printf("READ SCRATCHPAD: command status error\n");
         return false;
     }
 
     /* check if data was set in scratchpad */
     if (checkDataIntegr && memcmp(&cmd[4], rowData, DS2431_ROW_SIZE))
     {
-        Serial.println("READ SCRATCHPAD: row is write protected");
+        printf("READ SCRATCHPAD: row is write protected\n");
         return false;
     }
 
@@ -252,7 +244,7 @@ static bool writeRow(const OneWireNg::Id *id,
     ow->touchBytes(cmd, 4);
 
     /* wait for completion (10 ms) */
-    delay(10);
+    delayMs(10);
 
     return true;
 }
@@ -277,10 +269,7 @@ static bool writePage(const OneWireNg::Id *id,
 
     if (i < (DS2431_PAGE_SIZE / DS2431_ROW_SIZE))
     {
-        Serial.print("Error writing row ");
-        Serial.print(row);
-        Serial.print(" in page ");
-        Serial.println(pageAddr);
+        printf("Error writing row %u in page %u\n", (unsigned)row, pageAddr);
         return false;
     }
     return true;
@@ -297,7 +286,7 @@ void setup()
 
     ow = new OneWireNg_CurrentPlatform(OW_PIN, false);
 
-    Serial.begin(115200);
+    stdio_init_all();
 
 #ifdef USE_OD_MODE
     ow->overdriveAll();
@@ -306,7 +295,7 @@ void setup()
     /* search for DS2431 devices connected to the bus
      */
     ow->searchFilterAdd(DS2431);
-    Serial.println("Connected DS2431 devices:");
+    printf("Connected DS2431 devices:\n");
 
     ow->searchReset();
     while (ow->search(id) == OneWireNg::EC_MORE) {
@@ -316,7 +305,7 @@ void setup()
         printId(id);
         printMem(NULL);
 
-        Serial.println("----------");
+        printf("----------\n");
     }
 
 #ifdef WRITE_DEMO
@@ -330,12 +319,21 @@ void setup()
         0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00
     };
     if (writePage(&dev, 1, pageData, true)) {
-        Serial.println("Page successfully written to EEPROM");
+        printf("Page successfully written to EEPROM\n");
     }
 #endif
 }
 
 void loop()
 {
-    delay(1000);
+    delayMs(1000);
+}
+
+int main()
+{
+    setup();
+    for (;;)
+        loop();
+
+    return 0;
 }

@@ -14,8 +14,8 @@
  * Dallas family thermometers access example (Mbed OS).
  *
  * Required configuration:
- * - @c CONFIG_SEARCH_ENABLED if @c MBED_CONF_APP_SINGLE_SENSOR is not set,
- * - @c CONFIG_PWR_CTRL_ENABLED if @c MBED_CONF_APP_PWR_CTRL_PIN is set.
+ * - @c CONFIG_SEARCH_ENABLED for non single sensor setup,
+ * - @c CONFIG_PWR_CTRL_ENABLED if @c MBED_CONF_APP_PWR_CTRL_PIN is configured.
  */
 #include <stdio.h>
 
@@ -29,11 +29,11 @@
 #endif
 
 #if !MBED_CONF_APP_SINGLE_SENSOR && !CONFIG_SEARCH_ENABLED
-# error "CONFIG_SEARCH_ENABLED is required for non MBED_CONF_APP_SINGLE_SENSOR setup"
+# error "CONFIG_SEARCH_ENABLED is required for non signle sensor setup"
 #endif
 
 #if defined(MBED_CONF_APP_PWR_CTRL_PIN) && !CONFIG_PWR_CTRL_ENABLED
-# error "CONFIG_PWR_CTRL_ENABLED is required if MBED_CONF_APP_PWR_CTRL_PIN is defined"
+# error "CONFIG_PWR_CTRL_ENABLED is required if MBED_CONF_APP_PWR_CTRL_PIN is configured"
 #endif
 
 #if defined(MBED_CONF_APP_COMMON_RES) && \

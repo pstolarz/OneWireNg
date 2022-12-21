@@ -27,11 +27,11 @@
 #endif
 
 #if !CONFIG_SEARCH_ENABLED
-# error "Example requires CONFIG_SEARCH_ENABLED to be configured"
+# error "CONFIG_SEARCH_ENABLED is required"
 #endif
 
 #if !CONFIG_OVERDRIVE_ENABLED
-# error "Example requires CONFIG_OVERDRIVE_ENABLED to be configured"
+# error "CONFIG_OVERDRIVE_ENABLED is required"
 #endif
 
 static OneWireNg *ow = NULL;

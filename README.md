@@ -310,13 +310,13 @@ direct voltage source via its GPIO pads, parasitically powered devices need
 to be powered directly by GPIO controlling the 1-wire bus while using this
 driver.
 
-**1-wire stability and parasite powering**
+**Caveats**
 
-Parasite powered slaves are less stable (more error prone) than regularly
-powered devices. If possible, try to avoid parasitically powered setups.
+* Parasite powered slaves are less stable (more error prone) than regularly
+  powered devices. If possible, try to avoid parasitically powered setups.
 
-For legacy AVR (non mega-AVR) platforms the library need to be configured
-with `CONFIG_BUS_BLINK_PROTECTION` to make the parasitic mode working.
+* For legacy AVR (non mega-AVR) platforms the library need to be configured
+  with `CONFIG_BUS_BLINK_PROTECTION` to make the parasitic mode working.
 
 <a name="arch"></a>
 ## Architecture details

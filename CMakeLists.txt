@@ -1,16 +1,6 @@
 if(IDF_VER)
-    if(IDF_TARGET STREQUAL "esp8266")
-        # ESP8266 RTOS SDK
-        idf_component_register(
-            INCLUDE_DIRS
-                src
-            SRC_DIRS
-                src
-                src/platform
-                src/drivers
-        )
-    else()
-        # ESP-IDF
+    # ESP-IDF
+    if(IDF_VERSION_MAJOR GREATER_EQUAL 5)
         idf_component_register(
             INCLUDE_DIRS
                 src
@@ -22,6 +12,15 @@ if(IDF_VER)
                 driver
                 esp_timer
                 soc
+        )
+    else()
+        idf_component_register(
+            INCLUDE_DIRS
+                src
+            SRC_DIRS
+                src
+                src/platform
+                src/drivers
         )
     endif()
     return()

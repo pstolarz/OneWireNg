@@ -12,6 +12,7 @@ RUN apt-get update && \
     ninja-build \
     python3 \
     python3-pip \
+    python3-venv \
     sudo
 RUN apt-get clean
 
@@ -26,7 +27,7 @@ RUN ln -sf /bin/bash /bin/sh
 RUN cd / && \
   git clone https://github.com/espressif/esp-idf && \
   cd esp-idf && \
-  git checkout v4.4.3 && \
+  git checkout v5.0 && \
   git submodule update --init --recursive
 
 RUN cd /esp-idf && \

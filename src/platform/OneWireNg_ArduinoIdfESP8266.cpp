@@ -118,49 +118,6 @@ static volatile uint32_t *esp8266_gpioToFn[16] = {
 /* GPIO 16 PIN Function Register */
 # define GP16F  ESP8266_REG(0x7A0)
 # define GPF16  GP16F
-
-# define INPUT             0x00
-# define OUTPUT            0x01
-# define INPUT_PULLUP      0x02
-
-void pinMode(uint8_t pin, uint8_t mode)
-{
-    if (pin < 16) {
-        if (mode == OUTPUT)
-        {
-            /* set mode to GPIO */
-            GPF(pin) = GPFFS(GPFFS_GPIO(pin));
-            /* SOURCE(GPIO) | DRIVER(NORMAL) |
-               INT_TYPE(UNCHANGED) | WAKEUP_ENABLE(DISABLED) */
-            GPC(pin) = (GPC(pin) & (0xF << GPCI));
-            /* enable */
-            GPES = (1 << pin);
-        } else if (mode == INPUT || mode == INPUT_PULLUP)
-        {
-            /* set mode to GPIO */
-            GPF(pin) = GPFFS(GPFFS_GPIO(pin));
-            /* disable */
-            GPEC = (1 << pin);
-            /* SOURCE(GPIO) | DRIVER(OPEN_DRAIN) |
-               INT_TYPE(UNCHANGED) | WAKEUP_ENABLE(DISABLED) */
-            GPC(pin) = (GPC(pin) & (0xF << GPCI)) | (1 << GPCD);
-            if (mode == INPUT_PULLUP) {
-                /* enable  pull-up */
-                GPF(pin) |= (1 << GPFPU);
-            }
-        }
-    } else if (pin == 16)
-    {
-        /* set mode to GPIO */
-        GPF16 = GP16FFS(GPFFS_GPIO(pin));
-        GPC16 = 0;
-        if (mode == INPUT) {
-            GP16E &= ~1;
-        } else if (mode == OUTPUT) {
-            GP16E |= 1;
-        }
-    }
-}
 #endif /* ESP-IDF */
 
 #define __READ_GPIO(gs) \
@@ -190,6 +147,23 @@ void pinMode(uint8_t pin, uint8_t mode)
 
 #define __GPIO_AS_OUTPUT(gs) \
     if (gs.pin < 16) { __GPIO_SET_OUTPUT(gs); } else { __GPIO16_SET_OUTPUT(); }
+
+/*
+ * Set mode to GPIO.
+ * SOURCE -> GPIO_DATA,
+ * DRIVER -> NORMAL,
+ * INT_TYPE -> DISABLED.
+ */
+static void pinInit(uint8_t pin)
+{
+    if (pin < 16) {
+        GPF(pin) = GPFFS(GPFFS_GPIO(pin));
+        GPC(pin) = 0;
+    } else if (pin == 16) {
+        GPF16 = GP16FFS(GPFFS_GPIO(pin));
+        GPC16 = 0;
+    }
+}
 
 TIME_CRITICAL int OneWireNg_ArduinoIdfESP8266::readDtaGpioIn()
 {
@@ -274,7 +248,11 @@ void OneWireNg_ArduinoIdfESP8266::initDtaGpio(unsigned pin, bool pullUp)
     _dtaGpio.bmsk = (pin < 16 ? (uint32_t)(1UL << pin) : 1);
     _dtaGpio.inReg = (pin < 16 ? &GPI : &GP16I);
 
-    pinMode(pin, (pullUp ? INPUT_PULLUP : INPUT));
+    pinInit(pin);
+    if (pullUp) {
+        /* enable pull-up */
+        GPF(pin) |= (1 << GPFPU);
+    }
     setupDtaGpio();
 }
 
@@ -286,7 +264,7 @@ void OneWireNg_ArduinoIdfESP8266::initPwrCtrlGpio(unsigned pin)
     _pwrCtrlGpio.pin = pin;
     _pwrCtrlGpio.bmsk = (pin < 16 ? (uint32_t)(1UL << pin) : 1);
 
-    pinMode(pin, OUTPUT);
+    pinInit(pin);
     setupPwrCtrlGpio(true);
 }
 #endif

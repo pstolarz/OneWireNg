@@ -128,7 +128,7 @@ void loop()
     DSTherm drv(ow);
 
     /* convert temperature on all sensors connected... */
-    drv.convertTempAll(DSTherm::SCAN_BUS, PARASITE_POWER_ARG);
+    drv.convertTempAll(DSTherm::MAX_CONV_TIME, PARASITE_POWER_ARG);
 
 #if MBED_CONF_APP_SINGLE_SENSOR
     /* single sensor environment */

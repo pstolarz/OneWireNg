@@ -133,7 +133,7 @@ void loop()
     Placeholder<MAX31850::Scratchpad> scrpd;
 
     /* convert temperature on all sensors connected... */
-    drv.convertTempAll(MAX31850::SCAN_BUS, PARASITE_POWER_ARG);
+    drv.convertTempAll(MAX31850::MAX_CONV_TIME, PARASITE_POWER_ARG);
 
     /* ...and read them one-by-one */
     for (const auto& id: *ow) {

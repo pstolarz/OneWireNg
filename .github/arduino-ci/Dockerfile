@@ -19,6 +19,7 @@ RUN arduino-cli core install arduino:samd
 RUN arduino-cli core install arduino:mbed_edge
 RUN arduino-cli core install arduino:mbed_nano
 RUN arduino-cli core install arduino:mbed_nicla
+RUN arduino-cli core install arduino:mbed_opta
 RUN arduino-cli core install arduino:mbed_portenta
 RUN arduino-cli core install arduino:mbed_rp2040
 

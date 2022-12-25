@@ -195,7 +195,7 @@ While added the library shall be configured via Mbed OS native configuration
 * Arduino/Pico SDK RP2040.
     * Platform classes: `OneWireNg_PicoRP2040`, `OneWireNg_PicoRP2040PIO`.
     * Tested on Raspberry Pi Pico.
-* Arduino/Mbed OS platforms (incl. RP2040, Nano, Edge, Nicla, Portena).
+* Arduino/Mbed OS platforms (incl. Edge, Nano, Nicla, Portena, Opta, RP2040).
     * Platform class: `OneWireNg_ArduinoMbedHAL`.
     * Tested on Raspberry Pi Pico, Nucleo-144 (L552ZE-Q).
 * Arduino STM32.

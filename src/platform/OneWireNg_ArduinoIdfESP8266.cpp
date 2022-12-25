@@ -24,110 +24,102 @@
  */
 #if defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266)
 #include <assert.h>
+#include <stdint.h>
 
-#ifdef ARDUINO
-# include "Arduino.h"
-#else
-/* ESP-IDF */
-# include <stdint.h>
+#define ESP8266_REGISTER(addr) *((volatile uint32_t*)(0x60000000 + (addr)))
 
-# define ESP8266_REG(addr) *((volatile uint32_t*)(0x60000000 + (addr)))
+/* Control Registers (GPIO 0-15) */
+#define REG_GPO    ESP8266_REGISTER(0x300) // GPIO_OUT R/W (Output Level)
+#define REG_GPOS   ESP8266_REGISTER(0x304) // GPIO_OUT_SET WO
+#define REG_GPOC   ESP8266_REGISTER(0x308) // GPIO_OUT_CLR WO
+#define REG_GPE    ESP8266_REGISTER(0x30C) // GPIO_ENABLE R/W (Enable)
+#define REG_GPES   ESP8266_REGISTER(0x310) // GPIO_ENABLE_SET WO
+#define REG_GPEC   ESP8266_REGISTER(0x314) // GPIO_ENABLE_CLR WO
+#define REG_GPI    ESP8266_REGISTER(0x318) // GPIO_IN RO (Read Input Level)
+#define REG_GPIE   ESP8266_REGISTER(0x31C) // GPIO_STATUS R/W (Interrupt Enable)
+#define REG_GPIES  ESP8266_REGISTER(0x320) // GPIO_STATUS_SET WO
+#define REG_GPIEC  ESP8266_REGISTER(0x324) // GPIO_STATUS_CLR WO
 
-/* GPIO (0-15) Control Registers */
-# define GPO    ESP8266_REG(0x300) /* GPIO_OUT R/W (Output Level) */
-# define GPOS   ESP8266_REG(0x304) /* GPIO_OUT_SET WO */
-# define GPOC   ESP8266_REG(0x308) /* GPIO_OUT_CLR WO */
-# define GPE    ESP8266_REG(0x30C) /* GPIO_ENABLE R/W (Enable) */
-# define GPES   ESP8266_REG(0x310) /* GPIO_ENABLE_SET WO */
-# define GPEC   ESP8266_REG(0x314) /* GPIO_ENABLE_CLR WO */
-# define GPI    ESP8266_REG(0x318) /* GPIO_IN RO (Read Input Level) */
-# define GPIE   ESP8266_REG(0x31C) /* GPIO_STATUS R/W (Interrupt Enable) */
-# define GPIES  ESP8266_REG(0x320) /* GPIO_STATUS_SET WO */
-# define GPIEC  ESP8266_REG(0x324) /* GPIO_STATUS_CLR WO */
+/* Control Registers (GPIO 16) */
+#define REG_GP16O  ESP8266_REGISTER(0x768)
+#define REG_GP16E  ESP8266_REGISTER(0x774)
+#define REG_GP16I  ESP8266_REGISTER(0x78C)
 
-/* GPIO (0-15) PIN Control Bits */
-# define GPCWE  10 /* WAKEUP_ENABLE (can be 1 only when INT_TYPE is high or low) */
-# define GPCI   7  /* INT_TYPE (3bits) 0:disable,1:rising,2:falling,3:change,4:low,5:high */
-# define GPCD   2  /* DRIVER 0:normal,1:open drain */
-# define GPCS   0  /* SOURCE 0:GPIO_DATA,1:SigmaDelta */
+/* PIN Control Register (GPIO 0-15) */
+#define REG_GPC(p) ESP8266_REGISTER(0x328 + ((p & 0xF) * 4))
 
-/* GPIO (0-15) PIN Control Register */
-# define GPC(p) ESP8266_REG(0x328 + ((p & 0xF) * 4))
+/* PIN Control Register (GPIO 16) */
+#define REG_GPC16  ESP8266_REGISTER(0x790)
 
-/* GPIO (0-15) Function Bits */
-# define GPFSOE 0 /* Sleep OE */
-# define GPFSS  1 /* Sleep Sel */
-# define GPFSPD 2 /* Sleep Pulldown */
-# define GPFSPU 3 /* Sleep Pullup */
-# define GPFFS0 4 /* Function Select bit 0 */
-# define GPFFS1 5 /* Function Select bit 1 */
-# define GPFPD  6 /* Pulldown */
-# define GPFPU  7 /* Pullup */
-# define GPFFS2 8 /* Function Select bit 2 */
+/* PIN Function Registers (GPIO 0-15) */
+#define REG_GPF0   ESP8266_REGISTER(0x834)
+#define REG_GPF1   ESP8266_REGISTER(0x818)
+#define REG_GPF2   ESP8266_REGISTER(0x838)
+#define REG_GPF3   ESP8266_REGISTER(0x814)
+#define REG_GPF4   ESP8266_REGISTER(0x83C)
+#define REG_GPF5   ESP8266_REGISTER(0x840)
+#define REG_GPF6   ESP8266_REGISTER(0x81C)
+#define REG_GPF7   ESP8266_REGISTER(0x820)
+#define REG_GPF8   ESP8266_REGISTER(0x824)
+#define REG_GPF9   ESP8266_REGISTER(0x828)
+#define REG_GPF10  ESP8266_REGISTER(0x82C)
+#define REG_GPF11  ESP8266_REGISTER(0x830)
+#define REG_GPF12  ESP8266_REGISTER(0x804)
+#define REG_GPF13  ESP8266_REGISTER(0x808)
+#define REG_GPF14  ESP8266_REGISTER(0x80C)
+#define REG_GPF15  ESP8266_REGISTER(0x810)
 
-/* GPIO (0-15) PIN Function Registers */
-# define GPF0   ESP8266_REG(0x834)
-# define GPF1   ESP8266_REG(0x818)
-# define GPF2   ESP8266_REG(0x838)
-# define GPF3   ESP8266_REG(0x814)
-# define GPF4   ESP8266_REG(0x83C)
-# define GPF5   ESP8266_REG(0x840)
-# define GPF6   ESP8266_REG(0x81C)
-# define GPF7   ESP8266_REG(0x820)
-# define GPF8   ESP8266_REG(0x824)
-# define GPF9   ESP8266_REG(0x828)
-# define GPF10  ESP8266_REG(0x82C)
-# define GPF11  ESP8266_REG(0x830)
-# define GPF12  ESP8266_REG(0x804)
-# define GPF13  ESP8266_REG(0x808)
-# define GPF14  ESP8266_REG(0x80C)
-# define GPF15  ESP8266_REG(0x810)
-
-static volatile uint32_t *esp8266_gpioToFn[16] = {
-    &GPF0, &GPF1, &GPF2,  &GPF3,  &GPF4,  &GPF5,  &GPF6,  &GPF7,
-    &GPF8, &GPF9, &GPF10, &GPF11, &GPF12, &GPF13, &GPF14, &GPF15
+static volatile uint32_t *_gpioToFn_tab[16] = {
+    &REG_GPF0,  &REG_GPF1,  &REG_GPF2,  &REG_GPF3,
+    &REG_GPF4,  &REG_GPF5,  &REG_GPF6,  &REG_GPF7,
+    &REG_GPF8,  &REG_GPF9,  &REG_GPF10, &REG_GPF11,
+    &REG_GPF12, &REG_GPF13, &REG_GPF14, &REG_GPF15
 };
-# define GPF(p) (*esp8266_gpioToFn[(p & 0xF)])
+#define REG_GPF(p) (*_gpioToFn_tab[(p & 0xF)])
 
-# define GPFFS(f) \
-    (((((f) & 4) != 0) << GPFFS2) | \
-     ((((f) & 2) != 0) << GPFFS1) | \
-     ((((f) & 1) != 0) << GPFFS0))
+/* PIN Function Register (GPIO 16) */
+#define REG_GPF16  ESP8266_REGISTER(0x7A0)
 
-# define GPFFS_GPIO(p) \
-    (((p) == 0 || (p) == 2 || (p) == 4 || (p) == 5) ? \
-     0 : ((p) == 16) ? 1 : 3)
+/* Function Bits (GPIO 0-15) */
+#define BIT_GPFSOE   0 // Sleep OE
+#define BIT_GPFSS    1 // Sleep Sel
+#define BIT_GPFSPD   2 // Sleep Pulldown
+#define BIT_GPFSPU   3 // Sleep Pullup
+#define BIT_GPFFS0   4 // Function Select bit 0
+#define BIT_GPFFS1   5 // Function Select bit 1
+#define BIT_GPFPD    6 // Pulldown
+#define BIT_GPFPU    7 // Pullup
+#define BIT_GPFFS2   8 // Function Select bit 2
 
-/* GPIO 16 Control Registers */
-# define GP16O  ESP8266_REG(0x768)
-# define GP16E  ESP8266_REG(0x774)
-# define GP16I  ESP8266_REG(0x78C)
+/* PIN Function Bits (GPIO 16) */
+#define BIT_GP16FFS0 0 // Function Select bit 0
+#define BIT_GP16FFS1 1 // Function Select bit 1
+#define BIT_GP16FPD  3 // Pulldown
+#define BIT_GP16FSPD 5 // Sleep Pulldown
+#define BIT_GP16FFS2 6 // Function Select bit 2
 
-/* GPIO 16 PIN Control Register */
-# define GP16C  ESP8266_REG(0x790)
-# define GPC16  GP16C
+#define BFD_GPFFS(f) \
+    (((((f) & 4) != 0) << BIT_GPFFS2) | \
+     ((((f) & 2) != 0) << BIT_GPFFS1) | \
+     ((((f) & 1) != 0) << BIT_GPFFS0))
 
-/* GPIO 16 PIN Function Bits */
-# define GP16FFS0 0 /* Function Select bit 0 */
-# define GP16FFS1 1 /* Function Select bit 1 */
-# define GP16FPD  3 /* Pulldown */
-# define GP16FSPD 5 /* Sleep Pulldown */
-# define GP16FFS2 6 /* Function Select bit 2 */
-# define GP16FFS(f) (((f) & 0x03) | (((f) & 0x04) << 4))
+#define BFD_GP16FFS(f) \
+    (((((f) & 4) != 0) << BIT_GP16FFS2) | \
+     ((((f) & 2) != 0) << BIT_GP16FFS1) | \
+     ((((f) & 1) != 0) << BIT_GP16FFS0))
 
-/* GPIO 16 PIN Function Register */
-# define GP16F  ESP8266_REG(0x7A0)
-# define GPF16  GP16F
-#endif /* ESP-IDF */
+#define GPFFS_GPIO_FN(p) \
+    (((p) == 0 || (p) == 2 || (p) == 4 || (p) == 5) ? 0 : ((p) == 16) ? 1 : 3)
+
 
 #define __READ_GPIO(gs) \
     ((*gs.inReg & gs.bmsk) != 0)
 
-#define __WRITE0_GPIO(gs) GPOC = gs.bmsk
-#define __WRITE0_GPIO16() GP16O &= ~(uint32_t)1
+#define __WRITE0_GPIO(gs) REG_GPOC = gs.bmsk
+#define __WRITE0_GPIO16() REG_GP16O &= ~(uint32_t)1
 
-#define __WRITE1_GPIO(gs) GPOS = gs.bmsk
-#define __WRITE1_GPIO16() GP16O |= (uint32_t)1
+#define __WRITE1_GPIO(gs) REG_GPOS = gs.bmsk
+#define __WRITE1_GPIO16() REG_GP16O |= (uint32_t)1
 
 #define __WRITE_GPIO(gs, st) \
     if (gs.pin < 16) { \
@@ -136,14 +128,14 @@ static volatile uint32_t *esp8266_gpioToFn[16] = {
         if (st) { __WRITE1_GPIO16(); } else { __WRITE0_GPIO16(); } \
     }
 
-#define __GPIO_SET_INPUT(gs) GPEC = gs.bmsk
-#define __GPIO16_SET_INPUT() GP16E &= ~(uint32_t)1
+#define __GPIO_SET_INPUT(gs) REG_GPEC = gs.bmsk
+#define __GPIO16_SET_INPUT() REG_GP16E &= ~(uint32_t)1
 
 #define __GPIO_AS_INPUT(gs) \
     if (gs.pin < 16) { __GPIO_SET_INPUT(gs); } else { __GPIO16_SET_INPUT(); }
 
-#define __GPIO_SET_OUTPUT(gs) GPES = gs.bmsk
-#define __GPIO16_SET_OUTPUT() GP16E |= (uint32_t)1
+#define __GPIO_SET_OUTPUT(gs) REG_GPES = gs.bmsk
+#define __GPIO16_SET_OUTPUT() REG_GP16E |= (uint32_t)1
 
 #define __GPIO_AS_OUTPUT(gs) \
     if (gs.pin < 16) { __GPIO_SET_OUTPUT(gs); } else { __GPIO16_SET_OUTPUT(); }
@@ -157,11 +149,11 @@ static volatile uint32_t *esp8266_gpioToFn[16] = {
 static void pinInit(uint8_t pin)
 {
     if (pin < 16) {
-        GPF(pin) = GPFFS(GPFFS_GPIO(pin));
-        GPC(pin) = 0;
+        REG_GPF(pin) = BFD_GPFFS(GPFFS_GPIO_FN(pin));
+        REG_GPC(pin) = 0;
     } else if (pin == 16) {
-        GPF16 = GP16FFS(GPFFS_GPIO(pin));
-        GPC16 = 0;
+        REG_GPF16 = BFD_GP16FFS(GPFFS_GPIO_FN(pin));
+        REG_GPC16 = 0;
     }
 }
 
@@ -246,12 +238,12 @@ void OneWireNg_ArduinoIdfESP8266::initDtaGpio(unsigned pin, bool pullUp)
 
     _dtaGpio.pin = pin;
     _dtaGpio.bmsk = (pin < 16 ? (uint32_t)(1UL << pin) : 1);
-    _dtaGpio.inReg = (pin < 16 ? &GPI : &GP16I);
+    _dtaGpio.inReg = (pin < 16 ? &REG_GPI : &REG_GP16I);
 
     pinInit(pin);
     if (pullUp) {
         /* enable pull-up */
-        GPF(pin) |= (1 << GPFPU);
+        REG_GPF(pin) |= (1 << BIT_GPFPU);
     }
     setupDtaGpio();
 }

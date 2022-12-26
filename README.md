@@ -315,8 +315,9 @@ driver.
 * Parasite powered slaves are less stable (more error prone) than regularly
   powered devices. If possible, try to avoid parasitically powered setups.
 
-* For legacy AVR (non mega-AVR) platforms the library need to be configured
-  with `CONFIG_BUS_BLINK_PROTECTION` to make the parasitic mode working.
+* For legacy AVR (non mega-AVR) and ESP8266 platforms (especially working
+  in the parasitic mode) there are observed problems unless the parameter
+  `CONFIG_BUS_BLINK_PROTECTION` is configured.
 
 <a name="arch"></a>
 ## Architecture details

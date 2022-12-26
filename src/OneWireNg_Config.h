@@ -203,10 +203,11 @@
  *     CONFIG_BUS_BLINK_PROTECTION parameter.
  *  3. High state visible via pull-up resistor (GPIO configured as input).
  *
- * @note The parameter shall be used for legacy AVR platforms especially
- *     working in the parasitic mode.
  * @note @c CONFIG_BUS_BLINK_PROTECTION may be useful to improve 1-wire
  *     communication on long cables by speeding-up low-to-high transition.
+ * @note For legacy AVR and ESP8266 platforms (especially working in the
+ *     parasitic mode) there are observed problems unless the parameter is
+ *     configured.
  */
 # ifndef CONFIG_BUS_BLINK_PROTECTION
 #  define CONFIG_BUS_BLINK_PROTECTION 0

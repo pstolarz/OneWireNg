@@ -23,7 +23,7 @@ if(IDF_VER)
                 src/drivers
         )
     endif()
-    return()
+    set(TARGET ${COMPONENT_LIB})
 endif()
 
 if(PICO_SDK_VERSION_STRING)
@@ -40,5 +40,10 @@ if(PICO_SDK_VERSION_STRING)
         pico_stdlib
         hardware_pio
     )
-    return()
+    set(TARGET OneWireNg)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+        CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${TARGET} PRIVATE -Os)
 endif()

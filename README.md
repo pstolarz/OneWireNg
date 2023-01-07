@@ -9,7 +9,7 @@
 [![Mbed OS builds](https://github.com/pstolarz/OneWireNg/workflows/Mbed%20OS%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/mbedos-builds.yml)
 [![Unit tests](https://github.com/pstolarz/OneWireNg/workflows/Unit%20tests/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml)
 [![Join the chat at https://gitter.im/pstolarz/OneWireNg](https://badges.gitter.im/pstolarz/OneWireNg.svg)](https://gitter.im/pstolarz/OneWireNg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![PlatformIO Registry](https://api.registry.platformio.org/v3/packages/pstolarz/library/OneWireNg/badge.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)
+[![PlatformIO Registry](https://badges.registry.platformio.org/packages/pstolarz/library/OneWireNg.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)
 <br>
 
 This is an 1-wire service library, intended as an alternative for the classic
@@ -85,13 +85,13 @@ devices.
 
   The code architecture allows fast and easy porting for new Arduino platforms
   or even usage core part of the library outside the Arduino environment.
-  See below for usage details on ESP-IDF, Pico SDK or Mbed OS frameworks.
+  See below for usage details on ESP-IDF, Pico SDK or Mbed OS based platforms.
 
 <a name="usage"></a>
 ## Usage
 
 Refer to [`examples`](examples) directory for usage details for each of the
-supported frameworks: Arduino, ESP-IDF, Pico SDK and Mbed OS.
+supported frameworks: Arduino, ESP-IDF, Pico SDK and Mbed.
 
 For API specification refer to sources inline documentation (mainly
 [`OneWireNg`](src/OneWireNg.h) class). For convenience it's possible to generate
@@ -164,17 +164,18 @@ pico_add_extra_outputs(some_project)
 <a name="usage_mbed"></a>
 ### Mbed OS
 
-*NOTE: The library usage for [Mbed OS](https://os.mbed.com) framework is
-experimental. The only board used for tests of this framework is NUCLEO-L552ZE-Q.*
+*NOTE: The library usage for [Mbed OS](https://os.mbed.com) is experimental.
+The only board used for tests of this framework is NUCLEO-L552ZE-Q.*
 
-To add OneWireNg as a library for Mbed OS project use (for specific `VERSION`):
+To add OneWireNg as a library for Mbed framework project use (for specific
+`VERSION`):
 
 ```
 mbed add https://github.com/pstolarz/OneWireNg#VERSION
 ```
 
-While added the library shall be configured via Mbed OS native configuration
-(see [`mbed_lib.json`](mbed_lib.json) for details), which shadows the
+While added the library shall be configured via Mbed native configuration (see
+[`mbed_lib.json`](mbed_lib.json) for details), which shadows the
 `OneWireNg_Config.h` configuration file.
 
 <a name="supported_plats"></a>
@@ -195,7 +196,7 @@ While added the library shall be configured via Mbed OS native configuration
 * Arduino/Pico SDK RP2040.
     * Platform classes: `OneWireNg_PicoRP2040`, `OneWireNg_PicoRP2040PIO`.
     * Tested on Raspberry Pi Pico.
-* Arduino/Mbed OS platforms (incl. Edge, Nano, Nicla, Portena, Opta, RP2040).
+* Arduino/Mbed OS based platforms (incl. Edge, Nano, Nicla, Portena, Opta, RP2040).
     * Platform class: `OneWireNg_ArduinoMbedHAL`.
     * Tested on Raspberry Pi Pico, Nucleo-144 (L552ZE-Q).
 * Arduino STM32.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Piotr Stolarz
+ * Copyright (c) 2019-2023 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -60,8 +60,8 @@
 
 #elif !defined(OWNG_NO_NATIVE_CONFIG) && defined(__MBED__) && !defined(ARDUINO)
 /*
- * Similarly to ESP-IDF, for Mbed OS framework there are 2 ways to specify
- * the library configuration: native (default one, recommended) and standard.
+ * Similarly to ESP-IDF, for Mbed framework there are 2 ways to specify the
+ * library configuration: native (default one, recommended) and standard.
  * OWNG_NO_NATIVE_CONFIG is used to enable the latter.
  */
 

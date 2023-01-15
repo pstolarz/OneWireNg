@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Piotr Stolarz
+ * Copyright (c) 2019-2023 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -131,7 +131,17 @@ public:
      *
      * @note This method is part of the extended virtual interface.
      */
-    EXT_VIRTUAL_INTF uint8_t touchByte(uint8_t byte, bool power = false);
+    EXT_VIRTUAL_INTF uint8_t touchByte(uint8_t byte, bool power = false)
+    {
+        uint8_t ret = 0;
+        for (int i = 0; i < 8; i++) {
+            if (touchBit(byte & 1, power && (i >= 7)))
+                ret |= 1 << i;
+
+            byte >>= 1;
+        }
+        return ret;
+    }
 
     /**
      * Array of bytes touch.
@@ -751,38 +761,13 @@ protected:
     }
 
 #if (CONFIG_MAX_SEARCH_FILTERS > 0)
-    /**
-     * For currently selected family code filters apply them for bit
-     * position @c n.
-     *
-     * @return Filtered bit value at position @c n:
-     *     0: only 0 possible,
-     *     1: only 1 possible,
-     *     2: 0 or 1 possible (code discrepancy or no filtering).
-     */
-    int searchFilterApply(int n);
-
-    /**
-     * For currently selected family code filters deselect these ones
-     * whose value on @c n bit position is different from @c bit.
-     */
-    void searchFilterSelect(int n, int bit);
-
-    /**
-     * Select all family codes set as search filters.
-     */
-    void searchFilterSelectAll() {
-        for (int i = 0; i < _n_fltrs; i++)
-            _fltrs[i].ns = false;
-    }
-
     struct {
         uint8_t code;   /** family code */
         bool ns;        /** not-selected flag */
     } _fltrs[CONFIG_MAX_SEARCH_FILTERS];
 
     int _n_fltrs;       /** number of configured filters */
-#endif /* CONFIG_MAX_SEARCH_FILTERS */
+#endif
 
 #if CONFIG_OVERDRIVE_ENABLED
     bool _overdrive;    /** overdrive turned on */
@@ -806,6 +791,17 @@ private:
 
     Id _lsrch;  /** last search result */
     int _lzero; /** last 0-value search discrepancy bit number */
+#endif
+
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
+    int searchFilterApply(uint8_t bm);
+    void searchFilterSelect(uint8_t bm, int bit);
+    void searchFilterSelectAll();
+
+    /* AND/OR bit-fields used for family code filtering */
+    bool _bao_reuse;
+    uint8_t _ba;
+    uint8_t _bo;
 #endif
 
 #ifdef OWNG_TEST

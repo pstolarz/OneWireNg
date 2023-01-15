@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Piotr Stolarz
+ * Copyright (c) 2019-2023 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -42,19 +42,197 @@
 # define CRCTAB_STORAGE
 #endif
 
-uint8_t OneWireNg::touchByte(uint8_t byte, bool power)
+#if (CONFIG_MAX_SEARCH_FILTERS > 0)
+OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
 {
-    uint8_t ret = 0;
-    for (int i = 0; i < 8; i++) {
-        if (touchBit(byte & 1, power && (i >= 7)))
-            ret |= 1 << i;
-
-        byte >>= 1;
+    for (int i = 0; i < _n_fltrs; i++) {
+        /* check if the code is already added */
+        if (_fltrs[i].code == code)
+            return EC_SUCCESS;
     }
-    return ret;
+
+    if (_n_fltrs >= CONFIG_MAX_SEARCH_FILTERS)
+        return EC_FULL;
+
+    _fltrs[_n_fltrs].code = code;
+    _fltrs[_n_fltrs].ns = false;
+    _n_fltrs++;
+
+    return EC_SUCCESS;
 }
 
+void OneWireNg::searchFilterDel(uint8_t code)
+{
+    for (int i = 0; i < _n_fltrs; i++) {
+        if (_fltrs[i].code == code) {
+            for (i++; i < _n_fltrs; i++)
+                _fltrs[i - 1] = _fltrs[i];
+
+            _n_fltrs--;
+            break;
+        }
+    }
+}
+
+/**
+ * For currently selected family code filters apply them for a bit
+ * identified by bitmap @c bm. The function assumes at least one selected
+ * filter in the filters set.
+ *
+ * @return Filtered bit value:
+ *     0: only 0 possible,
+ *     1: only 1 possible,
+ *     2: 0 or 1 possible (code discrepancy or no filtering).
+ */
+inline int OneWireNg::searchFilterApply(uint8_t bm)
+{
+    if (!_n_fltrs)
+        /* no filtering - any bit value applies */
+        return 2;
+
+    if (!_bao_reuse) {
+        _ba = _bo = 0;
+        _ba--; /* all 1s */
+
+        for (int i = 0; i < _n_fltrs; i++) {
+            if (!_fltrs[i].ns) {
+                _ba &= _fltrs[i].code;
+                _bo |= _fltrs[i].code;
+            }
+        }
+    }
+    return (!(_bo & bm) ? 0 : ((_ba & bm) ? 1 : 2));
+}
+
+/**
+ * For currently selected family code filters deselect these whose value
+ * on a bit position (identified by bitmap @c bm) is different from @c bit.
+ */
+inline void OneWireNg::searchFilterSelect(uint8_t bm, int bit)
+{
+    _bao_reuse = true;
+
+    for (int i = 0; i < _n_fltrs; i++) {
+        if (!_fltrs[i].ns) {
+            if ((_fltrs[i].code & bm) ^ (bit ? bm : 0))
+                _bao_reuse = !(_fltrs[i].ns = true);
+        }
+    }
+}
+
+/**
+ * Select all family codes set as search filters.
+ */
+inline void OneWireNg::searchFilterSelectAll()
+{
+    for (int i = 0; i < _n_fltrs; i++)
+        _fltrs[i].ns = false;
+
+    _bao_reuse = false;
+}
+#endif /* CONFIG_MAX_SEARCH_FILTERS */
+
 #if CONFIG_SEARCH_ENABLED
+/**
+ * Transmit search triplet on the bus (for a given bit position @c n)
+ * consisting of the following bits:
+ * - bit 1: 0 present for this bit position (master reads, slave writes),
+ * - bit 2: 1 present for this bit position (master reads, slave writes),
+ * - bit 3: select slave with a given bit value (master writes, slave reads).
+ *     This bit may not be transmitted in case it has no sense (no slave
+ *     devices on the bus or bus error).
+ *
+ * If selected bit value is 1 then the corresponding n-th bit in @c id is set
+ * (the @id must be initialized with 0).
+ *
+ * @c lzero is set to @c n if discrepancy occurred at the processed bit and
+ * the bit value is 0. @c lzero is not updated in other case.
+ *
+ * @return Error codes:
+ *     - @c EC_SUCCESS: Searching step successfully finished; device @c id
+ *         returned.
+ *     - @c EC_BUS_ERROR: Unexpected response received - bus error.
+ *     - @c EC_NO_DEVS: Returned if search filtering is enabled and there are
+ *         no devices matching the filtering criteria in the current searching
+ *         step. Search-scan process needs to be continued with a subsequent
+ *         searching step or finished (depending on the binary tree processing
+ *         condition).
+ */
+inline OneWireNg::ErrorCode
+    OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
+{
+    uint8_t n_bm = (uint8_t)(1 << (n & 7));
+    uint8_t n_bt = (n >> 3);
+
+    int selBit;             /* selected bit value */
+    int v0 = touchBit(1);   /* 0-presence */
+    int v1 = touchBit(1);   /* 1-presence */
+
+    if (v1 && v0)
+    {
+        /*
+         * No slave devices present on the bus. Reset pulse
+         * indicated presence of some - bus error is returned.
+         */
+        return EC_BUS_ERROR;
+    } else if (!v1 && !v0)
+    {
+        /*
+         * Discrepancy detected for this bit position.
+         */
+        if (n_bt >= (int)(sizeof(Id) - 1)) {
+            /* no discrepancy is expected for CRC part of the id - bus error */
+            return EC_BUS_ERROR;
+        } else {
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
+            if (n_bt || (selBit = searchFilterApply(n_bm)) == 2)
+# endif
+            {
+                if (n < _lzero) {
+                    selBit = ((_lsrch[n_bt] & n_bm) != 0);
+                } else if (n == _lzero) {
+                    selBit = 1;
+                } else {
+                    selBit = 0;
+                }
+
+                if (!selBit)
+                    lzero = n;
+            }
+        }
+    } else
+    {
+        /*
+         * Unambiguous value for this bit position.
+         */
+        selBit = !v1;
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
+        if (!n_bt)
+        {
+            /* check if code matches filtering criteria */
+            int fltBit = searchFilterApply(n_bm);
+            if (fltBit != 2 && fltBit != selBit)
+                return EC_NO_DEVS;
+        }
+# endif
+    }
+
+    touchBit(selBit);
+# if (CONFIG_MAX_SEARCH_FILTERS > 0)
+    /*
+     * There is at least one matching family code among connected devices
+     * for the already selected bit. Therefore the following call wont end
+     * up with all-deselected-filters state.
+     */
+    if (!n_bt)
+        searchFilterSelect(n_bm, selBit);
+# endif
+    if (selBit)
+        id[n_bt] |= n_bm;
+
+    return EC_SUCCESS;
+}
+
 # define __UPDATE_DISCREPANCY() \
     (memcpy(_lsrch, id, sizeof(Id)), ((_lzero = lzero) < 0))
 
@@ -109,171 +287,6 @@ restart:
 
 # undef __UPDATE_DISCREPANCY
 #endif /* CONFIG_SEARCH_ENABLED */
-
-#define __BITMASK8(n)       ((uint8_t)(1 << ((n) & 7)))
-#define __BYTE_OF_BIT(t, n) ((t)[(n) >> 3])
-#define __BIT_IN_BYTE(t, n) (__BYTE_OF_BIT(t, n) & __BITMASK8(n))
-#define __BIT_SET(t, n)     (__BYTE_OF_BIT(t, n) |= __BITMASK8(n))
-
-#if (CONFIG_MAX_SEARCH_FILTERS > 0)
-OneWireNg::ErrorCode OneWireNg::searchFilterAdd(uint8_t code)
-{
-    for (int i = 0; i < _n_fltrs; i++) {
-        /* check if the code is already added */
-        if (_fltrs[i].code == code)
-            return EC_SUCCESS;
-    }
-
-    if (_n_fltrs >= CONFIG_MAX_SEARCH_FILTERS)
-        return EC_FULL;
-
-    _fltrs[_n_fltrs].code = code;
-    _fltrs[_n_fltrs].ns = false;
-    _n_fltrs++;
-
-    return EC_SUCCESS;
-}
-
-void OneWireNg::searchFilterDel(uint8_t code)
-{
-    for (int i = 0; i < _n_fltrs; i++) {
-        if (_fltrs[i].code == code) {
-            for (i++; i < _n_fltrs; i++) {
-                _fltrs[i - 1].code = _fltrs[i].code;
-            }
-            _n_fltrs--;
-            break;
-        }
-    }
-}
-
-int OneWireNg::searchFilterApply(int n)
-{
-    if (!_n_fltrs)
-        /* no filtering - any bit value applies */
-        return 2;
-
-    uint8_t ba = 0, bo = 0, bm = __BITMASK8(n);
-    ba--; /* all 1s */
-
-    for (int i = 0; i < _n_fltrs; i++) {
-        if (!_fltrs[i].ns) {
-            ba &= _fltrs[i].code;
-            bo |= _fltrs[i].code;
-        }
-    }
-    return (!(bo & bm) ? 0 : ((ba & bm) ? 1 : 2));
-}
-
-void OneWireNg::searchFilterSelect(int n, int bit)
-{
-    uint8_t bm = __BITMASK8(n);
-    for (int i = 0; i < _n_fltrs; i++) {
-        if (!_fltrs[i].ns) {
-            if ((((_fltrs[i].code & bm) != 0) ^ (bit != 0)))
-                _fltrs[i].ns = true;
-        }
-    }
-}
-#endif /* CONFIG_MAX_SEARCH_FILTERS */
-
-#if CONFIG_SEARCH_ENABLED
-/**
- * Transmit search triplet on the bus (for a given bit position @c n)
- * consisting of the following bits:
- * - bit 1: 0 present for this bit position (master reads, slave writes),
- * - bit 2: 1 present for this bit position (master reads, slave writes),
- * - bit 3: select slave with a given bit value (master writes, slave reads).
- *     This bit may not be transmitted in case it has no sense (no slave
- *     devices on the bus or bus error).
- *
- * If selected bit value is 1 then the corresponding n-th bit in @c id is set
- * (the @id must be initialized with 0).
- *
- * @c lzero is set to @c n if discrepancy occurred at the processed bit and
- * the bit value is 0. @c lzero is not updated in other case.
- *
- * @return Error codes:
- *     - @c EC_SUCCESS: Searching step successfully finished; device @c id
- *         returned.
- *     - @c EC_BUS_ERROR: Unexpected response received - bus error.
- *     - @c EC_NO_DEVS: Returned if search filtering is enabled and there are
- *         no devices matching the filtering criteria in the current searching
- *         step. Search-scan process needs to be continued with a subsequent
- *         searching step or finished (depending on the binary tree processing
- *         condition).
- */
-OneWireNg::ErrorCode OneWireNg::transmitSearchTriplet(int n, Id& id, int& lzero)
-{
-    int selBit; /* selected bit value */
-
-    int v0 = touchBit(1);   /* 0-presence */
-    int v1 = touchBit(1);   /* 1-presence */
-
-    if (v1 && v0)
-    {
-        /*
-         * No slave devices present on the bus. Reset pulse
-         * indicated presence of some - bus error is returned.
-         */
-        return EC_BUS_ERROR;
-    } else if (!v1 && !v0)
-    {
-        /*
-         * Discrepancy detected for this bit position.
-         */
-        if (n >= (int)(8 * (sizeof(Id) - 1))) {
-            /* no discrepancy is expected for CRC part of the id - bus error */
-            return EC_BUS_ERROR;
-        } else {
-# if (CONFIG_MAX_SEARCH_FILTERS > 0)
-            if (n >= 8 || (selBit = searchFilterApply(n)) == 2)
-# endif
-            {
-                if (n < _lzero) {
-                    selBit = (__BIT_IN_BYTE(_lsrch, n) != 0);
-                } else if (n == _lzero) {
-                    selBit = 1;
-                } else {
-                    selBit = 0;
-                }
-
-                if (!selBit)
-                    lzero = n;
-            }
-        }
-    } else
-    {
-        /*
-         * Unambiguous value for this bit position.
-         */
-        selBit = !v1;
-# if (CONFIG_MAX_SEARCH_FILTERS > 0)
-        if (n < 8)
-        {
-            /* check if code matches filtering criteria */
-            int fltBit = searchFilterApply(n);
-            if (fltBit != 2 && fltBit != selBit)
-                return EC_NO_DEVS;
-        }
-# endif
-    }
-
-    touchBit(selBit);
-# if (CONFIG_MAX_SEARCH_FILTERS > 0)
-    searchFilterSelect(n, selBit);
-# endif
-    if (selBit) {
-        __BIT_SET(id, n);
-    }
-    return EC_SUCCESS;
-}
-#endif /* CONFIG_SEARCH_ENABLED */
-
-#undef __BIT_SET
-#undef __BIT_IN_BYTE
-#undef __BYTE_OF_BIT
-#undef __BITMASK8
 
 uint8_t OneWireNg::crc8(const void *in, size_t len, uint8_t crc_in)
 {

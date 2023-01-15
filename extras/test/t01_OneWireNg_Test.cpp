@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Piotr Stolarz
+ * Copyright (c) 2019-2023 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -76,7 +76,7 @@ private:
         int bit_n = (_trans_n-8) / 3;
         int trpl_n = (_trans_n-8) % 3;
 
-        for (int i=0; i < _slaves_n; i++)
+        for (int i = 0; i < _slaves_n; i++)
         {
             if (!_slaves[i].srchIdle)
             {
@@ -118,7 +118,7 @@ private:
     static void printId(const Id& id)
     {
         printf("%02x", id[0]);
-        for (int i=1; i < (int)sizeof(Id); i++)
+        for (int i = 1; i < (int)sizeof(Id); i++)
             printf(":%02x", id[i]);
         printf("\n");
     }
@@ -139,7 +139,7 @@ public:
         _trans_n = 0;
         _cmd = 0x00;
 
-        for (int i=0; i < _slaves_n; i++)
+        for (int i = 0; i < _slaves_n; i++)
             _slaves[i].srchIdle = false;
 
         return (_slaves_n > 0 ? EC_SUCCESS : EC_NO_DEVS);
@@ -171,7 +171,7 @@ public:
 
     static void test_crc8()
     {
-        for (size_t i=0; i < TAB_SZ(TEST1_IDS); i++)
+        for (size_t i = 0; i < TAB_SZ(TEST1_IDS); i++)
             assert(checkCrcId(TEST1_IDS[i]) == EC_SUCCESS);
 
         TEST_SUCCESS();
@@ -179,17 +179,17 @@ public:
 
     static void test_crc16()
     {
-        uint16_t c1=0, c2;
+        uint16_t c1 = 0, c2;
         const uint16_t res[] = {
             0xbad3, 0x4631, 0x47bb, 0x3840, 0x477e, 0xa7bc, 0x78e1, 0xd7dd,
             0xb74e, 0x8043, 0x2706, 0x3bc4, 0xd4a5, 0x35a5, 0x0314, 0x4525
         };
 
         uint8_t buf[0x1000];
-        for (size_t i=0; i < sizeof(buf); i++)
+        for (size_t i = 0; i < sizeof(buf); i++)
             buf[i] = (uint8_t)i;
 
-        for (size_t i=0, j=0; i < sizeof(buf); i+=0x100, j++) {
+        for (size_t i = 0, j = 0; i < sizeof(buf); i += 0x100, j++) {
             c1 = crc16(&buf[i], 0x100, c1);
             c2 = crc16(&buf[0], i + 0x100);
             assert(c1 == c2 && c1 == res[j]);
@@ -206,10 +206,10 @@ public:
         };
 
         uint8_t buf[0x1000];
-        for (size_t i=0; i < sizeof(buf); i++)
+        for (size_t i = 0; i < sizeof(buf); i++)
             buf[i] = (uint8_t)i;
 
-        for (size_t i=0, j=0; i < sizeof(buf); i+=0x100, j++) {
+        for (size_t i = 0, j = 0; i < sizeof(buf); i += 0x100, j++) {
             assert(checkInvCrc16(&buf[0], i + 0x100, ~res[j]) == EC_SUCCESS);
         }
 
@@ -248,12 +248,12 @@ public:
         int fnd[TAB_SZ(TEST1_IDS)] = {};
 
         ow.searchReset();
-        for (i=1; i < TAB_SZ(TEST1_IDS); i++)
+        for (i = 1; i < TAB_SZ(TEST1_IDS); i++)
             ow.addSlave(TEST1_IDS[i]);
 
         while (ow.search(id) == EC_MORE) {
             // printId(id);
-            for (i=0; i < TAB_SZ(TEST1_IDS); i++) {
+            for (i = 0; i < TAB_SZ(TEST1_IDS); i++) {
                 if (cmpId(id, TEST1_IDS[i])) {
                     fnd[i]++;
                     break;
@@ -261,7 +261,7 @@ public:
             }
         }
 
-        for (i=0; i < TAB_SZ(TEST1_IDS); i++) {
+        for (i = 0; i < TAB_SZ(TEST1_IDS); i++) {
             /* each id returned only once */
             assert(fnd[i] == 1);
         }
@@ -285,7 +285,7 @@ public:
         assert(!ow._n_fltrs);
 
         int i;
-        for (i=0; i < CONFIG_MAX_SEARCH_FILTERS; i++) {
+        for (i = 0; i < CONFIG_MAX_SEARCH_FILTERS; i++) {
             assert(ow.searchFilterAdd(i+1) == EC_SUCCESS);
             assert(!ow._fltrs[i].ns);
         }
@@ -308,7 +308,7 @@ public:
         ow.searchFilterDelAll();
         assert(!ow._n_fltrs);
 
-        assert(ow.searchFilterApply(0) == 2);
+        assert(ow.searchFilterApply(1 << 0) == 2);
 
         ow.searchFilterAdd(0x00);
         ow.searchFilterAdd(0x0f);
@@ -316,36 +316,38 @@ public:
         ow.searchFilterAdd(0xaa);
         ow.searchFilterAdd(0xff);
 
-        assert(ow.searchFilterApply(3) == 2);
+        ow.searchFilterSelectAll();
+        assert(ow.searchFilterApply(1 << 3) == 2);
 
-        ow.searchFilterSelect(3, 1);
+        ow.searchFilterSelect((1 << 3), 1);
         assert(ow._fltrs[0].ns &&
            !ow._fltrs[1].ns &&
             ow._fltrs[2].ns &&
            !ow._fltrs[3].ns &&
            !ow._fltrs[4].ns);
 
-        assert(ow.searchFilterApply(3) == 1);
+        assert(ow.searchFilterApply(1 << 3) == 1);
 
         ow.searchFilterSelectAll();
-        for (i=0; i < ow._n_fltrs; i++)
+        for (i = 0; i < ow._n_fltrs; i++)
             assert(!ow._fltrs[1].ns);
 
-        ow.searchFilterSelect(3, 0);
+        ow.searchFilterSelect((1 << 3), 0);
         assert(!ow._fltrs[0].ns &&
            ow._fltrs[1].ns &&
            !ow._fltrs[2].ns &&
            ow._fltrs[3].ns &&
            ow._fltrs[4].ns);
 
-        assert(!ow.searchFilterApply(3));
+        assert(!ow.searchFilterApply(1 << 3));
 
         ow.searchFilterDelAll();
-        assert(ow.searchFilterApply(0) == 2);
+        assert(ow.searchFilterApply(1 << 0) == 2);
 
         ow.searchFilterAdd(0xaa);
-        for (i=0; i < 8; i++)
-            assert(ow.searchFilterApply(i) == (i % 2));
+        ow.searchFilterSelectAll();
+        for (i = 0; i < 8; i++)
+            assert(ow.searchFilterApply(1 << i) == (i % 2));
 
         TEST_SUCCESS();
     }
@@ -377,15 +379,15 @@ public:
         ow.searchReset();
         ow.searchFilterDelAll();
 
-        for (i=1; i < TAB_SZ(TEST2_IDS); i++)
+        for (i = 1; i < TAB_SZ(TEST2_IDS); i++)
             ow.addSlave(TEST2_IDS[i]);
 
-        for (i=0; i < TAB_SZ(TEST2_FILTERS); i++)
+        for (i = 0; i < TAB_SZ(TEST2_FILTERS); i++)
             ow.searchFilterAdd(TEST2_FILTERS[i]);
 
         while (ow.search(id) == EC_MORE) {
             // printId(id);
-            for (i=0; i < TAB_SZ(TEST2_IDS); i++) {
+            for (i = 0; i < TAB_SZ(TEST2_IDS); i++) {
                 if (cmpId(id, TEST2_IDS[i])) {
                     fnd[i]++;
                     break;
@@ -393,8 +395,8 @@ public:
             }
         }
 
-        for (i=0; i < TAB_SZ(TEST2_FILTERS); i++) {
-            for (j=0; j < TAB_SZ(TEST2_IDS); j++) {
+        for (i = 0; i < TAB_SZ(TEST2_FILTERS); i++) {
+            for (j = 0; j < TAB_SZ(TEST2_IDS); j++) {
                 if (TEST2_IDS[j][0] == TEST2_FILTERS[i])
                 {
                     /* each filtered id returned only once */
@@ -405,7 +407,7 @@ public:
             }
         }
 
-        for (i=0; i < TAB_SZ(TEST2_IDS); i++) {
+        for (i = 0; i < TAB_SZ(TEST2_IDS); i++) {
             /* slaves with family codes outside
                the filters set are not returned */
             assert(!fnd[i] || fnd[i] == -1);

@@ -27,7 +27,7 @@ RUN ln -sf /bin/bash /bin/sh
 RUN cd / && \
   git clone https://github.com/espressif/esp-idf && \
   cd esp-idf && \
-  git checkout v5.0 && \
+  git checkout v5.0.1 && \
   git submodule update --init --recursive
 
 RUN cd /esp-idf && \

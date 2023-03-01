@@ -8,6 +8,7 @@ RUN apt-get update && \
     curl \
     python3 \
     python3-pip \
+    python3-venv \
     sudo
 
 RUN cd /usr/bin && \

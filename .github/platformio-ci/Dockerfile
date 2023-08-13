@@ -17,15 +17,16 @@ RUN cd /usr/bin && \
 
 RUN ln -sf /bin/bash /bin/sh
 
-RUN python -c \
-  "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)"
+RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py; \
+  python3 get-platformio.py; \
+  rm get-platformio.py
 
 RUN ln -s ~/.platformio/penv/bin/platformio /usr/local/bin/platformio && \
   ln -s ~/.platformio/penv/bin/pio /usr/local/bin/pio && \
   ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 
-RUN mkdir /pio-ard-ci && cd /pio-ard-ci && \
-  pio project init -s && \
+RUN mkdir /platformio-ard-ci && cd /platformio-ard-ci && \
+  platformio project init -s && \
   echo                                  >>platformio.ini && \
   echo "[env]"                          >>platformio.ini && \
   echo "framework = arduino"            >>platformio.ini && \
@@ -53,10 +54,10 @@ RUN mkdir /pio-ard-ci && cd /pio-ard-ci && \
   echo "[env:nucleo_l552ze_q]"          >>platformio.ini && \
   echo "platform = ststm32"             >>platformio.ini && \
   echo "board = nucleo_l552ze_q"        >>platformio.ini && \
-  pio pkg install
+  platformio pkg install
 
-RUN mkdir /pio-idf-ci && cd /pio-idf-ci && \
-  pio project init -s && \
+RUN mkdir /platformio-idf-ci && cd /platformio-idf-ci && \
+  platformio project init -s && \
   echo                                  >>platformio.ini && \
   echo "[env:esp32-s2-saola-1]"         >>platformio.ini && \
   echo "framework = espidf"             >>platformio.ini && \
@@ -67,4 +68,4 @@ RUN mkdir /pio-idf-ci && cd /pio-idf-ci && \
   echo "framework = espidf"             >>platformio.ini && \
   echo "platform = espressif32"         >>platformio.ini && \
   echo "board = esp32-c3-devkitm-1"     >>platformio.ini && \
-  pio pkg install
+  platformio pkg install

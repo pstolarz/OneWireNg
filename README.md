@@ -1,9 +1,7 @@
-[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine/)
-
 # OneWireNg
 
 [![Arduino builds](https://github.com/pstolarz/OneWireNg/workflows/Arduino%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ard-builds.yml)
-[![PlatformIO builds](https://github.com/pstolarz/OneWireNg/workflows/PlatformIO%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/pio-builds.yml)
+[![PlatformIO builds](https://github.com/pstolarz/OneWireNg/workflows/PlatformIO%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/platformio-builds.yml)
 [![ESP-IDF builds](https://github.com/pstolarz/OneWireNg/workflows/ESP-IDF%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/espidf-builds.yml)
 [![Pico SDK builds](https://github.com/pstolarz/OneWireNg/workflows/Pico%20SDK%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/picosdk-builds.yml)
 [![Mbed OS builds](https://github.com/pstolarz/OneWireNg/workflows/Mbed%20OS%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/mbedos-builds.yml)

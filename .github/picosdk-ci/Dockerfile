@@ -12,7 +12,7 @@ ENV PICO_SDK_PATH=/pico-sdk
 RUN cd / && \
   git clone https://github.com/raspberrypi/pico-sdk && \
   cd pico-sdk && \
-  git checkout 1.5.0 && \
+  git checkout 1.5.1 && \
   git submodule update --init --recursive
 
 RUN apt-get update && \

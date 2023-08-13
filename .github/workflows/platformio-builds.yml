@@ -11,17 +11,17 @@ defaults:
   run:
     shell: bash
 jobs:
-  pio_info:
+  platformio_info:
     runs-on: ubuntu-latest
-    container: ghcr.io/pstolarz/pio-ci
+    container: ghcr.io/pstolarz/platformio-ci
     steps:
       - name: PlatformIO recent packages versions info
         run: |
-          cd /pio-ard-ci && sudo pio pkg list && sudo pio pkg outdated
-          cd /pio-idf-ci && sudo pio pkg list && sudo pio pkg outdated
-  pio_ard_build:
+          cd /platformio-ard-ci && sudo platformio pkg list && sudo platformio pkg outdated
+          cd /platformio-idf-ci && sudo platformio pkg list && sudo platformio pkg outdated
+  platformio_ard_build:
     runs-on: ubuntu-latest
-    container: ghcr.io/pstolarz/pio-ci
+    container: ghcr.io/pstolarz/platformio-ci
     strategy:
       matrix:
         plat:
@@ -45,14 +45,14 @@ jobs:
       - name: Build
         run: |
           repo_dir=$(pwd)
-          cd /pio-ard-ci
+          cd /platformio-ard-ci
           cp ${repo_dir}/examples/arduino/${{ matrix.example }}/${{ matrix.example }}.ino \
             src/${{ matrix.example }}.ino
-          sudo pio pkg install -l ${repo_dir}
-          sudo PLATFORMIO_BUILD_FLAGS="${BUILD_FLAGS}" pio run -e ${{ matrix.plat }}
-  pio_idf_build:
+          sudo platformio pkg install -l ${repo_dir}
+          sudo PLATFORMIO_BUILD_FLAGS="${BUILD_FLAGS}" platformio run -e ${{ matrix.plat }}
+  platformio_idf_build:
     runs-on: ubuntu-latest
-    container: ghcr.io/pstolarz/pio-ci
+    container: ghcr.io/pstolarz/platformio-ci
     strategy:
       matrix:
         plat:
@@ -73,8 +73,8 @@ jobs:
       - name: Build
         run: |
           repo_dir=$(pwd)
-          cd /pio-idf-ci
+          cd /platformio-idf-ci
           cp ${repo_dir}/examples/esp-idf/${{ matrix.example }}/main/${{ matrix.example }}.cpp \
             src/${{ matrix.example }}.cpp
-          sudo pio pkg install -l ${repo_dir}
-          sudo PLATFORMIO_BUILD_FLAGS="${BUILD_FLAGS}" pio run -e ${{ matrix.plat }}
+          sudo platformio pkg install -l ${repo_dir}
+          sudo PLATFORMIO_BUILD_FLAGS="${BUILD_FLAGS}" platformio run -e ${{ matrix.plat }}

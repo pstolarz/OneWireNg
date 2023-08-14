@@ -11,7 +11,7 @@ defaults:
   run:
     shell: bash
 jobs:
-  ard_info:
+  arduino_info:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/arduino-ci
     steps:
@@ -20,7 +20,7 @@ jobs:
           sudo arduino-cli update
           sudo arduino-cli core list
           sudo arduino-cli core list --updatable
-  ard_build:
+  arduino_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/arduino-ci
     strategy:

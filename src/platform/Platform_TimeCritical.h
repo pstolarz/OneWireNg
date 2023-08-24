@@ -26,7 +26,7 @@
 
 #if CONFIG_BITBANG_DELAY_CCOUNT
 # if defined(CONFIG_IDF_TARGET_ESP32C2) || defined(CONFIG_IDF_TARGET_ESP32C3) || \
-    defined(CONFIG_IDF_TARGET_ESP32H2)
+    defined(CONFIG_IDF_TARGET_ESP32C6) || defined(CONFIG_IDF_TARGET_ESP32H2)
 #  include "esp_cpu.h"
 #  include "esp_idf_version.h"
 #  if (ESP_IDF_VERSION_MAJOR >= 5)

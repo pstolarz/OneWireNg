@@ -54,6 +54,10 @@ RUN mkdir /platformio-ard-ci && cd /platformio-ard-ci && \
   echo "[env:nucleo_l552ze_q]"          >>platformio.ini && \
   echo "platform = ststm32"             >>platformio.ini && \
   echo "board = nucleo_l552ze_q"        >>platformio.ini && \
+  echo                                  >>platformio.ini && \
+  echo "[env:pico]"                     >>platformio.ini && \
+  echo "platform = raspberrypi"         >>platformio.ini && \
+  echo "board = pico"                   >>platformio.ini && \
   platformio pkg install
 
 RUN mkdir /platformio-idf-ci && cd /platformio-idf-ci && \

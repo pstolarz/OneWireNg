@@ -31,6 +31,7 @@ jobs:
           - esp32dev
           - d1
           - nucleo_l552ze_q
+          - pico
         example:
           - DallasTemperature
     env:

@@ -26,13 +26,13 @@
     !(defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266))
 #include <assert.h>
 #include "platform/Platform_TimeCritical.h"
+#include "driver/gpio.h"
+#include "soc/gpio_periph.h"
 
 #ifdef ARDUINO
 # include "Arduino.h"
 #else
 /* ESP-IDF */
-# include "driver/gpio.h"
-# include "soc/gpio_periph.h"
 
 # define INPUT  0x01
 # define OUTPUT 0x02

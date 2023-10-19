@@ -34,13 +34,14 @@ RUN arduino-cli config add board_manager.additional_urls \
     https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json && \
   arduino-cli config add board_manager.additional_urls \
     http://drazzy.com/package_drazzy.com_index.json && \
+  curl https://drazzy.com/package_drazzy.com_index.json >~/.arduino15/package_drazzy.com_index.json && \
   arduino-cli update
 
+RUN arduino-cli core install megaTinyCore:megaavr
 RUN arduino-cli core install esp32:esp32
 RUN arduino-cli core install esp8266:esp8266
 RUN arduino-cli core install STMicroelectronics:stm32
 RUN arduino-cli core install rp2040:rp2040
-RUN arduino-cli core install megaTinyCore:megaavr
 
 RUN apt-get install -y \
   python3 \

@@ -25,20 +25,15 @@
 #if (defined(ARDUINO_ARCH_ESP32) || defined(IDF_VER)) && \
     !(defined(ARDUINO_ARCH_ESP8266) || defined(CONFIG_IDF_TARGET_ESP8266))
 #include <assert.h>
-#include "platform/Platform_TimeCritical.h"
 #include "driver/gpio.h"
 #include "soc/gpio_periph.h"
+#include "platform/Platform_TimeCritical.h"
 
-#ifdef ARDUINO
-# include "Arduino.h"
-#else
-/* ESP-IDF */
+#define __INPUT  0x01
+#define __OUTPUT 0x02
+#define __PULLUP 0x04
 
-# define INPUT  0x01
-# define OUTPUT 0x02
-# define PULLUP 0x04
-
-void pinMode(uint8_t pin, uint8_t mode)
+static void _pinMode(uint8_t pin, uint8_t mode)
 {
     gpio_config_t conf = {
         .pin_bit_mask = (1ULL << pin),
@@ -47,13 +42,12 @@ void pinMode(uint8_t pin, uint8_t mode)
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_DISABLE
     };
-    conf.mode = (gpio_mode_t)(mode & (INPUT | OUTPUT));
-    if (mode & PULLUP) {
+    conf.mode = (gpio_mode_t)(mode & (__INPUT | __OUTPUT));
+    if (mode & __PULLUP) {
         conf.pull_up_en = GPIO_PULLUP_ENABLE;
     }
     gpio_config(&conf);
 }
-#endif
 
 #ifndef GPIO_PIN_COUNT
 # error "GPIO_PIN_COUNT not defined for this version of SDK"
@@ -183,7 +177,7 @@ void OneWireNg_ArduinoIdfESP32::initDtaGpio(unsigned pin, bool pullUp)
         _dtaGpio.modClrReg = &REG_GPIO_MOD_CLR_HI;
     }
 #endif
-    pinMode(pin, INPUT | (pullUp ? PULLUP : 0));
+    _pinMode(pin, __INPUT | (pullUp ? __PULLUP : 0));
     setupDtaGpio();
 }
 
@@ -208,7 +202,7 @@ void OneWireNg_ArduinoIdfESP32::initPwrCtrlGpio(unsigned pin)
         _pwrCtrlGpio.modClrReg = &REG_GPIO_MOD_CLR_HI;
     }
 # endif
-    pinMode(pin, OUTPUT);
+    _pinMode(pin, __OUTPUT);
     setupPwrCtrlGpio(true);
 }
 #endif /* CONFIG_PWR_CTRL_ENABLED */
@@ -219,5 +213,9 @@ void OneWireNg_ArduinoIdfESP32::initPwrCtrlGpio(unsigned pin)
 #undef __WRITE1_GPIO
 #undef __WRITE0_GPIO
 #undef __READ_GPIO
+
+#undef __PULLUP
+#undef __OUTPUT
+#undef __INPUT
 
 #endif /* ESP32 */

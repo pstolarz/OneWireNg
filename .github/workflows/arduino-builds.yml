@@ -47,7 +47,9 @@ jobs:
         example:
           - DallasTemperature
     env:
-      BUILD_FLAGS: "\
+      # -c added to make buggy esp32-arduino core happy,
+      # see: https://github.com/espressif/arduino-esp32/issues/8815
+      BUILD_FLAGS: "-c \
         -DCONFIG_PWR_CTRL_ENABLED \
         -DCONFIG_OVERDRIVE_ENABLED \
         -DCONFIG_CRC16_ENABLED \

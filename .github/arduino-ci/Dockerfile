@@ -29,7 +29,9 @@ RUN arduino-cli core install arduino:mbed_opta
 RUN arduino-cli core install arduino:mbed_portenta
 RUN arduino-cli core install arduino:mbed_rp2040
 
-# install extra cores
+# Install extra cores.
+# NOTE: due to bug in arduino-cli the last core is installed by downloading
+# the index file, see: https://github.com/arduino/arduino-cli/issues/2345
 RUN arduino-cli config add board_manager.additional_urls \
     https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json && \
   arduino-cli config add board_manager.additional_urls \

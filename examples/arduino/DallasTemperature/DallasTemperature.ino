@@ -41,8 +41,8 @@
 //#define SINGLE_SENSOR
 
 /*
- * The parameter specific type of power provisioning for parasitically powered
- * sensors:
+ * For parasitically powered sensors the parameter specifies type of power
+ * provisioning:
  * - Not defined: power provided by bus pin.
  * - Defined: power provided by a switching transistor and controlled by the
  *   pin number specified by the parameter.

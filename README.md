@@ -6,7 +6,6 @@
 [![Pico SDK builds](https://github.com/pstolarz/OneWireNg/workflows/Pico%20SDK%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/picosdk-builds.yml)
 [![Mbed OS builds](https://github.com/pstolarz/OneWireNg/workflows/Mbed%20OS%20builds/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/mbedos-builds.yml)
 [![Unit tests](https://github.com/pstolarz/OneWireNg/workflows/Unit%20tests/badge.svg?branch=master)](https://github.com/pstolarz/OneWireNg/actions/workflows/ut.yml)
-[![Join the chat at https://gitter.im/pstolarz/OneWireNg](https://badges.gitter.im/pstolarz/OneWireNg.svg)](https://gitter.im/pstolarz/OneWireNg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/pstolarz/library/OneWireNg.svg)](https://registry.platformio.org/libraries/pstolarz/OneWireNg)
 <br>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Piotr Stolarz
+ * Copyright (c) 2019-2022,2024 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -114,15 +114,9 @@ static void printScratchpad(const DSTherm::Scratchpad& scrpd)
     Serial.print("; Resolution:");
     Serial.print(9 + (int)(scrpd.getResolution() - DSTherm::RES_9_BIT));
 
-    long temp = scrpd.getTemp();
+    long temp = scrpd.getTemp2();
     Serial.print("; Temp:");
-    if (temp < 0) {
-        temp = -temp;
-        Serial.print('-');
-    }
-    Serial.print(temp / 1000);
-    Serial.print('.');
-    Serial.print(temp % 1000);
+    Serial.print((float)temp / 16);
     Serial.print(" C");
 
     Serial.println();

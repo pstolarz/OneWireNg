@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022 Piotr Stolarz
+ * Copyright (c) 2021,2022,2024 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -45,12 +45,27 @@ public:
         static const size_t LENGTH = 9;
 
         /**
-         * Get temperature.
+         * Get temperature (1000 scaled).
          *
          * @return Temperature in Celsius degrees returned as fixed-point integer
-         *     with multiplier 1000 , e.g. 20.125 C is returned as 20125.
+         *     with multiplier 1000, e.g. 20.125 C is returned as 20125.
          */
         long getTemp() const;
+
+        /**
+         * Get temperature (16 scaled).
+         *
+         * @return Temperature in Celsius degrees returned as fixed-point integer
+         *     with multiplier 16, e.g. 20.125 C is returned as 322.
+         *
+         * @note Advantages using this routine over @c getTemp() are twofold:
+         * - It's computational faster.
+         * - It's more precise for temperatures with fractional part finer
+         *   than 1/1000. For example 0.4375 will be truncated to 0.437 by
+         *   @c getTemp(), whereas @c getTemp2() will return fractional part
+         *   in full extend.
+         */
+        long getTemp2() const;
 
         /**
          * Get Th.

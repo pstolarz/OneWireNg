@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022 Piotr Stolarz
+ * Copyright (c) 2021,2022,2024 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -196,10 +196,32 @@ long DSTherm::Scratchpad::getTemp() const
         if (_scrpd[7]) {
             /* truncate fractional part */
             temp = rsh(temp, 1) * 1000;
-            temp += (1000L * (int8_t)(_scrpd[7] - _scrpd[6]) / _scrpd[7]) - 250;
+            temp += ((1000L * (long)(int8_t)(_scrpd[7] - _scrpd[6])) / _scrpd[7]) - 250;
         } else
 #endif
             temp = div2(temp * 1000, 1);
+    }
+    return temp;
+}
+
+long DSTherm::Scratchpad::getTemp2() const
+{
+    long temp = ((long)(int8_t)_scrpd[1] << 8) | _scrpd[0];
+
+    if (_id[0] != DS18S20) {
+        unsigned res = (_scrpd[4] >> 5) & 3;
+
+        /* mask unused bits to zeroes */
+        temp &= ~(long)((1 << (3 - res)) - 1);
+    } else {
+#if CONFIG_DS18S20_EXT_RES
+        if (_scrpd[7]) {
+            /* truncate fractional part, 16-scaled */
+            temp = (temp & ~1L) << 3;
+            temp += (((long)(int8_t)(_scrpd[7] - _scrpd[6]) << 4) / _scrpd[7]) - 4;
+        } else
+#endif
+            temp <<= 3;
     }
     return temp;
 }

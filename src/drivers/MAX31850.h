@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022 Piotr Stolarz
+ * Copyright (c) 2021,2022,2024 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -31,7 +31,7 @@ public:
         using DSTherm::Scratchpad::LENGTH;
 
         /**
-         * Get thermocouple temperature.
+         * Get thermocouple temperature (1000 scaled).
          *
          * @return Temperature in Celsius degrees returned as fixed-point integer
          *     with multiplier 1000 , e.g. 20.125 C is returned as 20125.
@@ -45,6 +45,25 @@ public:
                 (long)((unsigned long)(long)(int8_t)_scrpd[1] << 8) | _scrpd[0];
             temp = rsh(temp, 2); /* truncate unused bits */
             temp = div2(temp * 1000, 2);
+            return temp;
+        }
+
+        /**
+         * Get thermocouple temperature (16 scaled).
+         *
+         * @return Temperature in Celsius degrees returned as fixed-point integer
+         *     with multiplier 16, e.g. 20.125 C is returned as 322.
+         *
+         * @note @ref getFaultStatus() shall be checked first to ensure
+         *     correctness of the returned temperature.
+         *
+         * @see DSTherm::Scratchpad::getTemp2()
+         */
+        long getTemp2() const
+        {
+            long temp =
+                (long)((unsigned long)(long)(int8_t)_scrpd[1] << 8) | _scrpd[0];
+            temp &= ~3L; /* mask unused bits to zeroes, 16-scaled */
             return temp;
         }
 
@@ -63,7 +82,7 @@ public:
         }
 
         /**
-         * Get internal (cold-junction) temperature.
+         * Get internal (cold-junction) temperature (1000 scaled).
          *
          * @return Temperature in Celsius degrees returned as fixed-point integer
          *     with multiplier 1000 , e.g. 20.125 C is returned as 20125.
@@ -74,6 +93,22 @@ public:
                 (long)((unsigned long)(long)(int8_t)_scrpd[3] << 8) | _scrpd[2];
             temp = rsh(temp, 4); /* truncate unused bits */
             temp = div2(temp * 1000, 4);
+            return temp;
+        }
+
+        /**
+         * Get internal (cold-junction) temperature (16 scaled).
+         *
+         * @return Temperature in Celsius degrees returned as fixed-point integer
+         *     with multiplier 16, e.g. 20.125 C is returned as 322.
+         *
+         * @see DSTherm::Scratchpad::getTemp2()
+         */
+        long getTempInternal2() const
+        {
+            long temp =
+                (long)((unsigned long)(long)(int8_t)_scrpd[3] << 8) | _scrpd[2];
+            temp = rsh(temp, 4); /* truncate unused bits */
             return temp;
         }
 

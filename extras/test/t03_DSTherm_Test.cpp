@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022 Piotr Stolarz
+ * Copyright (c) 2021,2022,2024 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -78,49 +78,49 @@ public:
         scrpd.setResolution(DSTherm::RES_12_BIT);
 
         scrpd._scrpd[0] = 0xd0; scrpd._scrpd[1] = 0x07;
-        assert(scrpd.getTemp() == 125000);
+        assert(scrpd.getTemp() == 125000 && scrpd.getTemp2() == 2000);
         scrpd._scrpd[0] = 0x50; scrpd._scrpd[1] = 0x05;
-        assert(scrpd.getTemp() == 85000);
+        assert(scrpd.getTemp() == 85000 && scrpd.getTemp2() == 1360);
         scrpd._scrpd[0] = 0x91; scrpd._scrpd[1] = 0x01;
-        assert(scrpd.getTemp() == 25062);
+        assert(scrpd.getTemp() == 25062 && scrpd.getTemp2() == 401);
         scrpd._scrpd[0] = 0xa2; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 10125);
+        assert(scrpd.getTemp() == 10125 && scrpd.getTemp2() == 162);
         scrpd._scrpd[0] = 0x08; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 500);
+        assert(scrpd.getTemp() == 500 && scrpd.getTemp2() == 8);
         scrpd._scrpd[0] = 0x00; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 0);
+        assert(scrpd.getTemp() == 0 && scrpd.getTemp2() == 0);
         scrpd._scrpd[0] = 0xf8; scrpd._scrpd[1] = 0xff;
-        assert(scrpd.getTemp() == -500);
+        assert(scrpd.getTemp() == -500 && scrpd.getTemp2() == -8);
         scrpd._scrpd[0] = 0x5e; scrpd._scrpd[1] = 0xff;
-        assert(scrpd.getTemp() == -10125);
+        assert(scrpd.getTemp() == -10125 && scrpd.getTemp2() == -162);
         scrpd._scrpd[0] = 0x6f; scrpd._scrpd[1] = 0xfe;
-        assert(scrpd.getTemp() == -25062);
+        assert(scrpd.getTemp() == -25062 && scrpd.getTemp2() == -401);
         scrpd._scrpd[0] = 0x90; scrpd._scrpd[1] = 0xfc;
-        assert(scrpd.getTemp() == -55000);
+        assert(scrpd.getTemp() == -55000 && scrpd.getTemp2() == -880);
 
         /* as above but with 9-bits resolution */
         scrpd.setResolution(DSTherm::RES_9_BIT);
 
         scrpd._scrpd[0] = 0xd0; scrpd._scrpd[1] = 0x07;
-        assert(scrpd.getTemp() == 125000);
+        assert(scrpd.getTemp() == 125000 && scrpd.getTemp2() == 2000);
         scrpd._scrpd[0] = 0x50; scrpd._scrpd[1] = 0x05;
-        assert(scrpd.getTemp() == 85000);
+        assert(scrpd.getTemp() == 85000 && scrpd.getTemp2() == 1360);
         scrpd._scrpd[0] = 0x91; scrpd._scrpd[1] = 0x01;
-        assert(scrpd.getTemp() == 25000);
+        assert(scrpd.getTemp() == 25000 && scrpd.getTemp2() == 400);
         scrpd._scrpd[0] = 0xa2; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 10000);
+        assert(scrpd.getTemp() == 10000 && scrpd.getTemp2() == 160);
         scrpd._scrpd[0] = 0x08; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 500);
+        assert(scrpd.getTemp() == 500 && scrpd.getTemp2() == 8);
         scrpd._scrpd[0] = 0x00; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 0);
+        assert(scrpd.getTemp() == 0 && scrpd.getTemp2() == 0);
         scrpd._scrpd[0] = 0xf8; scrpd._scrpd[1] = 0xff;
-        assert(scrpd.getTemp() == -500);
+        assert(scrpd.getTemp() == -500 && scrpd.getTemp2() == -8);
         scrpd._scrpd[0] = 0x5e; scrpd._scrpd[1] = 0xff;
-        assert(scrpd.getTemp() == -10500);
+        assert(scrpd.getTemp() == -10500 && scrpd.getTemp2() == -168);
         scrpd._scrpd[0] = 0x6f; scrpd._scrpd[1] = 0xfe;
-        assert(scrpd.getTemp() == -25500);
+        assert(scrpd.getTemp() == -25500 && scrpd.getTemp2() == -408);
         scrpd._scrpd[0] = 0x90; scrpd._scrpd[1] = 0xfc;
-        assert(scrpd.getTemp() == -55000);
+        assert(scrpd.getTemp() == -55000 && scrpd.getTemp2() == -880);
 
         /* DS18S20 (const 9-bits resolution) */
         scrpd._id[0] = DSTherm::DS18S20;
@@ -128,19 +128,19 @@ public:
         scrpd._scrpd[6] = 0x0c;
 
         scrpd._scrpd[0] = 0xaa; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 85000);
+        assert(scrpd.getTemp() == 85000 && scrpd.getTemp2() == 1360);
         scrpd._scrpd[0] = 0x32; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 25000);
+        assert(scrpd.getTemp() == 25000 && scrpd.getTemp2() == 400);
         scrpd._scrpd[0] = 0x01; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 500);
+        assert(scrpd.getTemp() == 500 && scrpd.getTemp2() == 8);
         scrpd._scrpd[0] = 0x00; scrpd._scrpd[1] = 0x00;
-        assert(scrpd.getTemp() == 0);
+        assert(scrpd.getTemp() == 0 && scrpd.getTemp2() == 0);
         scrpd._scrpd[0] = 0xff; scrpd._scrpd[1] = 0xff;
-        assert(scrpd.getTemp() == -500);
+        assert(scrpd.getTemp() == -500 && scrpd.getTemp2() == -8);
         scrpd._scrpd[0] = 0xce; scrpd._scrpd[1] = 0xff;
-        assert(scrpd.getTemp() == -25000);
+        assert(scrpd.getTemp() == -25000 && scrpd.getTemp2() == -400);
         scrpd._scrpd[0] = 0x92; scrpd._scrpd[1] = 0xff;
-        assert(scrpd.getTemp() == -55000);
+        assert(scrpd.getTemp() == -55000 && scrpd.getTemp2() == -880);
 
         TEST_SUCCESS();
     }

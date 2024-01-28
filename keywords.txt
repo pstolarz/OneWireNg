@@ -82,6 +82,7 @@ getFamilyName	KEYWORD2
 getConversionTime	KEYWORD2
 
 getTemp	KEYWORD2
+getTemp2	KEYWORD2
 getTh	KEYWORD2
 getTl	KEYWORD2
 setThl	KEYWORD2
@@ -94,6 +95,7 @@ getRaw	KEYWORD2
 
 getFaultStatus	KEYWORD2
 getTempInternal	KEYWORD2
+getTempInternal2	KEYWORD2
 getInputState	KEYWORD2
 
 

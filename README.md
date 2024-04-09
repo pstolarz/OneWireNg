@@ -187,7 +187,7 @@ While added the library shall be configured via Mbed native configuration (see
 * Arduino ESP8266/ESP-IDF.
     * Platform class: `OneWireNg_ArduinoIdfESP8266`.
     * Tested on WemOS D1.
-* Arduino/ESP-IDF ESP32 (classic, S, C and H families).
+* Arduino/ESP-IDF ESP32 (classic, S, C, H and P families).
     * Platform class: `OneWireNg_ArduinoIdfESP32`.
     * Tested on ESP32-WROOM-32, ESP32-S2-WROVER, ESP32-S3-WROOM-1, ESP32-C3-32S-Kit.
 * Arduino/Pico SDK RP2040.

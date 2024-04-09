@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Piotr Stolarz
+ * Copyright (c) 2022,2024 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -40,7 +40,10 @@ static void _pinMode(uint8_t pin, uint8_t mode)
         .mode = GPIO_MODE_DISABLE,
         .pull_up_en = GPIO_PULLUP_DISABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE
+        .intr_type = GPIO_INTR_DISABLE,
+#if SOC_GPIO_SUPPORT_PIN_HYS_FILTER
+        .hys_ctrl_mode = GPIO_HYS_SOFT_DISABLE,
+#endif
     };
     conf.mode = (gpio_mode_t)(mode & (__INPUT | __OUTPUT));
     if (mode & __PULLUP) {
@@ -60,15 +63,23 @@ static void _pinMode(uint8_t pin, uint8_t mode)
 # define REG_GPIO_MOD_SET_LO GPIO.enable_w1ts.val
 # define REG_GPIO_MOD_CLR_LO GPIO.enable_w1tc.val
 #else
-# define REG_GPIO_IN_LO GPIO.in
+# if defined(CONFIG_IDF_TARGET_ESP32P4)
+#  define REG_GPIO_IN_LO GPIO.in.val
+#  define REG_GPIO_OUT_SET_LO GPIO.out_w1ts.val
+#  define REG_GPIO_OUT_CLR_LO GPIO.out_w1tc.val
+#  define REG_GPIO_MOD_SET_LO GPIO.enable_w1ts.val
+#  define REG_GPIO_MOD_CLR_LO GPIO.enable_w1tc.val
+# else
+#  define REG_GPIO_IN_LO GPIO.in
+#  define REG_GPIO_OUT_SET_LO GPIO.out_w1ts
+#  define REG_GPIO_OUT_CLR_LO GPIO.out_w1tc
+#  define REG_GPIO_MOD_SET_LO GPIO.enable_w1ts
+#  define REG_GPIO_MOD_CLR_LO GPIO.enable_w1tc
+# endif
 # define REG_GPIO_IN_HI GPIO.in1.val
-# define REG_GPIO_OUT_SET_LO GPIO.out_w1ts
 # define REG_GPIO_OUT_SET_HI GPIO.out1_w1ts.val
-# define REG_GPIO_OUT_CLR_LO GPIO.out_w1tc
 # define REG_GPIO_OUT_CLR_HI GPIO.out1_w1tc.val
-# define REG_GPIO_MOD_SET_LO GPIO.enable_w1ts
 # define REG_GPIO_MOD_SET_HI GPIO.enable1_w1ts.val
-# define REG_GPIO_MOD_CLR_LO GPIO.enable_w1tc
 # define REG_GPIO_MOD_CLR_HI GPIO.enable1_w1tc.val
 #endif
 

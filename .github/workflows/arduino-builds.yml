@@ -31,9 +31,9 @@ jobs:
           - arduino:sam:arduino_due_x
           - arduino:samd:tian
           - arduino:mbed_edge:edge_control
+          - arduino:mbed_giga:giga
           - arduino:mbed_nano:nano33ble
           - arduino:mbed_nicla:nicla_sense
-          - arduino:mbed_opta:opta
           - arduino:mbed_portenta:envie_m7
           - arduino:mbed_rp2040:pico
           - esp32:esp32:esp32

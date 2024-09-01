@@ -33,6 +33,8 @@ choice CRC8_ALGO
         bool "Basic; no memory tables"
     config CRC8_ALGO_TAB_16LH
         bool "2x16 elements table"
+    config CRC8_ALGO_TAB_16
+        bool "16 elements table"
 endchoice
 
 config CRC16_ENABLED
@@ -48,6 +50,8 @@ choice CRC16_ALGO
         bool "Basic; no memory tables"
     config CRC16_ALGO_TAB_16LH
         bool "2x16 elements table"
+    config CRC16_ALGO_TAB_16
+        bool "16 elements table"
 endchoice
 endif
 

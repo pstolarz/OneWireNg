@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023 Piotr Stolarz
+ * Copyright (c) 2019-2024 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -42,12 +42,16 @@
 #  define CONFIG_CRC8_ALGO CRC8_BASIC
 # elif CONFIG_CRC8_ALGO_TAB_16LH
 #  define CONFIG_CRC8_ALGO CRC8_TAB_16LH
+# elif CONFIG_CRC8_ALGO_TAB_16
+#  define CONFIG_CRC8_ALGO CRC8_TAB_16
 # endif
 
 # if CONFIG_CRC16_ALGO_BASIC
 #  define CONFIG_CRC16_ALGO CRC16_BASIC
 # elif CONFIG_CRC16_ALGO_TAB_16LH
 #  define CONFIG_CRC16_ALGO CRC16_TAB_16LH
+# elif CONFIG_CRC16_ALGO_TAB_16
+#  define CONFIG_CRC16_ALGO CRC16_TAB_16
 # endif
 
 # if CONFIG_BITBANG_TIMING_STRICT
@@ -137,9 +141,11 @@
  * Type of algorithm used for CRC-8/MAXIM calculation.
  *
  * The macro may be defined as:
- * - @c CRC8_BASIC: Basic method. No memory tables used. This method is
- *   about 8 times slower than the tabled method but no extra memory is used.
+ * - @c CRC8_BASIC: Basic method. No memory tables used. This method is about
+ *   8 times slower than the table based methods but no extra memory is used.
  * - @c CRC8_TAB_16LH: 2x16 elements table, 1 byte each.
+ * - @c CRC8_TAB_16: 16 elements table, 1 byte each. This method is about 20%
+ *   slower than 2x16 elements table based method.
  */
 # ifndef CONFIG_CRC8_ALGO
 #  define CONFIG_CRC8_ALGO CRC8_TAB_16LH
@@ -158,8 +164,10 @@
  *
  * The macro may be defined as:
  * - @c CRC16_BASIC: Basic method. No memory tables used. This method is about
- *     8 times slower than the tabled method but no extra memory is used.
+ *   8 times slower than the table based methods but no extra memory is used.
  * - @c CRC16_TAB_16LH: 2x16 elements table, 2 bytes each.
+ * - @c CRC16_TAB_16: 16 elements table, 2 bytes each. This method is about 20%
+ *   slower than 2x16 elements table based method.
  */
 # ifndef CONFIG_CRC16_ALGO
 #  define CONFIG_CRC16_ALGO CRC16_TAB_16LH

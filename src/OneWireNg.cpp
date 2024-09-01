@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023 Piotr Stolarz
+ * Copyright (c) 2019-2024 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -15,17 +15,23 @@
 
 #define CRC8_BASIC      1
 #define CRC8_TAB_16LH   2
+#define CRC8_TAB_16     3
 
 #define CRC16_BASIC     1
 #define CRC16_TAB_16LH  2
+#define CRC16_TAB_16    3
 
 #if defined(CONFIG_CRC8_ALGO) && \
-    !(CONFIG_CRC8_ALGO == CRC8_BASIC || CONFIG_CRC8_ALGO == CRC8_TAB_16LH)
+    !(CONFIG_CRC8_ALGO == CRC8_BASIC || \
+      CONFIG_CRC8_ALGO == CRC8_TAB_16LH || \
+      CONFIG_CRC8_ALGO == CRC8_TAB_16)
 # error "Invalid CONFIG_CRC8_ALGO"
 #endif
 
 #if defined(CONFIG_CRC16_ALGO) && \
-    !(CONFIG_CRC16_ALGO == CRC16_BASIC || CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
+    !(CONFIG_CRC16_ALGO == CRC16_BASIC || \
+      CONFIG_CRC16_ALGO == CRC16_TAB_16LH || \
+      CONFIG_CRC16_ALGO == CRC16_TAB_16)
 # error "Invalid CONFIG_CRC16_ALGO"
 #endif
 
@@ -292,13 +298,15 @@ uint8_t OneWireNg::crc8(const void *in, size_t len, uint8_t crc_in)
 {
     uint8_t crc = crc_in;
 
-#if (CONFIG_CRC8_ALGO == CRC8_TAB_16LH)
+#if (CONFIG_CRC8_ALGO == CRC8_TAB_16LH || CONFIG_CRC8_ALGO == CRC8_TAB_16)
     const uint8_t *in_bts = (const uint8_t*)in;
 
+# if (CONFIG_CRC8_ALGO == CRC8_TAB_16LH)
     CRCTAB_STORAGE static uint8_t CRC8_16L[] = {
         0x00, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83,
         0xc2, 0x9c, 0x7e, 0x20, 0xa3, 0xfd, 0x1f, 0x41
     };
+# endif
     CRCTAB_STORAGE static uint8_t CRC8_16H[] = {
         0x00, 0x9d, 0x23, 0xbe, 0x46, 0xdb, 0x65, 0xf8,
         0x8c, 0x11, 0xaf, 0x32, 0xca, 0x57, 0xe9, 0x74
@@ -306,8 +314,13 @@ uint8_t OneWireNg::crc8(const void *in, size_t len, uint8_t crc_in)
 
     while (len--) {
         crc ^= *in_bts++;
-        crc = tabRead_u8(CRC8_16L + (crc & 0x0f)) ^
-            tabRead_u8(CRC8_16H + (crc >> 4));
+# if (CONFIG_CRC8_ALGO == CRC8_TAB_16LH)
+        uint8_t tl = tabRead_u8(CRC8_16L + (crc & 0xf));
+# else
+        uint8_t tl = tabRead_u8(CRC8_16H + (crc & 0xf));
+        tl = tabRead_u8(CRC8_16H + (tl & 0xf)) ^ (tl >> 4);
+# endif
+        crc = tl ^ tabRead_u8(CRC8_16H + (crc >> 4));
     }
 #else
     crc = OneWireNg::crc<uint8_t, 0x8c>(in, len, crc);
@@ -320,13 +333,15 @@ uint16_t OneWireNg::crc16(const void *in, size_t len, uint16_t crc_in)
 {
     uint16_t crc = crc_in;
 
-# if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
+# if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH || CONFIG_CRC16_ALGO == CRC16_TAB_16)
     const uint8_t *in_bts = (const uint8_t*)in;
 
+# if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
     CRCTAB_STORAGE static uint16_t CRC16_16L[] = {
         0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0, 0x0280, 0xc241,
         0xc601, 0x06c0, 0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440
     };
+#endif
     CRCTAB_STORAGE static uint16_t CRC16_16H[] = {
         0x0000, 0xcc01, 0xd801, 0x1400, 0xf001, 0x3c00, 0x2800, 0xe401,
         0xa001, 0x6c00, 0x7800, 0xb401, 0x5000, 0x9c01, 0x8801, 0x4400
@@ -334,9 +349,13 @@ uint16_t OneWireNg::crc16(const void *in, size_t len, uint16_t crc_in)
 
     while (len--) {
         crc ^= *in_bts++;
-        crc = (crc >> 8) ^
-            tabRead_u16(CRC16_16L + (crc & 0x0f)) ^
-            tabRead_u16(CRC16_16H + ((crc >> 4) & 0x0f));
+# if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
+        uint16_t tl = tabRead_u16(CRC16_16L + (crc & 0xf));
+# else
+        uint16_t tl = tabRead_u16(CRC16_16H + (crc & 0xf));
+        tl = tabRead_u16(CRC16_16H + (tl & 0xf)) ^ (tl >> 4);
+# endif
+        crc = (crc >> 8) ^ tl ^ tabRead_u16(CRC16_16H + ((crc >> 4) & 0xf));
     }
 # else
     crc = OneWireNg::crc<uint16_t, 0xa001>(in, len, crc_in);

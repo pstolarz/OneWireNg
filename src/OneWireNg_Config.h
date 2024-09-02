@@ -40,16 +40,16 @@
 
 # if CONFIG_CRC8_ALGO_BASIC
 #  define CONFIG_CRC8_ALGO CRC8_BASIC
-# elif CONFIG_CRC8_ALGO_TAB_16LH
-#  define CONFIG_CRC8_ALGO CRC8_TAB_16LH
+# elif CONFIG_CRC8_ALGO_TAB_32
+#  define CONFIG_CRC8_ALGO CRC8_TAB_32
 # elif CONFIG_CRC8_ALGO_TAB_16
 #  define CONFIG_CRC8_ALGO CRC8_TAB_16
 # endif
 
 # if CONFIG_CRC16_ALGO_BASIC
 #  define CONFIG_CRC16_ALGO CRC16_BASIC
-# elif CONFIG_CRC16_ALGO_TAB_16LH
-#  define CONFIG_CRC16_ALGO CRC16_TAB_16LH
+# elif CONFIG_CRC16_ALGO_TAB_32
+#  define CONFIG_CRC16_ALGO CRC16_TAB_32
 # elif CONFIG_CRC16_ALGO_TAB_16
 #  define CONFIG_CRC16_ALGO CRC16_TAB_16
 # endif
@@ -143,12 +143,12 @@
  * The macro may be defined as:
  * - @c CRC8_BASIC: Basic method. No memory tables used. This method is about
  *   8 times slower than the table based methods but no extra memory is used.
- * - @c CRC8_TAB_16LH: 2x16 elements table, 1 byte each.
+ * - @c CRC8_TAB_32: 32 elements table, 1 byte each.
  * - @c CRC8_TAB_16: 16 elements table, 1 byte each. This method is about 20%
- *   slower than 2x16 elements table based method.
+ *   slower than 32 elements table based method.
  */
 # ifndef CONFIG_CRC8_ALGO
-#  define CONFIG_CRC8_ALGO CRC8_TAB_16LH
+#  define CONFIG_CRC8_ALGO CRC8_TAB_32
 # endif
 
 /**
@@ -165,12 +165,12 @@
  * The macro may be defined as:
  * - @c CRC16_BASIC: Basic method. No memory tables used. This method is about
  *   8 times slower than the table based methods but no extra memory is used.
- * - @c CRC16_TAB_16LH: 2x16 elements table, 2 bytes each.
+ * - @c CRC16_TAB_32: 32 elements table, 2 bytes each.
  * - @c CRC16_TAB_16: 16 elements table, 2 bytes each. This method is about 20%
- *   slower than 2x16 elements table based method.
+ *   slower than 32 elements table based method.
  */
 # ifndef CONFIG_CRC16_ALGO
-#  define CONFIG_CRC16_ALGO CRC16_TAB_16LH
+#  define CONFIG_CRC16_ALGO CRC16_TAB_32
 # endif
 
 /**

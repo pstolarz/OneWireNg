@@ -54,7 +54,7 @@ jobs:
           ln -s ${repo_dir}/examples/esp-idf/${{ matrix.example }}/CMakeLists.txt CMakeLists.txt
           echo "CONFIG_PWR_CTRL_ENABLED=y"      >sdkconfig.defaults
           echo "CONFIG_OVERDRIVE_ENABLED=y"     >>sdkconfig.defaults
-          echo "CONFIG_CRC8_ALGO_TAB_16LH=y"    >>sdkconfig.defaults
+          echo "CONFIG_CRC8_ALGO_TAB_32=y"      >>sdkconfig.defaults
           echo "CONFIG_CRC16_ENABLED=y"         >>sdkconfig.defaults
           echo "CONFIG_CRC16_ALGO_BASIC=y"      >>sdkconfig.defaults
           echo "CONFIG_BUS_BLINK_PROTECTION=y"  >>sdkconfig.defaults

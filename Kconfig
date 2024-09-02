@@ -27,12 +27,12 @@ config OVERDRIVE_ENABLED
 
 choice CRC8_ALGO
     prompt "CRC-8/MAXIM calculation algorithm"
-    default CRC8_ALGO_TAB_16LH
+    default CRC8_ALGO_TAB_32
 
     config CRC8_ALGO_BASIC
         bool "Basic; no memory tables"
-    config CRC8_ALGO_TAB_16LH
-        bool "2x16 elements table"
+    config CRC8_ALGO_TAB_32
+        bool "32 elements table"
     config CRC8_ALGO_TAB_16
         bool "16 elements table"
 endchoice
@@ -44,12 +44,12 @@ config CRC16_ENABLED
 if CRC16_ENABLED
 choice CRC16_ALGO
     prompt "CRC-16/ALGO calculation algorithm"
-    default CRC16_ALGO_TAB_16LH
+    default CRC16_ALGO_TAB_32
 
     config CRC16_ALGO_BASIC
         bool "Basic; no memory tables"
-    config CRC16_ALGO_TAB_16LH
-        bool "2x16 elements table"
+    config CRC16_ALGO_TAB_32
+        bool "32 elements table"
     config CRC16_ALGO_TAB_16
         bool "16 elements table"
 endchoice

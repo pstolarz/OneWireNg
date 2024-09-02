@@ -27,7 +27,7 @@
         "crc8_algo": {
             "help": "CRC-8/MAXIM calculation algorithm",
             "macro_name": "CONFIG_CRC8_ALGO",
-            "value": "CRC8_TAB_16LH"
+            "value": "CRC8_TAB_32"
         },
         "crc16_enabled": {
             "help": "Enable CRC-16/ARC",
@@ -36,7 +36,7 @@
         "crc16_algo": {
             "help": "CRC-16/ALGO calculation algorithm",
             "macro_name": "CONFIG_CRC16_ALGO",
-            "value": "CRC16_TAB_16LH"
+            "value": "CRC16_TAB_32"
         },
         "flash_crc_tab": {
             "help": "Store CRC tables in flash memory",

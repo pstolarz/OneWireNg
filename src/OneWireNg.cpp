@@ -14,23 +14,23 @@
 #include "OneWireNg.h"
 
 #define CRC8_BASIC      1
-#define CRC8_TAB_16LH   2
+#define CRC8_TAB_32     2
 #define CRC8_TAB_16     3
 
 #define CRC16_BASIC     1
-#define CRC16_TAB_16LH  2
+#define CRC16_TAB_32    2
 #define CRC16_TAB_16    3
 
 #if defined(CONFIG_CRC8_ALGO) && \
     !(CONFIG_CRC8_ALGO == CRC8_BASIC || \
-      CONFIG_CRC8_ALGO == CRC8_TAB_16LH || \
+      CONFIG_CRC8_ALGO == CRC8_TAB_32 || \
       CONFIG_CRC8_ALGO == CRC8_TAB_16)
 # error "Invalid CONFIG_CRC8_ALGO"
 #endif
 
 #if defined(CONFIG_CRC16_ALGO) && \
     !(CONFIG_CRC16_ALGO == CRC16_BASIC || \
-      CONFIG_CRC16_ALGO == CRC16_TAB_16LH || \
+      CONFIG_CRC16_ALGO == CRC16_TAB_32 || \
       CONFIG_CRC16_ALGO == CRC16_TAB_16)
 # error "Invalid CONFIG_CRC16_ALGO"
 #endif
@@ -298,10 +298,10 @@ uint8_t OneWireNg::crc8(const void *in, size_t len, uint8_t crc_in)
 {
     uint8_t crc = crc_in;
 
-#if (CONFIG_CRC8_ALGO == CRC8_TAB_16LH || CONFIG_CRC8_ALGO == CRC8_TAB_16)
+#if (CONFIG_CRC8_ALGO == CRC8_TAB_32 || CONFIG_CRC8_ALGO == CRC8_TAB_16)
     const uint8_t *in_bts = (const uint8_t*)in;
 
-# if (CONFIG_CRC8_ALGO == CRC8_TAB_16LH)
+# if (CONFIG_CRC8_ALGO == CRC8_TAB_32)
     CRCTAB_STORAGE static uint8_t CRC8_16L[] = {
         0x00, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83,
         0xc2, 0x9c, 0x7e, 0x20, 0xa3, 0xfd, 0x1f, 0x41
@@ -314,7 +314,7 @@ uint8_t OneWireNg::crc8(const void *in, size_t len, uint8_t crc_in)
 
     while (len--) {
         crc ^= *in_bts++;
-# if (CONFIG_CRC8_ALGO == CRC8_TAB_16LH)
+# if (CONFIG_CRC8_ALGO == CRC8_TAB_32)
         uint8_t tl = tabRead_u8(CRC8_16L + (crc & 0xf));
 # else
         uint8_t tl = tabRead_u8(CRC8_16H + (crc & 0xf));
@@ -333,10 +333,10 @@ uint16_t OneWireNg::crc16(const void *in, size_t len, uint16_t crc_in)
 {
     uint16_t crc = crc_in;
 
-# if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH || CONFIG_CRC16_ALGO == CRC16_TAB_16)
+# if (CONFIG_CRC16_ALGO == CRC16_TAB_32 || CONFIG_CRC16_ALGO == CRC16_TAB_16)
     const uint8_t *in_bts = (const uint8_t*)in;
 
-# if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
+# if (CONFIG_CRC16_ALGO == CRC16_TAB_32)
     CRCTAB_STORAGE static uint16_t CRC16_16L[] = {
         0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0, 0x0280, 0xc241,
         0xc601, 0x06c0, 0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440
@@ -349,7 +349,7 @@ uint16_t OneWireNg::crc16(const void *in, size_t len, uint16_t crc_in)
 
     while (len--) {
         crc ^= *in_bts++;
-# if (CONFIG_CRC16_ALGO == CRC16_TAB_16LH)
+# if (CONFIG_CRC16_ALGO == CRC16_TAB_32)
         uint16_t tl = tabRead_u16(CRC16_16L + (crc & 0xf));
 # else
         uint16_t tl = tabRead_u16(CRC16_16H + (crc & 0xf));

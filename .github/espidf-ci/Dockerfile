@@ -13,10 +13,9 @@ RUN apt-get update && \
     python3 \
     python3-pip \
     python3-venv \
+    python3-virtualenv \
     sudo
 RUN apt-get clean
-
-RUN pip3 install pyserial
 
 RUN cd /usr/bin && \
   ln -sf python3 python && \
@@ -27,7 +26,7 @@ RUN ln -sf /bin/bash /bin/sh
 RUN cd / && \
   git clone https://github.com/espressif/esp-idf && \
   cd esp-idf && \
-  git checkout v5.2.1 && \
+  git checkout v5.3.1 && \
   git submodule update --init --recursive
 
 RUN cd /esp-idf && \

@@ -101,16 +101,10 @@ extern tc_t _tc[portNUM_PROCESSORS];
 #  define timeCriticalExit() \
     portCLEAR_INTERRUPT_MASK_FROM_ISR(_tc[xPortGetCoreID()].int_lev)
 # endif
-#elif defined(ARDUINO)
-# define timeCriticalEnter() noInterrupts()
-# define timeCriticalExit() interrupts()
-#elif defined(__MBED__)
-# define timeCriticalEnter() __disable_irq()
-# define timeCriticalExit() __enable_irq()
 #elif defined(PICO_BUILD)
 # include "hardware/sync.h"
 
-#define portNUM_PROCESSORS 2
+# define portNUM_PROCESSORS 2
 typedef struct {
     uint32_t int_lev;       /* saved interrupt level */
 } tc_t;
@@ -121,6 +115,12 @@ extern tc_t _tc[portNUM_PROCESSORS];
 
 # define timeCriticalExit() \
     restore_interrupts(_tc[get_core_num()].int_lev)
+#elif defined(ARDUINO)
+# define timeCriticalEnter() noInterrupts()
+# define timeCriticalExit() interrupts()
+#elif defined(__MBED__)
+# define timeCriticalEnter() __disable_irq()
+# define timeCriticalExit() __enable_irq()
 #else
 # ifndef OWNG_TEST
 #  warning "Time critical API unsupported for the target platform. Disabled."

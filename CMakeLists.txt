@@ -1,3 +1,10 @@
+function(target_optimize_size target)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        target_compile_options(${target} PRIVATE -Os)
+    endif()
+endfunction()
+
 if(IDF_VER)
     # ESP-IDF
     if(IDF_VERSION_MAJOR GREATER_EQUAL 5)
@@ -23,7 +30,8 @@ if(IDF_VER)
                 src/drivers
         )
     endif()
-    set(target ${COMPONENT_LIB})
+
+    target_optimize_size(${COMPONENT_LIB})
 elseif(PICO_SDK_VERSION_STRING)
     # Pico SDK
     file(GLOB target_src
@@ -38,10 +46,6 @@ elseif(PICO_SDK_VERSION_STRING)
         pico_stdlib
         hardware_pio
     )
-    set(target OneWireNg)
-endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
-        CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(${target} PRIVATE -Os)
+    target_optimize_size(OneWireNg)
 endif()

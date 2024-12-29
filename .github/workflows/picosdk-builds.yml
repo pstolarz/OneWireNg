@@ -1,4 +1,6 @@
 name: Pico SDK builds
+env:
+  SDK_VER: 2.1.0
 on:
   push:
     branches:
@@ -11,18 +13,35 @@ defaults:
   run:
     shell: bash
 jobs:
-  picosdk_info:
+  picosdk_checkout:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/picosdk-ci
     steps:
-      - name: Pico SDK recent versions info
+      - uses: actions/cache@v4
+        with:
+          path: /pico-sdk
+          key: pico_sdk_cache
+      - name: Set SDK version
         run: |
           cd /pico-sdk
           git fetch || true
-          git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
+          git checkout -f ${SDK_VER}
+          git submodule update -f --init --recursive
+  picosdk_info:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/picosdk-ci
+    needs: picosdk_checkout
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: /pico-sdk
+          key: pico_sdk_cache
+      - name: SDK recent versions info
+        run: cd /pico-sdk && git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
   picosdk_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/picosdk-ci
+    needs: picosdk_checkout
     strategy:
       matrix:
         example:
@@ -35,6 +54,10 @@ jobs:
         -DCONFIG_ITERATION_RETRIES=1"
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /pico-sdk
+          key: pico_sdk_cache
       - name: Build
         run: |
           repo_dir=$(pwd)

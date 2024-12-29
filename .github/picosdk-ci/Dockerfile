@@ -12,7 +12,6 @@ ENV PICO_SDK_PATH=/pico-sdk
 RUN cd / && \
   git clone https://github.com/raspberrypi/pico-sdk && \
   cd pico-sdk && \
-  git checkout 2.0.0 && \
   git submodule update --init --recursive
 
 RUN apt-get update && \
@@ -21,6 +20,7 @@ RUN apt-get update && \
     g++ \
     gcc-arm-none-eabi \
     make \
+    nodejs \
     python3 \
     sudo
 RUN apt-get clean

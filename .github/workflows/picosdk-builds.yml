@@ -1,4 +1,7 @@
 name: Pico SDK builds
+env:
+  SDK_VER: 2.1.0
+  PICO_SDK_PATH: /pico-sdk
 on:
   push:
     branches:
@@ -11,18 +14,41 @@ defaults:
   run:
     shell: bash
 jobs:
-  picosdk_info:
+  picosdk_checkout:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/picosdk-ci
     steps:
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.PICO_SDK_PATH }}
+          key: picosdk-${{ env.SDK_VER }}
+      - name: Pico SDK checkout
+        run: |
+          cd ${PICO_SDK_PATH}
+          if [ ! -f .CACHED ]; then
+            git fetch || true
+            git checkout -f ${SDK_VER}
+            git submodule update -f --init --recursive
+            touch .CACHED
+          fi
+  picosdk_info:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/picosdk-ci
+    needs: picosdk_checkout
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.PICO_SDK_PATH }}
+          key: picosdk-${{ env.SDK_VER }}
       - name: Pico SDK recent versions info
         run: |
-          cd /pico-sdk
+          cd ${PICO_SDK_PATH}
           git fetch || true
           git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
   picosdk_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/picosdk-ci
+    needs: picosdk_checkout
     strategy:
       matrix:
         example:
@@ -35,6 +61,10 @@ jobs:
         -DCONFIG_ITERATION_RETRIES=1"
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.PICO_SDK_PATH }}
+          key: picosdk-${{ env.SDK_VER }}
       - name: Build
         run: |
           repo_dir=$(pwd)
@@ -44,4 +74,7 @@ jobs:
           ln -s ${repo_dir}/examples/pico-sdk/${{ matrix.example }}/CMakeLists.txt CMakeLists.txt
           ln -s ${repo_dir}/examples/pico-sdk/${{ matrix.example }}/pico_sdk_import.cmake pico_sdk_import.cmake
           mkdir build && cd build
-          sudo bash -c "PICO_SDK_PATH=/pico-sdk CXXFLAGS=\"${BUILD_FLAGS}\" CFLAGS=\"${BUILD_FLAGS}\" cmake .. && make"
+          export CXXFLAGS="${BUILD_FLAGS}"
+          export CFLAGS="${BUILD_FLAGS}"
+          cmake ..
+          make

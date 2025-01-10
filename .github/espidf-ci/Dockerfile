@@ -10,6 +10,7 @@ RUN apt-get update && \
     libusb-1.0-0 \
     make \
     ninja-build \
+    nodejs \
     python3 \
     python3-pip \
     python3-venv \
@@ -23,20 +24,12 @@ RUN cd /usr/bin && \
 
 RUN ln -sf /bin/bash /bin/sh
 
-RUN cd / && \
-  git clone https://github.com/espressif/esp-idf && \
-  cd esp-idf && \
-  git checkout v5.3.1 && \
-  git submodule update --init --recursive
+RUN git clone -- https://github.com/espressif/esp-idf /esp-idf && \
+  cd /esp-idf && \
+  git submodule update --init --recursive && \
+  chmod --recursive a+rw .
 
-RUN cd /esp-idf && \
-  ./install.sh
-
-RUN cd / && \
-  git clone https://github.com/espressif/ESP8266_RTOS_SDK && \
-  cd ESP8266_RTOS_SDK && \
-  git checkout v3.4 && \
-  git submodule update --init --recursive
-
-RUN cd /ESP8266_RTOS_SDK && \
-  ./install.sh
+RUN git clone -- https://github.com/espressif/ESP8266_RTOS_SDK /ESP8266_RTOS_SDK && \
+  cd /ESP8266_RTOS_SDK && \
+  git submodule update --init --recursive && \
+  chmod --recursive a+rw .

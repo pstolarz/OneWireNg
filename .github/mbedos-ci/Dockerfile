@@ -35,5 +35,9 @@ RUN mbed new /tmp/mbed; exit 0
 RUN pip install --break-system-packages -r /tmp/mbed/mbed-os/requirements.txt && \
   rm -rf /tmp/mbed
 
+# 'six' module needs to be installed for user (not system-wide)
+RUN pip uninstall -y --break-system-packages six && \
+  pip install --break-system-packages --user six
+
 RUN mbed config -G TOOLCHAIN GCC_ARM && \
   mbed config -G GCC_ARM_PATH /opt/gcc-arm-none-eabi/bin

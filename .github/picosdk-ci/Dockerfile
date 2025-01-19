@@ -1,5 +1,7 @@
 FROM ubuntu:latest
 
+ENV PICO_SDK_PATH=/opt/pico-sdk
+
 ENV TZ=Europe/Warsaw
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -15,7 +17,12 @@ RUN apt-get update && \
     sudo
 RUN apt-get clean
 
-RUN git clone -- https://github.com/raspberrypi/pico-sdk /pico-sdk && \
-  cd /pico-sdk && \
-  git submodule update --init --recursive && \
-  chmod --recursive a+rw .
+RUN cd /usr/bin && \
+  ln -sf python3 python && \
+  ln -sf pip3 pip
+
+RUN ln -sf /bin/bash /bin/sh
+
+RUN git clone -- https://github.com/raspberrypi/pico-sdk ${PICO_SDK_PATH} && \
+  cd ${PICO_SDK_PATH} && \
+  git submodule update --init --recursive

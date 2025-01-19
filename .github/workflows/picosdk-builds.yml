@@ -1,7 +1,7 @@
 name: Pico SDK builds
 env:
   SDK_VER: 2.1.0
-  PICO_SDK_PATH: /pico-sdk
+  PICO_SDK_PATH: /opt/pico-sdk
 on:
   push:
     branches:
@@ -14,32 +14,10 @@ defaults:
   run:
     shell: bash
 jobs:
-  picosdk_checkout:
-    runs-on: ubuntu-latest
-    container: ghcr.io/pstolarz/picosdk-ci
-    steps:
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.PICO_SDK_PATH }}
-          key: picosdk-${{ env.SDK_VER }}
-      - name: Pico SDK checkout
-        run: |
-          cd ${PICO_SDK_PATH}
-          if [ ! -f .CACHED ]; then
-            git fetch || true
-            git checkout -f ${SDK_VER}
-            git submodule update -f --init --recursive
-            touch .CACHED
-          fi
   picosdk_info:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/picosdk-ci
-    needs: picosdk_checkout
     steps:
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.PICO_SDK_PATH }}
-          key: picosdk-${{ env.SDK_VER }}
       - name: Pico SDK recent versions info
         run: |
           cd ${PICO_SDK_PATH}
@@ -48,23 +26,30 @@ jobs:
   picosdk_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/picosdk-ci
-    needs: picosdk_checkout
-    strategy:
-      matrix:
-        example:
-          - DallasTemperature
     env:
       BUILD_FLAGS: "\
         -DCONFIG_PWR_CTRL_ENABLED \
         -DCONFIG_OVERDRIVE_ENABLED \
         -DCONFIG_CRC16_ENABLED \
         -DCONFIG_ITERATION_RETRIES=1"
+    strategy:
+      matrix:
+        example:
+          - DallasTemperature
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
+        id: cache_picosdk
         with:
           path: ${{ env.PICO_SDK_PATH }}
           key: picosdk-${{ env.SDK_VER }}
+      - name: Pico SDK checkout
+        if: steps.cache_picosdk.outputs.cache-hit != 'true'
+        run: |
+          cd ${PICO_SDK_PATH}
+          git fetch || true
+          git checkout -f ${SDK_VER}
+          git submodule update -f --init --recursive
       - name: Build
         run: |
           repo_dir=$(pwd)

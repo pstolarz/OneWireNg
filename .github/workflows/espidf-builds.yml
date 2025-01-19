@@ -1,4 +1,10 @@
 name: ESP-IDF builds
+env:
+  ESPIDF_VER: v5.3.2
+  ESP8266_SDK_VER: v3.4
+  ESPIDF_DIR: /esp-idf
+  ESP8266_SDK_DIR: /ESP8266_RTOS_SDK
+  TOOLCHAIN_DIR: ~/.espressif
 on:
   push:
     branches:
@@ -11,23 +17,73 @@ defaults:
   run:
     shell: bash
 jobs:
-  espidf_info:
+  espidf_checkout:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/espidf-ci
     steps:
-      - name: ESP-IDF recent versions info
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ESPIDF_DIR }}
+            ${{ env.TOOLCHAIN_DIR }}
+          key: espidf-${{ env.ESPIDF_VER }}
+      - name: ESP IDF checkout
         run: |
-          cd /esp-idf
+          cd ${ESPIDF_DIR}
+          if [ ! -f .CACHED ]; then
+            git fetch || true
+            git checkout -f ${ESPIDF_VER}
+            git submodule update -f --init --recursive
+            ./install.sh
+            touch .CACHED
+          fi
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ESP8266_SDK_DIR }}
+            ${{ env.TOOLCHAIN_DIR }}
+          key: esp8266_rtos_sdk-${{ env.ESP8266_SDK_VER }}
+      - name: ESP8266 RTOS SDK checkout
+        run: |
+          cd ${ESP8266_SDK_DIR}
+          if [ ! -f .CACHED ]; then
+            git fetch || true
+            git checkout -f ${ESP8266_SDK_VER}
+            git submodule update -f --init --recursive
+            ./install.sh
+            touch .CACHED
+          fi
+  espidf_info:
+    runs-on: ubuntu-latest
+    container: ghcr.io/pstolarz/espidf-ci
+    needs: espidf_checkout
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ESPIDF_DIR }}
+            ${{ env.TOOLCHAIN_DIR }}
+          key: espidf-${{ env.ESPIDF_VER }}
+      - name: ESP IDF recent versions info
+        run: |
+          cd ${ESPIDF_DIR}
           git fetch || true
           git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
-      - name: ESP8266_RTOS_SDK recent versions info
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ESP8266_SDK_DIR }}
+            ${{ env.TOOLCHAIN_DIR }}
+          key: esp8266_rtos_sdk-${{ env.ESP8266_SDK_VER }}
+      - name: ESP8266 RTOS SDK recent versions info
         run: |
-          cd /ESP8266_RTOS_SDK
+          cd ${ESP8266_SDK_DIR}
           git fetch || true
           git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
   espidf_build:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/espidf-ci
+    needs: espidf_checkout
     strategy:
       matrix:
         plat:
@@ -44,6 +100,20 @@ jobs:
           - DallasTemperature
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        if: ${{ matrix.plat }} != 'esp8266'
+        with:
+          path: |
+            ${{ env.ESPIDF_DIR }}
+            ${{ env.TOOLCHAIN_DIR }}
+          key: espidf-${{ env.ESPIDF_VER }}
+      - uses: actions/cache@v4
+        if: ${{ matrix.plat }} == 'esp8266'
+        with:
+          path: |
+            ${{ env.ESP8266_SDK_DIR }}
+            ${{ env.TOOLCHAIN_DIR }}
+          key: esp8266_rtos_sdk-${{ env.ESP8266_SDK_VER }}
       - name: Build
         run: |
           repo_dir=$(pwd)
@@ -59,8 +129,11 @@ jobs:
           echo "CONFIG_CRC16_ALGO_BASIC=y"      >>sdkconfig.defaults
           echo "CONFIG_BUS_BLINK_PROTECTION=y"  >>sdkconfig.defaults
           echo "CONFIG_ITERATION_RETRIES=1"     >>sdkconfig.defaults
-          if [[ "${{ matrix.plat }}" = "esp8266" ]]; then
-            sudo bash -c "source /ESP8266_RTOS_SDK/export.sh; idf.py build"
+          if [[ "${{ matrix.plat }}" != 'esp8266' ]]; then
+            source ${ESPIDF_DIR}/export.sh
+            idf.py --preview set-target ${{ matrix.plat }}
+            idf.py build
           else
-            sudo bash -c "source /esp-idf/export.sh; idf.py --preview set-target ${{ matrix.plat }}; idf.py build"
+            source ${ESP8266_SDK_DIR}/export.sh
+            idf.py build
           fi

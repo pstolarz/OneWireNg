@@ -24,8 +24,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: |
-          sudo pip uninstall -y --break-system-packages six
-          pip install --break-system-packages --user six
           repo_dir=$(pwd)
           rm -rf /tmp/mbedos-build && mkdir /tmp/mbedos-build && cd /tmp/mbedos-build
           ln -s ${repo_dir} OneWireNg

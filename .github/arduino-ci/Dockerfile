@@ -6,13 +6,20 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && \
   apt-get install -y \
     curl \
+    nodejs \
     python3 \
     python3-pip \
     sudo \
     zip
 RUN apt-get clean
 
-# install arduino-cli
+RUN cd /usr/bin && \
+  ln -sf python3 python && \
+  ln -sf pip3 pip
+
+RUN ln -sf /bin/bash /bin/sh
+
+# install arduino-cli (root user)
 RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 
 RUN arduino-cli config init
@@ -29,7 +36,7 @@ RUN arduino-cli core install arduino:mbed_nicla
 RUN arduino-cli core install arduino:mbed_portenta
 RUN arduino-cli core install arduino:mbed_rp2040
 
-# Install extra cores.
+# install extra cores
 RUN arduino-cli config add board_manager.additional_urls \
     https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json && \
   arduino-cli config add board_manager.additional_urls \
@@ -50,10 +57,5 @@ RUN arduino-cli core install megaTinyCore:megaavr
 
 RUN arduino-cli config set library.enable_unsafe_install true
 
-# ESP-IDF required
-RUN pip3 install pyserial
-RUN cd /usr/bin && \
-  ln -sf python3 python && \
-  ln -sf pip3 pip
-
-RUN ln -sf /bin/bash /bin/sh
+# required by ESP-IDF
+RUN pip install --break-system-packages pyserial

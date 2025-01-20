@@ -1,4 +1,10 @@
 name: ESP-IDF builds
+env:
+  ESPIDF_VER: v5.3.2
+  ESP8266_SDK_VER: v3.4
+  ESPIDF_PATH: /opt/esp-idf
+  ESP8266_SDK_PATH: /opt/ESP8266_RTOS_SDK
+  TOOLCHAIN_PATH: ~/.espressif
 on:
   push:
     branches:
@@ -15,15 +21,17 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/espidf-ci
     steps:
-      - name: ESP-IDF recent versions info
+      - name: ESP IDF recent versions info
         run: |
-          cd /esp-idf
-          git fetch || true
+          cd ${ESPIDF_PATH}
+          sudo git fetch || true
+          sudo git checkout -f ${ESPIDF_VER}
           git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
-      - name: ESP8266_RTOS_SDK recent versions info
+      - name: ESP8266 RTOS SDK recent versions info
         run: |
-          cd /ESP8266_RTOS_SDK
-          git fetch || true
+          cd ${ESP8266_SDK_PATH}
+          sudo git fetch || true
+          sudo git checkout -f ${ESP8266_SDK_VER}
           git tag | sort | awk "/$(git describe --tags)/ {f=1} f==1 {print}"
   espidf_build:
     runs-on: ubuntu-latest
@@ -44,6 +52,30 @@ jobs:
           - DallasTemperature
     steps:
       - uses: actions/checkout@v4
+      - name: ESP checkout
+        run: |
+          cd ${ESPIDF_PATH}
+          sudo git fetch || true
+          sudo git checkout -f ${ESPIDF_VER}
+          sudo git submodule update -f --init --recursive
+
+          cd ${ESP8266_SDK_PATH}
+          sudo git fetch || true
+          sudo git checkout -f ${ESP8266_SDK_VER}
+          sudo git submodule update -f --init --recursive
+      - uses: actions/cache@v4
+        id: cache_esp_toolchains
+        with:
+          path: ${{ env.TOOLCHAIN_PATH }}
+          key: toolchains-espidf-${{ env.ESPIDF_VER }}-esp8266_rtos_sdk-${{ env.ESP8266_SDK_VER }}
+      - name: Install ESP toolchains
+        if: steps.cache_esp_toolchains.outputs.cache-hit != 'true'
+        run: |
+          cd ${ESPIDF_PATH}
+          ./install.sh
+
+          cd ${ESP8266_SDK_PATH}
+          ./install.sh
       - name: Build
         run: |
           repo_dir=$(pwd)
@@ -59,8 +91,11 @@ jobs:
           echo "CONFIG_CRC16_ALGO_BASIC=y"      >>sdkconfig.defaults
           echo "CONFIG_BUS_BLINK_PROTECTION=y"  >>sdkconfig.defaults
           echo "CONFIG_ITERATION_RETRIES=1"     >>sdkconfig.defaults
-          if [[ "${{ matrix.plat }}" = "esp8266" ]]; then
-            sudo bash -c "source /ESP8266_RTOS_SDK/export.sh; idf.py build"
+          if [[ "${{ matrix.plat }}" != 'esp8266' ]]; then
+            source ${ESPIDF_PATH}/export.sh
+            idf.py --preview set-target ${{ matrix.plat }}
+            idf.py build
           else
-            sudo bash -c "source /esp-idf/export.sh; idf.py --preview set-target ${{ matrix.plat }}; idf.py build"
+            source ${ESP8266_SDK_PATH}/export.sh
+            idf.py build
           fi

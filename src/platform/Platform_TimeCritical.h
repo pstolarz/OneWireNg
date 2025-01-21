@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022,2024 Piotr Stolarz
+ * Copyright (c) 2021,2022,2024,2025 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -26,7 +26,8 @@
 
 #if CONFIG_BITBANG_DELAY_CCOUNT
 # if defined(CONFIG_IDF_TARGET_ESP32C2) || defined(CONFIG_IDF_TARGET_ESP32C3) || \
-    defined(CONFIG_IDF_TARGET_ESP32C6) || defined(CONFIG_IDF_TARGET_ESP32H2) || \
+    defined(CONFIG_IDF_TARGET_ESP32C5)  || defined(CONFIG_IDF_TARGET_ESP32C6) || \
+    defined(CONFIG_IDF_TARGET_ESP32C61) || defined(CONFIG_IDF_TARGET_ESP32H2) || \
     defined(CONFIG_IDF_TARGET_ESP32P4)
 #  include "esp_cpu.h"
 #  include "esp_idf_version.h"

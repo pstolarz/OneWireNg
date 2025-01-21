@@ -16,6 +16,8 @@ jobs:
     container: ghcr.io/pstolarz/mbedos-ci
     strategy:
       matrix:
+        plat:
+          - NUCLEO_L552ZE_Q
         example:
           - DallasTemperature
     steps:
@@ -23,7 +25,7 @@ jobs:
       - name: Build
         run: |
           repo_dir=$(pwd)
-          mkdir /tmp/mbedos-build && cd /tmp/mbedos-build
+          rm -rf /tmp/mbedos-build && mkdir /tmp/mbedos-build && cd /tmp/mbedos-build
           ln -s ${repo_dir} OneWireNg
           ln -s ${repo_dir}/examples/mbed-os/${{ matrix.example }}/${{ matrix.example }}.cpp ${{ matrix.example }}.cpp
           jq '.target_overrides."*" += {
@@ -34,4 +36,4 @@ jobs:
             ${repo_dir}/examples/mbed-os/${{ matrix.example }}/mbed_app.json >mbed_app.json
           sudo mbed new .
           sudo mbed ls
-          sudo mbed compile -m NUCLEO_L552ZE_Q
+          sudo mbed compile -m ${{ matrix.plat }}

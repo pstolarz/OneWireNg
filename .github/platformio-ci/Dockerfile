@@ -1,11 +1,15 @@
 FROM ubuntu:latest
 
+ENV PIO_ARDUINO_PATH=/opt/platformio-ard-ci
+ENV PIO_IDF_PATH=/opt/platformio-idf-ci
+
 ENV TZ=Europe/Warsaw
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && \
   apt-get install -y \
     curl \
+    nodejs \
     python3 \
     python3-pip \
     python3-venv \
@@ -17,6 +21,7 @@ RUN cd /usr/bin && \
 
 RUN ln -sf /bin/bash /bin/sh
 
+# install platformio (root user)
 RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py; \
   python3 get-platformio.py; \
   rm get-platformio.py
@@ -25,7 +30,7 @@ RUN ln -s ~/.platformio/penv/bin/platformio /usr/local/bin/platformio && \
   ln -s ~/.platformio/penv/bin/pio /usr/local/bin/pio && \
   ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 
-RUN mkdir /platformio-ard-ci && cd /platformio-ard-ci && \
+RUN mkdir ${PIO_ARDUINO_PATH} && cd ${PIO_ARDUINO_PATH} && \
   platformio project init -s && \
   echo                                  >>platformio.ini && \
   echo "[env]"                          >>platformio.ini && \
@@ -60,7 +65,7 @@ RUN mkdir /platformio-ard-ci && cd /platformio-ard-ci && \
   echo "board = pico"                   >>platformio.ini && \
   platformio pkg install
 
-RUN mkdir /platformio-idf-ci && cd /platformio-idf-ci && \
+RUN mkdir ${PIO_IDF_PATH} && cd ${PIO_IDF_PATH} && \
   platformio project init -s && \
   echo                                  >>platformio.ini && \
   echo "[env:esp32-s2-saola-1]"         >>platformio.ini && \

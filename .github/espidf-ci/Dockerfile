@@ -1,5 +1,8 @@
 FROM ubuntu:latest
 
+ENV ESPIDF_PATH=/opt/esp-idf
+ENV ESP8266_SDK_PATH=/opt/ESP8266_RTOS_SDK
+
 ENV TZ=Europe/Warsaw
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -10,6 +13,7 @@ RUN apt-get update && \
     libusb-1.0-0 \
     make \
     ninja-build \
+    nodejs \
     python3 \
     python3-pip \
     python3-venv \
@@ -23,20 +27,12 @@ RUN cd /usr/bin && \
 
 RUN ln -sf /bin/bash /bin/sh
 
-RUN cd / && \
-  git clone https://github.com/espressif/esp-idf && \
-  cd esp-idf && \
-  git checkout v5.3.1 && \
+# install ESP IDF (root user)
+RUN git clone -- https://github.com/espressif/esp-idf ${ESPIDF_PATH} && \
+  cd ${ESPIDF_PATH} && \
   git submodule update --init --recursive
 
-RUN cd /esp-idf && \
-  ./install.sh
-
-RUN cd / && \
-  git clone https://github.com/espressif/ESP8266_RTOS_SDK && \
-  cd ESP8266_RTOS_SDK && \
-  git checkout v3.4 && \
+# install ESP8266 RTOS SDK (root user)
+RUN git clone -- https://github.com/espressif/ESP8266_RTOS_SDK ${ESP8266_SDK_PATH} && \
+  cd ${ESP8266_SDK_PATH} && \
   git submodule update --init --recursive
-
-RUN cd /ESP8266_RTOS_SDK && \
-  ./install.sh

@@ -24,9 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/pstolarz/arduino-ci
     env:
-      # NOTE: `-c' option added to make buggy esp32-arduino core happy,
-      # see: https://github.com/espressif/arduino-esp32/issues/8815
-      BUILD_FLAGS: "-c \
+      BUILD_FLAGS: "\
         -DCONFIG_PWR_CTRL_ENABLED \
         -DCONFIG_OVERDRIVE_ENABLED \
         -DCONFIG_CRC16_ENABLED \

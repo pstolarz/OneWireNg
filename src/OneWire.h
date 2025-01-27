@@ -58,7 +58,7 @@ public:
     ~OneWire()
     {
         if (_ow)
-            _ow->OneWireNg::~OneWireNg();
+            _ow->~OneWireNg();
 
         _ow = NULL;
     }
@@ -66,7 +66,7 @@ public:
     void begin(uint8_t pin)
     {
         if (_ow)
-            _ow->OneWireNg::~OneWireNg();
+            _ow->~OneWireNg();
 
         _ow = new (_ow_buf) OneWireNg_CurrentPlatform(
             pin,

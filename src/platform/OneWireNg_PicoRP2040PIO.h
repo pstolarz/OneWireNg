@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Piotr Stolarz
+ * Copyright (c) 2022,2025 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -68,6 +68,8 @@ public:
         _sm2 = pio_claim_unused_sm(_pio, true);
 #endif
 
+        _pioBound = false;
+        _progOwner = true;
         _exeProg = INVALID_PROG;
 
         powerBus(false);
@@ -134,6 +136,10 @@ public:
      * - New service will use its own 1 or 2 state machine(s), depending on
      *   @c CONFIG_RP2040_PIOSM_NUM_USED configuration.
      *
+     * @warning While creating the service object using this constructor
+     *     the @c base object MUST exist for the lifetime of the newly
+     *     created object.
+     *
      * @note The routine enables create up to 2 or 4 (depending on @c
      *     CONFIG_RP2040_PIOSM_NUM_USED configuration) 1-wire services
      *     handled by different pins for a single PIO peripheral.
@@ -150,6 +156,8 @@ public:
         _sm2 = pio_claim_unused_sm(_pio, true);
 #endif
 
+        _pioBound = false;
+        _progOwner = false;
         _exeProg = INVALID_PROG;
 
         powerBus(false);
@@ -185,6 +193,31 @@ public:
 #if CONFIG_RP2040_PIOSM_NUM_USED > 1
         pio_sm_set_config(_pio, _sm2, &_pioCfg);
 #endif
+    }
+
+    /**
+     * Clean-up PIO resources while destroying the service.
+     */
+    ~OneWireNg_PicoRP2040PIO()
+    {
+        /* disclaim unused PIO SM(s) */
+        pio_sm_set_enabled(_pio, _sm1, false);
+        pio_sm_unclaim(_pio, _sm1);
+#if CONFIG_RP2040_PIOSM_NUM_USED > 1
+        pio_sm_set_enabled(_pio, _sm2, false);
+        pio_sm_unclaim(_pio, _sm2);
+#endif
+        /*
+         * Dispose the PIO programs only in case the object is in ownership
+         * of them. Since OD uses the same PIO programs as STD mode, free
+         * STD programs only.
+         */
+        if (_progOwner) {
+            pio_remove_program(_pio, &w1_reset_program, _addrs[RESET_STD]);
+            pio_remove_program(_pio, &w1_touch0_program, _addrs[TOUCH0_STD]);
+            pio_remove_program(_pio, &w1_touch1_program, _addrs[TOUCH1_STD]);
+            _progOwner = false;
+        }
     }
 
     /**
@@ -319,6 +352,9 @@ protected:
 
     /** w1-bus GPIO bound to PIO flag */
     bool _pioBound;
+
+    /** PIO programs ownership indicator */
+    bool _progOwner;
 
     /** PIO's w1 programs addresses */
     uint _addrs[PROGS_NUM];

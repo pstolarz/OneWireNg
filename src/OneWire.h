@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022 Piotr Stolarz
+ * Copyright (c) 2021,2022,2025 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)

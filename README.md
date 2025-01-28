@@ -31,6 +31,7 @@ devices.
   * [`OneWireNg_BitBang`](#arch_bb)
   * [`OneWireNg_PLATFORM`](#arch_plat)
     * [RP2040 drivers](#arch_rp2040)
+      * [RP2040 PIO driver controlling many buses](#arch_rp2040pio_multi_bus)
 * [OneWire compatibility](#ow)
   * [DallasTemperature library](#ow_dallas)
 * [License](#license)
@@ -451,11 +452,60 @@ header which tries to detect platform the compilation is proceeded and:
 interface for RP2040 MCU using Programmable I/O (PIO) peripheral. Second type
 of driver supporting RP2040 platform is `OneWireNg_PicoRP2040` bit-banging
 driver. Use `CONFIG_RP2040_PIO_DRIVER` configuration parameter to setup a
-specific driver for the platform.
+specific driver for the platform (by default `CONFIG_RP2040_PIO_DRIVER` configures
+the PIO driver as default one for RP2040 MCU).
 
 NOTE: There are observed problems with Pico SDK's serial output (USB,
 UART) while using the bit-banging driver in `TIMING_STRICT` mode (see
 `CONFIG_BITBANG_TIMING`).
+
+<a name="arch_rp2040pio_multi_bus"></a>
+#### RP2040 PIO driver controlling many buses
+
+Number of GPIOs which may be handled by `OneWireNg_PicoRP2040PIO` driver objects
+is limited to:
+
+* 8 - if `CONFIG_RP2040_PIOSM_NUM_USED` is set to `1`. In this is case 4 drivers
+  are handled by RP2040's `PIO0` and 4 by `PIO1`.
+* 4 - if `CONFIG_RP2040_PIOSM_NUM_USED` is set to `2` (this is the default value
+  for the configuration parameter). In this is case 2 drivers are handled by
+  RP2040's `PIO0` and 2 by `PIO1`.
+
+NOTE: The above limits assume the RP2040's PIO is not used by other programs
+occupying its resources. In such case the limits are of course lower.
+
+The following code presents how to create the PIO drivers controlling multiple
+buses (dynamic allocation version).
+
+```cpp
+constexpr bool INT_PULLUP = false;
+
+// the driver is handled by PIO0/SM0
+OneWireNg *ow1 = new OneWireNg_PicoRP2040PIO(PIN1, INT_PULLUP, 0);
+
+// create more drivers handled by PIO0/SM1..3
+// the drivers reuse PIO0 program loaded by driver ow1
+OneWireNg *ow2 = new OneWireNg_PicoRP2040PIO(PIN2, INT_PULLUP, (OneWireNg_PicoRP2040PIO&)*ow1);
+#if CONFIG_RP2040_PIOSM_NUM_USED <= 1
+OneWireNg *ow3 = new OneWireNg_PicoRP2040PIO(PIN3, INT_PULLUP, (OneWireNg_PicoRP2040PIO&)*ow1);
+OneWireNg *ow4 = new OneWireNg_PicoRP2040PIO(PIN4, INT_PULLUP, (OneWireNg_PicoRP2040PIO&)*ow1);
+#endif
+
+// the driver is handled by PIO1/SM0
+OneWireNg *ow5 = new OneWireNg_PicoRP2040PIO(PIN5, INT_PULLUP, 1);
+
+// create more drivers handled by PIO1/SM1..3
+// the drivers reuse PIO1 program loaded by driver ow5
+OneWireNg *ow6 = new OneWireNg_PicoRP2040PIO(PIN6, INT_PULLUP, (OneWireNg_PicoRP2040PIO&)*ow5);
+#if CONFIG_RP2040_PIOSM_NUM_USED <= 1
+OneWireNg *ow7 = new OneWireNg_PicoRP2040PIO(PIN7, INT_PULLUP, (OneWireNg_PicoRP2040PIO&)*ow5);
+OneWireNg *ow8 = new OneWireNg_PicoRP2040PIO(PIN8, INT_PULLUP, (OneWireNg_PicoRP2040PIO&)*ow5);
+#endif
+```
+
+NOTE: In the above example drivers `ow2`..`ow4` use `ow1` as a base driver,
+which means the `ow1` must live as long as the dependant drivers. Similarly
+with `ow6`..`ow8` and `ow5` driver.
 
 <a name="ow"></a>
 ## OneWire compatibility

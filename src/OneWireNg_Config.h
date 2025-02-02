@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 Piotr Stolarz
+ * Copyright (c) 2019-2025 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -262,11 +262,11 @@
 /**
  * Boolean parameter to enable extended virtual interface.
  *
- * The extended interface enables more advance 1-wire service drivers to be
- * implemented in the future. The penalty is additional overhead needed for
- * calling the virtual methods being part of this interface. Since current
- * implementation doesn't leverage the interface it's recommended to disable
- * this parameter for slower platforms.
+ * Extended virtual interface extends number of virtual methods OneWireNg class
+ * provides, enabling implementation of more advanced 1-wire service drivers.
+ * The penalty is additional overhead needed for calling the extra virtual
+ * methods. To avoid the overhead it's recommended to enable the extended
+ * interface only for drivers requiring it.
  */
 # ifndef CONFIG_EXT_VIRTUAL_INTF
 #  define CONFIG_EXT_VIRTUAL_INTF 0
@@ -274,7 +274,7 @@
 
 /**
  * For C++11 range-loop used during search-scan process to detect slave devices
- * connected to the bus, the parameter specifies number or the search command
+ * connected to the bus, the parameter specifies number of "Search" command
  * resends in case of CRC or bus error. The parameter may be useful for error
  * prone setups. If 0 - no retires.
  *

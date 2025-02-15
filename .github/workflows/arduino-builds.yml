@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Arduino recent cores versions info
         run: |
-          sudo arduino-cli update
+          sudo arduino-cli update || true
           sudo arduino-cli core list
           sudo arduino-cli core list --updatable
   arduino_build:

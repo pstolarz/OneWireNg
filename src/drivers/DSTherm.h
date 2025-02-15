@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022,2024 Piotr Stolarz
+ * Copyright (c) 2021,2022,2024,2025 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -369,8 +369,7 @@ public:
      *   is used and the @c readSingleId() is not called. To avoid ambiguous
      *   behavior of initial call of the routine resulted from using uninitialized
      *   memory of the scratchpad placeholder, it's recommended to initialize
-     *   the placeholder with zeroes. See @c Init parameter of @ref Placeholder
-     *   template.
+     *   the placeholder with zeroes. @see PlaceholderInit.
      * - If @c reuseId is @c false, the routine calls @c readSingleId() every
      *   time to scan the bus for a connected sensor.
      *

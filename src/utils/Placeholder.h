@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022 Piotr Stolarz
+ * Copyright (c) 2021,2022,2025 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -12,19 +12,21 @@
 
 #ifndef __OWNG_PLACEHOLDER__
 #define __OWNG_PLACEHOLDER__
-
-#include <stdint.h>
-#include <string.h>  /* memset */
-#include "platform/Platform_New.h"
-
 /**
  * Simple placeholder template with automatic conversion to a reference or a
  * pointer of the stored object. Overloaded @c operator&() and @c operator*()
  * allow to retrieve casted address and a reference to the stored object.
  * @c operator->() enables accessing placeholded object's members.
  */
-template<class T, bool Init = false>
-class Placeholder
+
+#include <stdint.h>
+#include <string.h>  /* memset */
+#include "platform/Platform_New.h"
+
+namespace {
+
+template<class T, uint8_t B = 0, bool Init = false>
+class Placeholder_priv
 {
 public:
     T *operator&() {
@@ -51,16 +53,27 @@ protected:
     ALLOC_ALIGNED uint8_t _buf[sizeof(T)];
 };
 
-/**
- * Zero initialized @c Placeholder specialization.
- */
-template<class T>
-class Placeholder<T, true>: public Placeholder<T, false>
+template<class T, uint8_t B>
+class Placeholder_priv<T, B, true>: public Placeholder_priv<T, B, false>
 {
 public:
-    Placeholder() {
-        memset(this->_buf, 0, sizeof(this->_buf));
+    Placeholder_priv() {
+        memset(this->_buf, B, sizeof(this->_buf));
     }
 };
+
+} /* namespace */
+
+/**
+ * Uninitialized placeholder - placeholder's memory not initialized.
+ */
+template<class T>
+struct Placeholder: Placeholder_priv<T> {};
+
+/**
+ * Initialized placeholder - placeholder's memory filled by @c B (0 by default).
+ */
+template<class T, uint8_t B = 0>
+struct PlaceholderInit: Placeholder_priv<T, B, true> {};
 
 #endif /* __OWNG_PLACEHOLDER__ */

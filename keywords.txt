@@ -22,6 +22,7 @@ OneWireNg_CurrentPlatform	KEYWORD1
 DSTherm	KEYWORD1
 MAX31850	KEYWORD1
 Placeholder	KEYWORD1
+PlaceholderInit	KEYWORD1
 
 Id	KEYWORD3
 ErrorCode	KEYWORD3

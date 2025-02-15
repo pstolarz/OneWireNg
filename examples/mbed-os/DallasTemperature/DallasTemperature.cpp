@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022,2024 Piotr Stolarz
+ * Copyright (c) 2022,2024,2025 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -134,11 +134,10 @@ void loop()
     /* single sensor environment */
 
     /*
-     * Scratchpad placeholder is static to allow reuse of the associated
-     * sensor id while reissuing readScratchpadSingle() calls.
-     * Note, due to its storage class the placeholder is zero initialized.
+     * Zero-initialized scratchpad placeholder is static to allow reuse of
+     * the associated sensor id while reissuing readScratchpadSingle() calls.
      */
-    static Placeholder<DSTherm::Scratchpad> scrpd;
+    static PlaceholderInit<DSTherm::Scratchpad> scrpd;
 
     OneWireNg::ErrorCode ec = drv.readScratchpadSingle(scrpd);
     if (ec == OneWireNg::EC_SUCCESS) {

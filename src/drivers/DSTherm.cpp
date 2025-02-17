@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021,2022,2024 Piotr Stolarz
+ * Copyright (c) 2021,2022,2024,2025 Piotr Stolarz
  * OneWireNg: Arduino 1-wire service library
  *
  * Distributed under the 2-clause BSD License (the License)
@@ -25,12 +25,14 @@ const DSTherm::FamilyCodeName
     { DS28EA00, STR(DS28EA00) }
 };
 
-OneWireNg::ErrorCode DSTherm::readScratchpad(
-    const OneWireNg::Id& id, Scratchpad *scratchpad)
+OneWireNg::ErrorCode DSTherm::_readScratchpad(const OneWireNg::Id& id,
+    Scratchpad *scratchpad, bool addressAll)
 {
-    OneWireNg::ErrorCode ec = _ow.addressSingle(id);
-    if (ec == OneWireNg::EC_SUCCESS)
-    {
+    OneWireNg::ErrorCode ec = (addressAll ?
+        _ow.addressAll():
+        _ow.addressSingle(id));
+
+    if (ec == OneWireNg::EC_SUCCESS) {
         uint8_t cmd[1 + Scratchpad::LENGTH] = {
             CMD_READ_SCRATCHPAD,
             /* the read scratchpad will be placed here (9 bytes) */
@@ -49,6 +51,16 @@ OneWireNg::ErrorCode DSTherm::readScratchpad(
     return ec;
 }
 
+OneWireNg::ErrorCode DSTherm::readScratchpad(
+    const OneWireNg::Id& id, Scratchpad *scratchpad)
+{
+    OneWireNg::ErrorCode ec = _ow.addressSingle(id);
+    if (ec == OneWireNg::EC_SUCCESS)
+        ec = _readScratchpad(id, scratchpad);
+
+    return ec;
+}
+
 OneWireNg::ErrorCode DSTherm::readScratchpadSingle(
     Scratchpad *scratchpad, bool reuseId)
 {
@@ -62,7 +74,7 @@ OneWireNg::ErrorCode DSTherm::readScratchpadSingle(
         (getFamilyName(scratchpad->_id) != NULL) &&
         (OneWireNg::checkCrcId(scratchpad->_id) == OneWireNg::EC_SUCCESS))
     {
-        ec = readScratchpad(scratchpad->_id, scratchpad);
+        ec = _readScratchpad(scratchpad->_id, scratchpad, true);
     } else
     {
         OneWireNg::Id id;
@@ -70,7 +82,8 @@ OneWireNg::ErrorCode DSTherm::readScratchpadSingle(
         ec = _ow.readSingleId(id);
         if (ec == OneWireNg::EC_SUCCESS) {
             ec = (getFamilyName(id) != NULL ?
-                readScratchpad(id, scratchpad) : OneWireNg::EC_UNSUPPORED);
+                _readScratchpad(id, scratchpad, true) :
+                OneWireNg::EC_UNSUPPORED);
         }
     }
     return ec;

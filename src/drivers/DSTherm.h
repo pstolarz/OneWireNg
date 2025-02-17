@@ -357,13 +357,17 @@ public:
      * Read sensor scratchpad - single sensor mode.
      *
      * The routine performs the following steps:
-     * - Detects connected sensor id by calling @ref OneWireNg::readSingleId().
-     *   If more than one sensor is connected the routine returns @c EC_CRC_ERROR.
-     * - Calls @ref readScratchpad() with the id from the previous step.
+     * - Get connected sensor id by calling @ref OneWireNg::readSingleId().
+     *   This step is necessary to detect type of sensor and properly parse
+     *   its scratchpad.
+     * - Addressing all slaves on the bus, "Read Scratchpad" command (0xBE) is
+     *   sent to read sensor's scratchpad out.
+     * If more than one sensor is connected the routine fails with @c EC_CRC_ERROR
+     * error code.
      *
      * To avoid redundant @c readSingleId() calls on a single sensor environment
-     * @c reuseId argument may use sensor id stored in @c scratchpad set by the
-     * previous call to the routine:
+     * @c reuseId argument may indicate to reuse sensor id stored in @c scratchpad
+     * set by the previous call to the routine:
      * - If @c reuseId is @c true (default value), the routine examines passed
      *   @c scratchpad content if it contains valid sensor id. If so, the id
      *   is used and the @c readSingleId() is not called. To avoid ambiguous
@@ -592,6 +596,9 @@ protected:
         }
         return ec;
     }
+
+    OneWireNg::ErrorCode _readScratchpad(const OneWireNg::Id& id,
+        Scratchpad *scratchpad, bool addressAll = false);
 
     OneWireNg::ErrorCode _writeScratchpad(const OneWireNg::Id *id,
         int8_t th, int8_t tl, uint8_t res, uint8_t addr);

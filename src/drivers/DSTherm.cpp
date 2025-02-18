@@ -177,6 +177,44 @@ OneWireNg::ErrorCode DSTherm::_writeScratchpad(
     return ec;
 }
 
+OneWireNg::ErrorCode DSTherm::_copyScratchpad(
+    const OneWireNg::Id *id, bool parasitic, int copyTime)
+{
+    OneWireNg::ErrorCode ec =
+        (id ? _ow.addressSingle(*id) : _ow.addressAll());
+
+    if (ec == OneWireNg::EC_SUCCESS) {
+        _ow.writeByte(CMD_COPY_SCRATCHPAD, parasitic);
+        waitForCompletion((copyTime <= 0 ? 0 : copyTime),
+            parasitic, 0 /* not used */);
+    }
+    return ec;
+}
+
+OneWireNg::ErrorCode DSTherm::_recallEeprom(const OneWireNg::Id *id)
+{
+    OneWireNg::ErrorCode ec =
+        (id ? _ow.addressSingle(*id) : _ow.addressAll());
+
+    if (ec == OneWireNg::EC_SUCCESS)
+        _ow.writeByte(CMD_RECALL_E2);
+
+    return ec;
+}
+
+int DSTherm::_readPowerSupply(const OneWireNg::Id *id)
+{
+    int status = 1;
+    OneWireNg::ErrorCode ec =
+        (id ? _ow.addressSingle(*id) : _ow.addressAll());
+
+    if (ec == OneWireNg::EC_SUCCESS) {
+        _ow.writeByte(CMD_READ_POW_SUPPLY);
+        status = _ow.readBit();
+    }
+    return status;
+}
+
 OneWireNg::ErrorCode DSTherm::Scratchpad::writeScratchpad() const
 {
     OneWireNg::ErrorCode ec = _ow.addressSingle(_id);

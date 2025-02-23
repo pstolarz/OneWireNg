@@ -569,9 +569,9 @@ public:
     const static uint8_t CMD_READ_SCRATCHPAD  = 0xBE;
 
     /** Supported thermometers families */
-    const static uint8_t DS18S20  = 0x10;
+    const static uint8_t DS18S20  = 0x10; // also DS1820
     const static uint8_t DS1822   = 0x22;
-    const static uint8_t DS18B20  = 0x28;
+    const static uint8_t DS18B20  = 0x28; // also MAX31820
     const static uint8_t DS1825   = 0x3B;
     const static uint8_t DS28EA00 = 0x42;
 

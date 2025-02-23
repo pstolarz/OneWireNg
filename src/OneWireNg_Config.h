@@ -346,12 +346,12 @@
  * - 1: The same SM used for reset and touch,
  * - 2: Separate SMs used for reset and touch.
  *
- * @note The rationale behind this parameter are occasional issues, which
- *     have been observed with starting reset SM while sharing the same SM
- *     for both reset and touch activities.
+ * @note The rationale behind this parameter are occasional timing issues,
+ *     which have been observed with starting reset SM while sharing the same
+ *     SM for both reset and touch activities.
  */
 #ifndef CONFIG_RP2040_PIOSM_NUM_USED
-# define CONFIG_RP2040_PIOSM_NUM_USED 2
+# define CONFIG_RP2040_PIOSM_NUM_USED 1
 #endif
 
 #endif

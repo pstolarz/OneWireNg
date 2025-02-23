@@ -1,6 +1,6 @@
 name: Pico SDK builds
 env:
-  SDK_VER: 2.1.0
+  SDK_VER: 2.1.1
   PICO_SDK_PATH: /opt/pico-sdk
 on:
   push:

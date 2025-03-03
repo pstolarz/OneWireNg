@@ -467,9 +467,8 @@ is limited to:
 
 * 8 - if `CONFIG_RP2040_PIOSM_NUM_USED` is set to `1`. In this is case 4 drivers
   are handled by RP2040's `PIO0` and 4 by `PIO1`.
-* 4 - if `CONFIG_RP2040_PIOSM_NUM_USED` is set to `2` (this is the default value
-  for the configuration parameter). In this is case 2 drivers are handled by
-  RP2040's `PIO0` and 2 by `PIO1`.
+* 4 - if `CONFIG_RP2040_PIOSM_NUM_USED` is set to `2`. In this is case 2 drivers
+  are handled by RP2040's `PIO0` and 2 by `PIO1`.
 
 NOTE: The above limits assume the RP2040's PIO is not used by other programs
 occupying its resources. In such case the limits are of course lower.

@@ -23,10 +23,10 @@
 #include <string.h>  /* memset */
 #include "platform/Platform_New.h"
 
-namespace {
+namespace detail {
 
 template<class T, uint8_t B = 0, bool Init = false>
-class Placeholder_priv
+class Placeholder
 {
 public:
     T *operator&() {
@@ -54,26 +54,26 @@ protected:
 };
 
 template<class T, uint8_t B>
-class Placeholder_priv<T, B, true>: public Placeholder_priv<T, B, false>
+class Placeholder<T, B, true>: public Placeholder<T, B, false>
 {
 public:
-    Placeholder_priv() {
+    Placeholder() {
         memset(this->_buf, B, sizeof(this->_buf));
     }
 };
 
-} /* namespace */
+} /* namespace detail */
 
 /**
  * Uninitialized placeholder - placeholder's memory not initialized.
  */
 template<class T>
-struct Placeholder: Placeholder_priv<T> {};
+struct Placeholder: ::detail::Placeholder<T> {};
 
 /**
  * Initialized placeholder - placeholder's memory filled by @c B (0 by default).
  */
 template<class T, uint8_t B = 0>
-struct PlaceholderInit: Placeholder_priv<T, B, true> {};
+struct PlaceholderInit: ::detail::Placeholder<T, B, true> {};
 
 #endif /* __OWNG_PLACEHOLDER__ */

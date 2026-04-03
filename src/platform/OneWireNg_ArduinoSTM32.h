@@ -18,6 +18,12 @@
 #include "OneWireNg_BitBang.h"
 #include "platform/Platform_TimeCritical.h"
 
+#if STM32_CORE_VERSION >= 0x020c0000
+# define GPIO_PORT GPIOPort_list
+#else
+# define GPIO_PORT GPIOPort
+#endif
+
 /**
  * Arduino STM32 platform GPIO specific implementation.
  */
@@ -127,7 +133,7 @@ protected:
         _dtaGpio.pinName = digitalPinToPinName(pin);
         assert(_dtaGpio.pinName != NC);
 
-        _dtaGpio.gpio = GPIOPort[STM_PORT(_dtaGpio.pinName)];
+        _dtaGpio.gpio = GPIO_PORT[STM_PORT(_dtaGpio.pinName)];
         _dtaGpio.ll_pin = STM_LL_GPIO_PIN(_dtaGpio.pinName);
 
         pinMode(pin, (pullUp ? INPUT_PULLUP : INPUT));

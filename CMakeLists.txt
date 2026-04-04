@@ -17,6 +17,7 @@ if(IDF_VER)
                 src/drivers
             PRIV_REQUIRES
                 driver
+                esp_driver_gpio
                 esp_timer
                 soc
         )

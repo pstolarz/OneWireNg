@@ -1,6 +1,6 @@
 name: ESP-IDF builds
 env:
-  ESPIDF_VER: v5.4
+  ESPIDF_VER: v5.5.3
   ESP8266_SDK_VER: v3.4
   ESPIDF_PATH: /opt/esp-idf
   ESP8266_SDK_PATH: /opt/ESP8266_RTOS_SDK
@@ -53,7 +53,7 @@ jobs:
         example:
           - DallasTemperature
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: ESP checkout
         run: |
           cd ${ESPIDF_PATH}
@@ -65,18 +65,13 @@ jobs:
           sudo git fetch || true
           sudo git checkout -f ${ESP8266_SDK_VER}
           sudo git submodule update -f --init --recursive
-      - uses: actions/cache@v4
-        id: cache_esp_toolchains
-        with:
-          path: ${{ env.TOOLCHAIN_PATH }}
-          key: toolchains-espidf-${{ env.ESPIDF_VER }}-esp8266_rtos_sdk-${{ env.ESP8266_SDK_VER }}
       - name: Install ESP toolchains
-        if: steps.cache_esp_toolchains.outputs.cache-hit != 'true'
         run: |
           cd ${ESPIDF_PATH}
           ./install.sh
 
           cd ${ESP8266_SDK_PATH}
+          sed -ie 's/^setuptools$/setuptools==80.10.2/' requirements.txt
           ./install.sh
       - name: Build
         run: |

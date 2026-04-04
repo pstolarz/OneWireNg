@@ -1,6 +1,6 @@
 name: ESP-IDF builds
 env:
-  ESPIDF_VER: v5.5.3
+  ESPIDF_VER: v6.0
   ESP8266_SDK_VER: v3.4
   ESPIDF_PATH: /opt/esp-idf
   ESP8266_SDK_PATH: /opt/ESP8266_RTOS_SDK
@@ -48,6 +48,8 @@ jobs:
           - esp32c6
           - esp32c61
           - esp32h2
+          - esp32h21
+          - esp32h4
           - esp32p4
           - esp8266
         example:

@@ -146,7 +146,7 @@ protected:
         _pwrCtrlGpio.pinName = digitalPinToPinName(pin);
         assert(_pwrCtrlGpio.pinName != NC);
 
-        _pwrCtrlGpio.gpio = GPIOPort[STM_PORT(_pwrCtrlGpio.pinName)];
+        _pwrCtrlGpio.gpio = GPIO_PORT[STM_PORT(_pwrCtrlGpio.pinName)];
         _pwrCtrlGpio.ll_pin = STM_LL_GPIO_PIN(_pwrCtrlGpio.pinName);
 
         pinMode(pin, OUTPUT);

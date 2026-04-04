@@ -1,6 +1,6 @@
 name: Pico SDK builds
 env:
-  SDK_VER: 2.1.1
+  SDK_VER: 2.2.0
   PICO_SDK_PATH: /opt/pico-sdk
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
         example:
           - DallasTemperature
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Pico SDK checkout
         run: |
           cd ${PICO_SDK_PATH}

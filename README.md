@@ -471,7 +471,7 @@ is limited to:
   are handled by RP2040's `PIO0` and 2 by `PIO1`.
 
 NOTE: The above limits assume the RP2040's PIO is not used by other programs
-occupying its resources. In such case the limits are of course lower.
+occupying its resources. In such case the limits are lower.
 
 The following code presents how to create the PIO drivers controlling multiple
 buses (dynamic allocation version).
@@ -502,9 +502,8 @@ OneWireNg *ow8 = new OneWireNg_PicoRP2040PIO(PIN8, INT_PULLUP, (OneWireNg_PicoRP
 #endif
 ```
 
-NOTE: In the above example drivers `ow2`..`ow4` use `ow1` as a base driver,
-which means the `ow1` must live as long as the dependant drivers. Similarly
-with `ow6`..`ow8` and `ow5` driver.
+NOTE: In the above example drivers `ow2`..`ow4` use `ow1` as a base driver.
+Similarly with `ow6`..`ow8` and `ow5` driver.
 
 <a name="ow"></a>
 ## OneWire compatibility

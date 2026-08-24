@@ -350,9 +350,9 @@
  *     which have been observed with starting reset SM while sharing the same
  *     SM for both reset and touch activities.
  */
-#ifndef CONFIG_RP2040_PIOSM_NUM_USED
-# define CONFIG_RP2040_PIOSM_NUM_USED 1
-#endif
+# ifndef CONFIG_RP2040_PIOSM_NUM_USED
+#  define CONFIG_RP2040_PIOSM_NUM_USED 1
+# endif
 
 #endif
 
